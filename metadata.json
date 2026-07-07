@@ -1,0 +1,6 @@
+{
+  "name": "منوی دیجیتال کافه",
+  "description": "سامانه هوشمند و لوکس سفارش‌دهی دیجیتال کافه گالری به صورت مستقل بدون نیاز به نود با مانیتورینگ زنده برای ادمین و دانلود مستقیم بسته سی‌پنل",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
