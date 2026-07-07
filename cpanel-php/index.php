@@ -211,6 +211,13 @@ if ($pdo) {
     </div>
 </div>
 
+<!-- دکمه سبد خرید شناور لوکس فیکسد و ۱۰۰٪ واکنش‌گرا هماهنگ با تم سایت -->
+<button onclick="openCartModal()" id="floatingCartBtn" class="fixed bottom-6 left-6 z-40 bg-primary hover:opacity-95 text-white font-black py-3.5 px-5 md:py-4 md:px-6 rounded-full shadow-[rgba(139,90,43,0.35)_0px_8px_32px] flex items-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer hidden" title="مشاهده سبد خرید و ثبت نهایی">
+    <i data-lucide="shopping-bag" class="w-5 h-5 shrink-0"></i>
+    <span class="text-xs md:text-sm">مشاهده سبد خرید</span>
+    <span id="floatingCartCount" class="bg-white text-primary text-[10px] font-black w-5.5 h-5.5 rounded-full flex items-center justify-center shadow-sm shrink-0 font-mono">0</span>
+</button>
+
 <!-- ==================== مودال جزئیات محصول ==================== -->
 <div id="productDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs hidden transition-all duration-300">
     <div class="bg-white dark:bg-stone-900 rounded-3xl w-full max-w-lg overflow-hidden border border-stone-200 dark:border-stone-800 shadow-2xl relative">
@@ -417,17 +424,34 @@ if ($pdo) {
     }
 
     /**
-     * آپدیت تعداد سبد خرید در هدر
+     * آپدیت تعداد سبد خرید در هدر و دکمه شناور فیکسد
      */
     function updateCartBadges() {
         const badge = document.getElementById('cartCountBadge');
-        if (!badge) return;
+        const floatCartBtn = document.getElementById('floatingCartBtn');
+        const floatCartCount = document.getElementById('floatingCartCount');
         const totalCount = cart.reduce((total, item) => total + item.quantity, 0);
-        if (totalCount > 0) {
-            badge.innerText = totalCount;
-            badge.classList.remove('hidden');
-        } else {
-            badge.classList.add('hidden');
+
+        if (badge) {
+            if (totalCount > 0) {
+                badge.innerText = totalCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        if (floatCartBtn) {
+            if (totalCount > 0) {
+                floatCartBtn.classList.remove('hidden');
+                floatCartBtn.classList.add('flex');
+                if (floatCartCount) {
+                    floatCartCount.innerText = totalCount;
+                }
+            } else {
+                floatCartBtn.classList.add('hidden');
+                floatCartBtn.classList.remove('flex');
+            }
         }
     }
 

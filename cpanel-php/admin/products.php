@@ -197,6 +197,10 @@ if ($pdo) {
             <i data-lucide="settings" class="w-5 h-5 text-amber-600"></i>
             <span>تنظیمات سیستم</span>
         </a>
+        <a href="../../#code" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 font-bold text-sm transition-all">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            <span>دانلود کدهای cPanel</span>
+        </a>
     </nav>
     <div class="p-4 border-t border-stone-100 dark:border-stone-800">
         <a href="../logout.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold text-sm transition-all">
@@ -230,19 +234,19 @@ if ($pdo) {
     <!-- جدول محصولات موجود -->
     <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-right border-collapse text-xs">
+            <table class="w-full text-right border-collapse text-xs table-auto md:table-fixed">
                 <thead>
                     <tr class="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800 text-stone-500 font-bold">
-                        <th class="p-4 w-16">عکس</th>
+                        <th class="p-4 w-12 md:w-16">عکس</th>
                         <th class="p-4">نام محصول</th>
-                        <th class="p-4">دسته‌بندی</th>
+                        <th class="p-4 hidden md:table-cell md:w-28">دسته‌بندی</th>
                         <th class="p-4">قیمت پایه</th>
-                        <th class="p-4">تخفیف</th>
-                        <th class="p-4">قیمت نهایی</th>
-                        <th class="p-4">وضعیت موجودی</th>
-                        <th class="p-4">برچسب‌ها</th>
-                        <th class="p-4">نمایش</th>
-                        <th class="p-4 w-28">عملیات ادمین</th>
+                        <th class="p-4 hidden sm:table-cell md:w-16 text-center">تخفیف</th>
+                        <th class="p-4 md:w-32">قیمت نهایی</th>
+                        <th class="p-4 md:w-20 text-center">موجود</th>
+                        <th class="p-4 hidden lg:table-cell md:w-24">برچسب‌ها</th>
+                        <th class="p-4 hidden xl:table-cell md:w-16 text-center">نمایش</th>
+                        <th class="p-4 w-24 md:w-28 text-center">عملیات</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-stone-100 dark:divide-stone-800 font-semibold text-stone-700 dark:text-stone-300">
@@ -257,36 +261,36 @@ if ($pdo) {
                             <tr class="hover:bg-stone-50/50 dark:hover:bg-stone-800/10">
                                 <td class="p-4">
                                     <?php if (!empty($prod['image'])): ?>
-                                        <img src="../<?php echo sanitize($prod['image']); ?>" class="w-10 h-10 rounded-lg object-cover">
+                                        <img src="../<?php echo sanitize($prod['image']); ?>" class="w-8 h-8 md:w-10 md:h-10 rounded-lg object-cover">
                                     <?php else: ?>
-                                        <div class="w-10 h-10 bg-stone-100 dark:bg-stone-800 rounded-lg flex items-center justify-center text-stone-400"><i data-lucide="image" class="w-4 h-4"></i></div>
+                                        <div class="w-8 h-8 md:w-10 md:h-10 bg-stone-100 dark:bg-stone-800 rounded-lg flex items-center justify-center text-stone-400"><i data-lucide="image" class="w-4 h-4"></i></div>
                                     <?php endif; ?>
                                 </td>
-                                <td class="p-4 font-bold text-stone-900 dark:text-white"><?php echo sanitize($prod['name']); ?></td>
-                                <td class="p-4"><?php echo sanitize($prod['category_name']); ?></td>
-                                <td class="p-4"><?php echo number_format($prod['price']); ?> تومان</td>
-                                <td class="p-4 text-red-500">%<?php echo $prod['discount']; ?></td>
+                                <td class="p-4 font-bold text-stone-900 dark:text-white truncate max-w-[120px]" title="<?php echo sanitize($prod['name']); ?>"><?php echo sanitize($prod['name']); ?></td>
+                                <td class="p-4 hidden md:table-cell"><?php echo sanitize($prod['category_name']); ?></td>
+                                <td class="p-4"><?php echo number_format($prod['price']); ?></td>
+                                <td class="p-4 hidden sm:table-cell text-red-500 text-center">%<?php echo $prod['discount']; ?></td>
                                 <td class="p-4 font-black text-emerald-600"><?php echo number_format($final_price); ?> تومان</td>
-                                <td class="p-4">
-                                    <span class="px-2 py-0.5 rounded text-[10px] <?php echo $prod['is_available'] ? 'bg-green-100 text-green-700 dark:bg-green-950/40' : 'bg-red-100 text-red-700 dark:bg-red-950/40'; ?>">
-                                        <?php echo $prod['is_available'] ? 'موجود' : 'ناموجود'; ?>
+                                <td class="p-4 text-center">
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] <?php echo $prod['is_available'] ? 'bg-green-100 text-green-700 dark:bg-green-950/40' : 'bg-red-100 text-red-700 dark:bg-red-950/40'; ?>">
+                                        <?php echo $prod['is_available'] ? 'بله' : 'خیر'; ?>
                                     </span>
                                 </td>
-                                <td class="p-4">
+                                <td class="p-4 hidden lg:table-cell">
                                     <div class="flex gap-1">
                                         <?php if ($prod['is_popular']): ?><span class="bg-amber-100 text-amber-700 text-[9px] px-1.5 py-0.5 rounded">محبوب</span><?php endif; ?>
                                         <?php if ($prod['is_new']): ?><span class="bg-teal-100 text-teal-700 text-[9px] px-1.5 py-0.5 rounded">جدید</span><?php endif; ?>
                                     </div>
                                 </td>
-                                <td class="p-4">
-                                    <i data-lucide="<?php echo $prod['is_visible'] ? 'eye' : 'eye-off'; ?>" class="w-4 h-4 <?php echo $prod['is_visible'] ? 'text-stone-500' : 'text-stone-300'; ?>"></i>
+                                <td class="p-4 hidden xl:table-cell text-center">
+                                    <i data-lucide="<?php echo $prod['is_visible'] ? 'eye' : 'eye-off'; ?>" class="w-4 h-4 mx-auto <?php echo $prod['is_visible'] ? 'text-stone-500' : 'text-stone-300'; ?>"></i>
                                 </td>
-                                <td class="p-4">
-                                    <div class="flex items-center gap-1">
-                                        <button onclick="editProduct(<?php echo htmlspecialchars(json_encode($prod)); ?>)" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 text-blue-600 p-2 rounded-lg transition-all" title="ویرایش">
+                                <td class="p-4 text-center">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="editProduct(<?php echo htmlspecialchars(json_encode($prod)); ?>)" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 text-blue-600 p-1.5 rounded-lg transition-all" title="ویرایش">
                                             <i data-lucide="pencil" class="w-4 h-4"></i>
                                         </button>
-                                        <a href="products.php?action=delete&id=<?php echo $prod['id']; ?>" onclick="return confirm('آیا از حذف این محصول اطمینان دارید؟')" class="bg-red-50 hover:bg-red-100 dark:bg-red-950/30 text-red-600 p-2 rounded-lg transition-all" title="حذف">
+                                        <a href="products.php?action=delete&id=<?php echo $prod['id']; ?>" onclick="return confirm('آیا از حذف این محصول اطمینان دارید؟')" class="bg-red-50 hover:bg-red-100 dark:bg-red-950/30 text-red-600 p-1.5 rounded-lg transition-all" title="حذف">
                                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         </a>
                                     </div>

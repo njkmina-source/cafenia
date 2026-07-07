@@ -290,8 +290,8 @@ export default function App() {
     e.preventDefault();
     if (cart.length === 0) return;
 
-    // بررسی ولیدیشن شماره همراه (فقط برای سفارش‌های غیرحضوری/ارسالی)
-    if (orderType === 'outdoor' && !/^09[0-9]{9}$/.test(phone)) {
+    // بررسی ولیدیشن شماره همراه (فیلد موبایل در هردو حالت اجباری و برای بررسی فرمت است)
+    if (!/^09[0-9]{9}$/.test(phone)) {
       showNotification('فرمت شماره موبایل نامعتبر است (مثال: 09123456789)', 'error');
       return;
     }
@@ -301,13 +301,13 @@ export default function App() {
 
     const newOrder = {
       order_code: orderCode,
-      customer_name: orderType === 'outdoor' ? `${firstName} ${lastName}` : 'مشتری حضوری',
-      customer_phone: orderType === 'outdoor' ? phone : '-',
+      customer_name: orderType === 'indoor' ? `${firstName} ${lastName}` : firstName,
+      customer_phone: phone,
       order_type: orderType,
-      address: orderType === 'outdoor' ? address : '',
-      plaque: orderType === 'outdoor' ? plaque : '',
-      floor: orderType === 'outdoor' ? floor : '',
-      unit: orderType === 'outdoor' ? unit : '',
+      address: orderType === 'indoor' ? address : '',
+      plaque: orderType === 'indoor' ? plaque : '',
+      floor: orderType === 'indoor' ? floor : '',
+      unit: orderType === 'indoor' ? unit : '',
       description: description,
       total_amount: totalAmount,
       status: 'registered',
@@ -1274,6 +1274,30 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* بنر هوشمند دریافت کدهای نهایی سی‌پنل هماهنگ با تم جدید سایت */}
+                <div className="glass p-5 md:p-6 rounded-3xl border border-[#c49b63]/20 relative overflow-hidden shadow-xl">
+                  <div className="absolute inset-0 bg-[radial-gradient(#c49b63_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none"></div>
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                    <div className="text-center md:text-right space-y-1.5 flex-1">
+                      <h3 className="text-sm md:text-base font-black text-white flex items-center justify-center md:justify-start gap-2">
+                        <Download className="text-[#c49b63] w-5 h-5 animate-bounce shrink-0" />
+                        <span>دریافت مستقیم پکیج کدهای نهایی سی‌پنل (cPanel)</span>
+                      </h3>
+                      <p className="text-[11px] md:text-xs text-white/60 leading-relaxed">
+                        تمامی تغییرات اخیر، از جمله تم رنگی لوکس جدید، دکمه سبد خرید شناور و همگام‌سازی‌های اخیر به صورت خودکار در این پکیج قرار گرفته‌اند. فایل زیپ را دانلود کرده و بدون نیاز به هیچ تغییری روی هاست خود اکسترکت کنید.
+                      </p>
+                    </div>
+                    <button 
+                      onClick={handleDownloadCPanelPackage}
+                      disabled={isZipping}
+                      className="w-full md:w-auto bg-[#c49b63] hover:bg-[#b28b58] text-black font-black py-3 px-6 md:py-3.5 md:px-8 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer accent-glow whitespace-nowrap shrink-0 shadow-lg shadow-[#c49b63]/15 text-xs md:text-sm"
+                    >
+                      <Download className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
+                      <span>{isZipping ? 'در حال زیپ کردن...' : 'دانلود پکیج ZIP پروژه'}</span>
+                    </button>
+                  </div>
+                </div>
+
                 {/* مانیتور سفارشات جدید */}
                 <div className="glass p-5 rounded-2xl shadow-md">
                   <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
@@ -1450,33 +1474,33 @@ export default function App() {
                   {/* جدول محصولات */}
                   <div className="flex-1 glass rounded-3xl shadow-md overflow-hidden h-fit">
                     <div className="overflow-x-auto">
-                      <table className="w-full text-right border-collapse text-xs md:table-fixed">
+                      <table className="w-full text-right border-collapse text-xs table-auto md:table-fixed">
                         <thead>
                           <tr className="bg-white/5 border-b border-white/10 text-white/50 font-bold">
                             <th className="p-4 md:p-2 text-center w-12 md:w-12">عکس</th>
-                            <th className="p-4 md:p-2 text-right md:w-auto">نام</th>
-                            <th className="p-4 md:p-2 text-center md:w-20">دسته</th>
+                            <th className="p-4 md:p-2 text-right">نام</th>
+                            <th className="p-4 md:p-2 text-center md:w-20 hidden md:table-cell">دسته</th>
                             <th className="p-4 md:p-2 text-center md:w-28">قیمت پایه</th>
-                            <th className="p-4 md:p-2 text-center md:w-16">تخفیف</th>
+                            <th className="p-4 md:p-2 text-center md:w-16 hidden sm:table-cell">تخفیف</th>
                             <th className="p-4 md:p-2 text-center md:w-16">موجودی</th>
-                            <th className="p-4 md:p-2 text-center md:w-14">نمایش</th>
-                            <th className="p-4 md:p-2 w-24 md:w-20 text-center">عملیات</th>
+                            <th className="p-4 md:p-2 text-center md:w-14 hidden lg:table-cell">نمایش</th>
+                            <th className="p-4 md:p-2 w-20 md:w-20 text-center">عملیات</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10 font-semibold text-white/80">
                           {products.map(p => (
                             <tr key={p.id} className="hover:bg-white/5 transition-colors">
                               <td className="p-4 md:p-2 text-center"><img src={p.image} className="w-8 h-8 rounded-lg object-cover mx-auto" /></td>
-                              <td className="p-4 md:p-2 font-bold text-white text-right truncate" title={p.name}>{p.name}</td>
-                              <td className="p-4 md:p-2 text-center text-white/60">{categories.find(c => c.id === p.category_id)?.name || 'ناشناس'}</td>
+                              <td className="p-4 md:p-2 font-bold text-white text-right truncate max-w-[120px]" title={p.name}>{p.name}</td>
+                              <td className="p-4 md:p-2 text-center text-white/60 hidden md:table-cell">{categories.find(c => c.id === p.category_id)?.name || 'ناشناس'}</td>
                               <td className="p-4 md:p-2 text-center font-mono text-[#c49b63]">{toPersianDigits(p.price.toLocaleString())} تومان</td>
-                              <td className="p-4 md:p-2 text-center text-red-400">٪{toPersianDigits(p.discount)}</td>
+                              <td className="p-4 md:p-2 text-center text-red-400 hidden sm:table-cell">٪{toPersianDigits(p.discount)}</td>
                               <td className="p-4 md:p-2 text-center">
                                 <span className={`px-2 py-0.5 rounded text-[10px] mx-auto block w-fit ${p.is_available ? 'bg-green-500/15 text-green-400 border border-green-500/30' : 'bg-red-500/15 text-red-400 border border-red-500/30'}`}>
                                   {p.is_available ? 'موجود' : 'ناموجود'}
                                 </span>
                               </td>
-                              <td className="p-4 md:p-2 text-center text-white/60">{p.is_visible ? 'بله' : 'خیر'}</td>
+                              <td className="p-4 md:p-2 text-center text-white/60 hidden lg:table-cell">{p.is_visible ? 'بله' : 'خیر'}</td>
                               <td className="p-4 md:p-2">
                                 <div className="flex gap-1 justify-center">
                                   <button onClick={() => handleStartEditProduct(p)} className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 p-2 rounded-lg transition-colors" title="ویرایش محصول"><Pencil className="w-3.5 h-3.5" /></button>
@@ -1926,30 +1950,30 @@ export default function App() {
             </div>
           </div>
 
-          {/* ویرایشگر کدهای PHP ادمین با قابلیت کپی کدهای هر فایل */}
-          <div className="flex-1 p-4 md:p-6 flex flex-col h-[450px] md:h-[650px]">
-            <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 flex flex-col flex-1 overflow-hidden relative shadow-2xl">
+          {/* ویرایشگر کدهای PHP ادمین با قابلیت کپی کدهای هر فایل و ریسپانسیو بی‌نقص */}
+          <div className="flex-1 p-4 md:p-6 flex flex-col h-[450px] md:h-[650px] min-w-0 w-full max-w-full overflow-hidden">
+            <div className="bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 flex flex-col flex-1 overflow-hidden relative shadow-2xl min-w-0 w-full">
               <div className="px-4 md:px-5 py-3 bg-black/30 border-b border-white/10 flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-2 font-mono text-xs text-white">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <div className="flex items-center gap-2 font-mono text-xs text-white min-w-0">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500 shrink-0"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0"></div>
                   <span className="ml-2 text-white/40 hidden sm:inline">Editor:</span>
-                  <span className="text-[#c49b63] font-bold text-[11px] md:text-xs truncate max-w-[150px] sm:max-w-none">{selectedFile}</span>
+                  <span className="text-[#c49b63] font-bold text-[11px] md:text-xs truncate">{selectedFile}</span>
                 </div>
                 
                 <button 
                   onClick={() => handleCopyCode(phpFiles[selectedFile] || '')}
-                  className="bg-white/10 hover:bg-white/20 text-white text-[10px] md:text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 font-bold transition-all cursor-pointer"
+                  className="bg-white/10 hover:bg-white/20 text-white text-[10px] md:text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 font-bold transition-all cursor-pointer shrink-0"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>{copiedFile ? 'کپی شد!' : 'کپی کد فایل'}</span>
                 </button>
               </div>
 
-              {/* کدها */}
-              <div className="flex-1 overflow-auto p-4 md:p-6 font-mono text-[10px] md:text-xs leading-relaxed text-white/80 select-all bg-black/20">
-                <pre>{phpFiles[selectedFile] || 'در حال لود کردن کدهای فایل...'}</pre>
+              {/* کدها با پشتیبانی از اسکرول داخلی مجزا */}
+              <div className="flex-1 overflow-auto p-4 md:p-6 font-mono text-[10px] md:text-xs leading-relaxed text-white/80 select-all bg-black/20 w-full max-w-full">
+                <pre className="whitespace-pre-wrap break-all sm:whitespace-pre sm:break-normal overflow-x-auto">{phpFiles[selectedFile] || 'در حال لود کردن کدهای فایل...'}</pre>
               </div>
             </div>
           </div>
@@ -2101,9 +2125,9 @@ export default function App() {
                     </div>
                   </div>
 
-                  {orderType === 'outdoor' ? (
-                    // فیلدهای غیرحضوری درخواستی مشتری
-                    <div className="space-y-4">
+                  {orderType === 'indoor' ? (
+                    // فیلدهای حضوری در کافه درخواستی طبق منطق دیتابیس cpanel-php
+                    <div className="space-y-4 animate-fade-in">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-[10px] font-bold text-white/40 mb-1">نام *</label>
@@ -2137,16 +2161,24 @@ export default function App() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-white/40 mb-1">توضیحات ارسال</label>
-                        <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="توضیحات مربوط به زنگ، نحوه تحویل و..." rows={2} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors" />
+                        <label className="block text-[10px] font-bold text-white/40 mb-1">توضیحات سفارش</label>
+                        <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="توضیحات مربوط به زنگ، شماره میز و نحوه تحویل..." rows={2} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors" />
                       </div>
                     </div>
                   ) : (
-                    // فیلدهای حضوری درخواستی مشتری
-                    <div className="space-y-4">
+                    // فیلدهای غیرحضوری (ارسال) درخواستی طبق منطق دیتابیس cpanel-php
+                    <div className="space-y-4 animate-fade-in">
                       <div>
-                        <label className="block text-[10px] font-bold text-white/40 mb-1">شماره میز / توضیحات سفارش</label>
-                        <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="مثلا: شماره میز ۴، قهوه کم شیرین باشد." rows={6} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors" />
+                        <label className="block text-[10px] font-bold text-white/40 mb-1">نام کامل *</label>
+                        <input type="text" required value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-white/40 mb-1">شماره موبایل *</label>
+                        <input type="text" required placeholder="09xxxxxxxxx" value={phone} onChange={e => setPhone(e.target.value)} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors dir-ltr text-right" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-white/40 mb-1">توضیحات ارسال</label>
+                        <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="مثلا: لاته بدون شکر باشد." rows={3} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors" />
                       </div>
                     </div>
                   )}

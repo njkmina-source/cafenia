@@ -135,6 +135,10 @@ if ($pdo) {
             <i data-lucide="settings" class="w-5 h-5 text-amber-600"></i>
             <span>تنظیمات سیستم</span>
         </a>
+        <a href="../../#code" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 font-bold text-sm transition-all">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            <span>دانلود کدهای cPanel</span>
+        </a>
     </nav>
     <div class="p-4 border-t border-stone-100 dark:border-stone-800">
         <a href="../logout.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold text-sm transition-all">
