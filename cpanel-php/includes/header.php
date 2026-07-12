@@ -53,9 +53,53 @@ $settings = getSettings();
         ::-webkit-scrollbar-thumb:hover {
             background: #88888888;
         }
+        /* افکت‌های شیشه ای (Frosted Glass) برای یکسان‌سازی با پیش‌نمایش */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .glass-light {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glass-dark {
+            background: rgba(15, 14, 12, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .accent-glow {
+            box-shadow: 0 0 20px rgba(196, 155, 99, 0.3);
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: slideUp 0.3s ease forwards;
+        }
+        /* هید کردن اسکرول‌بار در دکمه‌ها */
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
-<body class="bg-stone-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 min-h-screen flex flex-col transition-colors duration-300">
+<body class="bg-stone-50 text-stone-800 dark:bg-[#0f0e0c] dark:text-stone-100 min-h-screen flex flex-col transition-colors duration-300">
 
 <!-- ناوبری هدر همراه با حالت شب و روز -->
 <header class="sticky top-0 z-40 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 transition-colors duration-300">

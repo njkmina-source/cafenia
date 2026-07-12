@@ -83,17 +83,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 } else {
                     // شبیه‌سازی برای دموی آسان در صورتی که دیتابیس هنوز روی cPanel ست نشده باشد
-                    // نام کاربری پیش‌فرض: admin و رمز عبور: admin1234
-                    if ($username === 'admin' && $password === 'admin1234') {
+                    // دریافت اطلاعات تغییریافته در تنظیمات از طریق لوکال استوریج کلاینت
+                    $expected_username = !empty($_POST['local_admin_username']) ? trim($_POST['local_admin_username']) : 'admin';
+                    $expected_password = !empty($_POST['local_admin_password']) ? trim($_POST['local_admin_password']) : 'admin1234';
+
+                    if ($username === $expected_username && $password === $expected_password) {
                         $_SESSION['admin_logged_in'] = true;
                         $_SESSION['admin_id'] = 1;
-                        $_SESSION['admin_user'] = 'admin';
+                        $_SESSION['admin_user'] = $expected_username;
                         $_SESSION['admin_fullname'] = 'مدیر پیش‌فرض کافه';
                         
                         header('Location: admin/dashboard.php');
                         exit;
                     } else {
-                        $error_message = "[دموی آفلاین] نام کاربری admin و رمز admin1234 است.";
+                        $error_message = "[دموی آفلاین] نام کاربری یا رمز عبور اشتباه است.";
                     }
                 }
             }
@@ -174,6 +177,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     document.addEventListener("DOMContentLoaded", function() {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+        }
+
+        // تزریق مقادیر تغییریافته در تنظیمات دمو از لوکال استوریج کلاینت به سرور شبیه‌ساز
+        const form = document.querySelector('form');
+        if (form) {
+            const userHidden = document.createElement('input');
+            userHidden.type = 'hidden';
+            userHidden.name = 'local_admin_username';
+            userHidden.value = localStorage.getItem('admin_username') || '';
+            form.appendChild(userHidden);
+
+            const passHidden = document.createElement('input');
+            passHidden.type = 'hidden';
+            passHidden.name = 'local_admin_password';
+            passHidden.value = localStorage.getItem('admin_password') || '';
+            form.appendChild(passHidden);
         }
     });
 </script>

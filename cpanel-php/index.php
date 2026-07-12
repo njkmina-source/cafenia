@@ -38,9 +38,9 @@ if ($pdo) {
     <div class="absolute inset-0 bg-gradient-to-t from-stone-50 via-transparent to-transparent dark:from-stone-950"></div>
 </div>
 
-<div class="max-w-6xl mx-auto px-4 -mt-20 relative z-10 pb-12">
+<div class="max-w-6xl mx-auto px-4 -mt-20 relative z-10 pb-12 w-full">
     <!-- کارت معرفی کافه -->
-    <div class="bg-white dark:bg-stone-900 rounded-3xl p-6 shadow-xl border border-stone-100 dark:border-stone-800 transition-all duration-300">
+    <div class="bg-white dark:bg-stone-900/40 glass rounded-3xl p-6 shadow-2xl transition-all duration-300">
         <div class="flex flex-col sm:flex-row items-center gap-6">
             <?php if (!empty($settings['logo_url'])): ?>
                 <img src="<?php echo sanitize($settings['logo_url']); ?>" alt="لوگو" class="w-24 h-24 rounded-full object-cover shadow-lg border-2 border-primary/50">
@@ -73,7 +73,7 @@ if ($pdo) {
             <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-stone-400">
                 <i data-lucide="search" class="w-5 h-5"></i>
             </span>
-            <input type="text" id="searchInput" placeholder="جستجوی محصول، قهوه، کیک..." class="w-full pl-4 pr-10 py-3 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-sm">
+            <input type="text" id="searchInput" placeholder="جستجوی محصول، قهوه، کیک..." class="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/5 border border-white/10 text-stone-800 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-md text-sm">
             <button id="clearSearchBtn" class="absolute inset-y-0 left-0 flex items-center pl-3 text-stone-400 hover:text-stone-600 hidden">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
@@ -81,16 +81,16 @@ if ($pdo) {
 
         <!-- فیلترهای پیشرفته -->
         <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
-            <button onclick="sortProducts('default')" id="sort-default" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white transition-all shadow-sm">
+            <button onclick="sortProducts('default')" id="sort-default" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-black accent-glow border border-primary transition-all shadow-md">
                 همه
             </button>
-            <button onclick="sortProducts('new')" id="sort-new" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all shadow-sm">
+            <button onclick="sortProducts('new')" id="sort-new" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-stone-600 dark:text-white/75 border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/10 transition-all shadow-md">
                 جدیدترین‌ها
             </button>
-            <button onclick="sortProducts('popular')" id="sort-popular" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all shadow-sm">
+            <button onclick="sortProducts('popular')" id="sort-popular" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-stone-600 dark:text-white/75 border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/10 transition-all shadow-md">
                 محبوب‌ترین‌ها
             </button>
-            <button onclick="sortProducts('discount')" id="sort-discount" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all shadow-sm">
+            <button onclick="sortProducts('discount')" id="sort-discount" class="sort-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-stone-600 dark:text-white/75 border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/10 transition-all shadow-md">
                 دارای تخفیف
             </button>
         </div>
@@ -100,13 +100,13 @@ if ($pdo) {
     <div class="mt-8">
         <h3 class="text-sm font-bold text-stone-500 dark:text-stone-400 mb-3">دسته‌بندی‌ها</h3>
         <div class="flex gap-3 overflow-x-auto pb-3 snap-x scrollbar-none" id="categoriesScrollContainer">
-            <button onclick="filterCategory(0)" id="cat-btn-0" class="category-btn snap-start shrink-0 px-5 py-3 rounded-2xl flex items-center gap-2.5 bg-primary text-white font-bold text-sm shadow-md transition-all duration-300">
+            <button onclick="filterCategory(0)" id="cat-btn-0" class="category-btn snap-start shrink-0 px-5 py-3 rounded-2xl flex items-center gap-2.5 bg-primary text-black font-bold text-sm shadow-md transition-all duration-300">
                 <i data-lucide="layers" class="w-5 h-5"></i>
                 <span>همه دسته‌ها</span>
             </button>
 
             <?php foreach ($categories as $cat): ?>
-                <button onclick="filterCategory(<?php echo $cat['id']; ?>)" id="cat-btn-<?php echo $cat['id']; ?>" class="category-btn snap-start shrink-0 px-5 py-3 rounded-2xl flex items-center gap-2.5 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-800 font-bold text-sm shadow-sm hover:bg-stone-50 dark:hover:bg-stone-800 transition-all duration-300">
+                <button onclick="filterCategory(<?php echo $cat['id']; ?>)" id="cat-btn-<?php echo $cat['id']; ?>" class="category-btn snap-start shrink-0 px-5 py-3 rounded-2xl flex items-center gap-2.5 bg-white/5 text-stone-700 dark:text-white/75 border border-stone-200 dark:border-white/10 font-bold text-sm shadow-sm hover:bg-stone-50 dark:hover:bg-white/10 transition-all duration-300">
                     <?php if (!empty($cat['icon'])): ?>
                         <i data-lucide="<?php echo sanitize($cat['icon']); ?>" class="w-5 h-5 text-primary"></i>
                     <?php else: ?>
@@ -119,12 +119,12 @@ if ($pdo) {
     </div>
 
     <!-- گرید نمایش محصولات کافه -->
-    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="productsGrid">
+    <div class="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4" id="productsGrid">
         <!-- محصولات به صورت داینامیک از سمت کلاینت با JS رندر می‌شوند یا مستقیم با PHP -->
         <?php foreach ($products as $prod): 
             $final_price = $prod['price'] - ($prod['price'] * $prod['discount'] / 100);
         ?>
-            <div class="product-card bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-100 dark:border-stone-800 hover:shadow-xl transition-all duration-300 flex flex-col group" 
+            <div class="product-card bg-stone-900/40 glass p-2.5 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-white/20 transition-all duration-300 flex flex-col group" 
                  data-id="<?php echo $prod['id']; ?>"
                  data-category="<?php echo $prod['category_id']; ?>"
                  data-name="<?php echo sanitize($prod['name']); ?>"
@@ -134,7 +134,7 @@ if ($pdo) {
                  data-price="<?php echo $prod['price']; ?>">
                 
                 <!-- تصویر محصول -->
-                <div class="relative w-full h-48 bg-stone-100 dark:bg-stone-800 overflow-hidden cursor-pointer" onclick="openProductDetailModal(<?php echo htmlspecialchars(json_encode($prod)); ?>)">
+                <div class="relative w-full h-28 md:h-36 bg-stone-100 dark:bg-stone-800/50 rounded-xl overflow-hidden cursor-pointer" onclick="openProductDetailModal(<?php echo htmlspecialchars(json_encode($prod)); ?>)">
                     <?php if (!empty($prod['image'])): ?>
                         <img src="<?php echo sanitize($prod['image']); ?>" alt="<?php echo sanitize($prod['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     <?php else: ?>
@@ -144,48 +144,48 @@ if ($pdo) {
                     <?php endif; ?>
 
                     <!-- بچ‌ها (Badges) -->
-                    <div class="absolute top-3 right-3 flex flex-col gap-1.5">
+                    <div class="absolute top-2 right-2 flex flex-col gap-1 z-10">
                         <?php if ($prod['is_popular']): ?>
-                            <span class="bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
-                                <i data-lucide="star" class="w-3 h-3 fill-white"></i>
-                                محبوب‌ترین
+                            <span class="bg-[#c49b63] text-black text-[8px] font-black px-2 py-0.5 rounded-full shadow-md flex items-center gap-0.5 accent-glow">
+                                <i data-lucide="star" class="w-2.5 h-2.5 fill-black text-black"></i>
+                                محبوب
                             </span>
                         <?php endif; ?>
                         <?php if ($prod['is_new']): ?>
-                            <span class="bg-teal-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">جدید</span>
+                            <span class="bg-teal-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full shadow-md">جدید</span>
                         <?php endif; ?>
                         <?php if ($prod['discount'] > 0): ?>
-                            <span class="bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">%<?php echo $prod['discount']; ?> تخفیف</span>
+                            <span class="bg-red-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full shadow-md">%<?php echo $prod['discount']; ?> تخفیف</span>
                         <?php endif; ?>
                     </div>
 
                     <!-- عدم موجودی -->
                     <?php if (!$prod['is_available']): ?>
                         <div class="absolute inset-0 bg-stone-900/80 backdrop-blur-xs flex items-center justify-center">
-                            <span class="bg-white/90 text-stone-900 dark:bg-stone-950/90 dark:text-white px-4 py-2 rounded-2xl text-xs font-extrabold shadow-md border border-stone-200">ناموجود</span>
+                            <span class="bg-white/10 backdrop-blur-md text-white px-2.5 py-1 rounded-xl text-[10px] font-black shadow-md border border-white/20">ناموجود</span>
                         </div>
                     <?php endif; ?>
                 </div>
 
                 <!-- توضیحات محصول -->
-                <div class="p-5 flex-1 flex flex-col">
+                <div class="p-2 md:p-3 flex-1 flex flex-col">
                     <div class="flex items-start justify-between gap-2">
-                        <h4 class="font-bold text-stone-900 dark:text-white group-hover:text-primary transition-colors cursor-pointer" onclick="openProductDetailModal(<?php echo htmlspecialchars(json_encode($prod)); ?>)">
+                        <h4 class="text-xs md:text-sm font-bold text-white group-hover:text-primary transition-colors cursor-pointer line-clamp-1" onclick="openProductDetailModal(<?php echo htmlspecialchars(json_encode($prod)); ?>)">
                             <?php echo sanitize($prod['name']); ?>
                         </h4>
                     </div>
-                    <p class="text-xs text-stone-500 dark:text-stone-400 mt-2 line-clamp-2 leading-relaxed flex-1">
+                    <p class="text-[10px] md:text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-2 leading-relaxed flex-1">
                         <?php echo sanitize($prod['description'] ?: 'توضیحی برای این محصول ثبت نشده است.'); ?>
                     </p>
 
                     <!-- قیمت و دکمه خرید -->
-                    <div class="mt-5 pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                    <div class="mt-3 pt-2.5 border-t border-stone-100 dark:border-stone-800/60 flex items-center justify-between">
                         <div class="flex flex-col">
                             <?php if ($prod['discount'] > 0): ?>
-                                <span class="text-xs text-stone-400 line-through decoration-red-500/50"><?php echo number_format($prod['price']); ?></span>
-                                <span class="text-sm font-black text-stone-950 dark:text-white"><?php echo number_format($final_price); ?> <span class="text-[10px] font-normal text-stone-500 dark:text-stone-400"><?php echo CURRENCY; ?></span></span>
+                                <span class="text-[10px] text-stone-400 line-through decoration-red-500/50"><?php echo number_format($prod['price']); ?></span>
+                                <span class="text-xs md:text-sm font-black text-white"><?php echo number_format($final_price); ?> <span class="text-[9px] font-normal text-stone-500 dark:text-stone-400"><?php echo CURRENCY; ?></span></span>
                             <?php else: ?>
-                                <span class="text-sm font-black text-stone-950 dark:text-white"><?php echo number_format($prod['price']); ?> <span class="text-[10px] font-normal text-stone-500 dark:text-stone-400"><?php echo CURRENCY; ?></span></span>
+                                <span class="text-xs md:text-sm font-black text-primary"><?php echo number_format($prod['price']); ?> <span class="text-[9px] font-normal text-stone-500 dark:text-stone-400"><?php echo CURRENCY; ?></span></span>
                             <?php endif; ?>
                         </div>
 
@@ -196,12 +196,12 @@ if ($pdo) {
                                 'price' => $final_price,
                                 'image' => $prod['image'],
                                 'discount' => $prod['discount']
-                            ])); ?>)" class="bg-primary hover:bg-primary-hover text-white p-2.5 rounded-2xl hover:scale-105 transition-all shadow-md active:scale-95" title="افزودن به سبد">
-                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            ])); ?>)" class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center hover:scale-105 transition-all shadow-md active:scale-95 animate-fade-in" title="افزودن به سبد">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
                         <?php else: ?>
-                            <button disabled class="bg-stone-100 dark:bg-stone-800 text-stone-400 p-2.5 rounded-2xl cursor-not-allowed">
-                                <i data-lucide="slash" class="w-5 h-5"></i>
+                            <button disabled class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/5 text-white/20 flex items-center justify-center cursor-not-allowed">
+                                <i data-lucide="minus" class="w-4 h-4"></i>
                             </button>
                         <?php endif; ?>
                     </div>
@@ -301,17 +301,17 @@ if ($pdo) {
                     <label class="block text-xs font-bold text-stone-400 mb-2">نوع تحویل سفارش</label>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="cursor-pointer">
-                            <input type="radio" name="order_type" value="indoor" checked onchange="toggleOrderTypeFields('indoor')" class="peer sr-only">
-                            <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
-                                <i data-lucide="coffee" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
-                                حضوری در کافه
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="order_type" value="outdoor" onchange="toggleOrderTypeFields('outdoor')" class="peer sr-only">
+                            <input type="radio" name="order_type" value="outdoor" checked onchange="toggleOrderTypeFields('outdoor')" class="peer sr-only">
                             <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
                                 <i data-lucide="truck" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
                                 غیرحضوری (ارسال)
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="order_type" value="indoor" onchange="toggleOrderTypeFields('indoor')" class="peer sr-only">
+                            <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
+                                <i data-lucide="coffee" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
+                                حضوری در کافه
                             </div>
                         </label>
                     </div>
@@ -319,37 +319,37 @@ if ($pdo) {
 
                 <!-- فیلدهای پویا بر اساس نوع سفارش -->
                 <!-- فیلدهای سفارش حضوری (مطابق پروپوزال مشتری) -->
-                <div id="indoorFields" class="space-y-4">
+                <div id="indoorFields" class="space-y-4 hidden">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام *</label>
-                            <input type="text" name="first_name" id="indoor_first_name" required class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                            <input type="text" name="first_name" id="indoor_first_name" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام خانوادگی *</label>
-                            <input type="text" name="last_name" id="indoor_last_name" required class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                            <input type="text" name="last_name" id="indoor_last_name" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">شماره موبایل *</label>
-                        <input type="text" name="phone" id="indoor_phone" required placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-right dir-ltr">
+                        <input type="text" name="phone" id="indoor_phone" placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-right dir-ltr">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">آدرس کامل *</label>
-                        <textarea name="address" id="indoor_address" required rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
+                        <textarea name="address" id="indoor_address" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">پلاک *</label>
-                            <input type="text" name="plaque" id="indoor_plaque" required class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <input type="text" name="plaque" id="indoor_plaque" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">طبقه *</label>
-                            <input type="text" name="floor" id="indoor_floor" required class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <input type="text" name="floor" id="indoor_floor" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">واحد *</label>
-                            <input type="text" name="unit" id="indoor_unit" required class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <input type="text" name="unit" id="indoor_unit" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
                         </div>
                     </div>
                     <div>
@@ -359,15 +359,13 @@ if ($pdo) {
                 </div>
 
                 <!-- فیلدهای سفارش غیرحضوری -->
-                <div id="outdoorFields" class="space-y-4 hidden">
+                <div id="outdoorFields" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام *</label>
-                        <input type="text" name="outdoor_name" id="outdoor_name_input" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                        <input type="text" name="outdoor_name" id="outdoor_name_input" required class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">شماره موبایل *</label>
-                        <input type="text" name="outdoor_phone" id="outdoor_phone_input" placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-right dir-ltr">
-                    </div>
+                    <!-- شماره موبایل حذف شده است و مقدار پیش‌فرض ارسال می‌شود -->
+                    <input type="hidden" name="outdoor_phone" id="outdoor_phone_input" value="09000000000">
                     <div>
                         <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">توضیحات</label>
                         <textarea name="description_outdoor" id="outdoor_desc_input" placeholder="مثلاً: لاته بدون شکر باشد" rows="3" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
@@ -803,14 +801,14 @@ if ($pdo) {
         
         // آپدیت استایل دکمه‌ها
         document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.classList.remove('bg-primary', 'text-white', 'shadow-md');
-            btn.classList.add('bg-white', 'dark:bg-stone-900', 'text-stone-700', 'dark:text-stone-300', 'border', 'border-stone-200', 'dark:border-stone-800', 'shadow-sm');
+            btn.classList.remove('bg-primary', 'text-black', 'shadow-md');
+            btn.classList.add('bg-white/5', 'text-stone-700', 'dark:text-white/75', 'border-stone-200', 'dark:border-white/10', 'shadow-sm');
         });
 
         const activeBtn = document.getElementById(`cat-btn-${catId}`);
         if (activeBtn) {
-            activeBtn.classList.remove('bg-white', 'dark:bg-stone-900', 'text-stone-700', 'dark:text-stone-300', 'border', 'border-stone-200', 'dark:border-stone-800', 'shadow-sm');
-            activeBtn.classList.add('bg-primary', 'text-white', 'shadow-md');
+            activeBtn.classList.remove('bg-white/5', 'text-stone-700', 'dark:text-white/75', 'border-stone-200', 'dark:border-white/10', 'shadow-sm');
+            activeBtn.classList.add('bg-primary', 'text-black', 'shadow-md');
         }
 
         filterProducts();
@@ -821,14 +819,14 @@ if ($pdo) {
 
         // آپدیت استایل دکمه‌های مرتب‌سازی
         document.querySelectorAll('.sort-btn').forEach(btn => {
-            btn.classList.remove('bg-primary', 'text-white');
-            btn.classList.add('bg-white', 'dark:bg-stone-900', 'text-stone-600', 'dark:text-stone-300', 'border', 'border-stone-200', 'dark:border-stone-800');
+            btn.classList.remove('bg-primary', 'text-black', 'accent-glow');
+            btn.classList.add('bg-white/5', 'text-stone-600', 'dark:text-white/75', 'border-stone-200', 'dark:border-white/10');
         });
 
         const activeSortBtn = document.getElementById(`sort-${sortType}`);
         if (activeSortBtn) {
-            activeSortBtn.classList.remove('bg-white', 'dark:bg-stone-900', 'text-stone-600', 'dark:text-stone-300', 'border', 'border-stone-200', 'dark:border-stone-800');
-            activeSortBtn.classList.add('bg-primary', 'text-white');
+            activeSortBtn.classList.remove('bg-white/5', 'text-stone-600', 'dark:text-white/75', 'border-stone-200', 'dark:border-white/10');
+            activeSortBtn.classList.add('bg-primary', 'text-black', 'accent-glow');
         }
 
         filterProducts();

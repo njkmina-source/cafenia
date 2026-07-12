@@ -93,7 +93,7 @@ if ($pdo) {
             <span>داشبورد و سفارشات</span>
         </a>
         <a href="products.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="cup-straw" class="w-5 h-5 text-amber-600"></i>
+            <i data-lucide="coffee" class="w-5 h-5 text-amber-600"></i>
             <span>مدیریت محصولات</span>
         </a>
         <a href="categories.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
@@ -172,7 +172,7 @@ if ($pdo) {
         <!-- کارت ۴ -->
         <div class="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs">
             <div class="text-violet-600 bg-violet-50 dark:bg-violet-950/50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
-                <i data-lucide="cup-straw" class="w-5 h-5"></i>
+                <i data-lucide="coffee" class="w-5 h-5"></i>
             </div>
             <span class="text-xs text-stone-400 font-semibold">تعداد کل محصولات</span>
             <span class="text-xl font-black text-stone-950 dark:text-white block mt-1"><?php echo number_format($stats['total_products']); ?></span>
@@ -241,6 +241,7 @@ if ($pdo) {
     // نگهداری کدهای سفارشات خوانده شده برای شناسایی پیام‌های جدید و به صدا در آوردن هشدار صوتی
     let knownOrderCodes = new Set();
     let initialLoad = true;
+    let salesChartInstance = null;
 
     // راه‌اندازی آیکون‌ها
     document.addEventListener("DOMContentLoaded", function() {
@@ -262,12 +263,14 @@ if ($pdo) {
         .then(res => res.json())
         .then(orders => {
             renderLiveOrders(orders);
+            initSalesChart();
         })
         .catch(err => {
             // شبیه‌سازی برای دموها در صورتی که هاست سی‌پنل فعلاً ست نباشد
             // جهت پایداری ۱۰۰٪ پیش‌نمایش در AI Studio
             let mockOrders = JSON.parse(localStorage.getItem('mock_orders')) || getDemoOrders();
             renderLiveOrders(mockOrders);
+            initSalesChart();
         });
     }
 
@@ -452,17 +455,61 @@ if ($pdo) {
     }
 
     /**
-     * راه‌اندازی نمودار Chart.js
+     * راه‌اندازی نمودار Chart.js بر اساس تراکنش‌های موفق ثبت شده
      */
     function initSalesChart() {
-        const ctx = document.getElementById('salesTrendsChart').getContext('2d');
-        new Chart(ctx, {
+        const canvas = document.getElementById('salesTrendsChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        let mockOrders = JSON.parse(localStorage.getItem('mock_orders')) || getDemoOrders();
+        
+        // فیلتر کردن فقط سفارشات موفق (completed)
+        const successfulOrders = mockOrders.filter(o => o.status === 'completed');
+        
+        // اندیس روزهای هفته در نمودار (شنبه تا جمعه)
+        const weekdayIndexMap = {
+            6: 0, // شنبه
+            0: 1, // یکشنبه
+            1: 2, // دوشنبه
+            2: 3, // سه‌شنبه
+            3: 4, // چهارشنبه
+            4: 5, // پنجشنبه
+            5: 6  // جمعه
+        };
+        
+        // مقادیر پیش‌فرض برای خالی نبودن نمودار در ابتدا
+        const dailySales = [120000, 340000, 290000, 480000, 410000, 780000, 950000];
+        
+        // اضافه کردن مبالغ تراکنش‌های موفق واقعی به روزهای هفته جاری
+        successfulOrders.forEach(o => {
+            if (o.created_jalali) {
+                const datePart = o.created_jalali.trim().split(' ')[0];
+                const parts = datePart.split('/');
+                if (parts.length === 3) {
+                    const m = parseInt(parts[1]) - 1;
+                    const d = parseInt(parts[2]);
+                    const tempDate = new Date(new Date().getFullYear(), m, d);
+                    const w = tempDate.getDay();
+                    const index = weekdayIndexMap[w];
+                    if (index !== undefined) {
+                        dailySales[index] += parseFloat(o.total_amount || 0);
+                    }
+                }
+            }
+        });
+
+        if (salesChartInstance) {
+            salesChartInstance.destroy();
+        }
+
+        salesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'],
                 datasets: [{
-                    label: 'میزان فروش روزانه (تومان)',
-                    data: [120000, 340000, 290000, 480000, 410000, 780000, 950000],
+                    label: 'میزان فروش موفق روزانه (تومان)',
+                    data: dailySales,
                     borderColor: '#8B5A2B',
                     backgroundColor: 'rgba(139, 90, 43, 0.08)',
                     borderWidth: 3,

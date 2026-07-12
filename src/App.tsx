@@ -229,7 +229,7 @@ export default function App() {
   const [selectedProductDetail, setSelectedProductDetail] = useState<any | null>(null);
 
   // فیلدهای فرم ثبت سفارش
-  const [orderType, setOrderType] = useState<'indoor' | 'outdoor'>('indoor');
+  const [orderType, setOrderType] = useState<'indoor' | 'outdoor'>('outdoor');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
@@ -252,6 +252,44 @@ export default function App() {
 
     return matchCat && matchSearch && matchSort;
   });
+
+  // محاسبه روند فروش سفارش‌های موفق برای نمودار (روزهای شنبه تا جمعه)
+  const getSalesTrendData = () => {
+    const weekdayIndexMap: { [key: number]: number } = {
+      6: 0, // شنبه
+      0: 1, // یکشنبه
+      1: 2, // دوشنبه
+      2: 3, // سه‌شنبه
+      3: 4, // چهارشنبه
+      4: 5, // پنجشنبه
+      5: 6  // جمعه
+    };
+    
+    const days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];
+    const dailySales = [120000, 340000, 290000, 480000, 410000, 780000, 950000];
+    
+    orders.filter(o => o.status === 'completed').forEach(o => {
+      if (o.created_jalali) {
+        const datePart = o.created_jalali.trim().split(' ')[0];
+        const parts = datePart.split('/');
+        if (parts.length === 3) {
+          const m = parseInt(parts[1]) - 1;
+          const d = parseInt(parts[2]);
+          const tempDate = new Date(new Date().getFullYear(), m, d);
+          const w = tempDate.getDay();
+          const index = weekdayIndexMap[w];
+          if (index !== undefined) {
+            dailySales[index] += parseFloat(o.total_amount || 0);
+          }
+        }
+      }
+    });
+    
+    return days.map((day, idx) => ({
+      day,
+      sales: dailySales[idx]
+    }));
+  };
 
   // افزودن به سبد
   const addToCart = (prod: any) => {
@@ -290,8 +328,8 @@ export default function App() {
     e.preventDefault();
     if (cart.length === 0) return;
 
-    // بررسی ولیدیشن شماره همراه (فیلد موبایل در هردو حالت اجباری و برای بررسی فرمت است)
-    if (!/^09[0-9]{9}$/.test(phone)) {
+    // بررسی ولیدیشن شماره همراه (فیلد موبایل در حالت حضوری اجباری است)
+    if (orderType === 'indoor' && !/^09[0-9]{9}$/.test(phone)) {
       showNotification('فرمت شماره موبایل نامعتبر است (مثال: 09123456789)', 'error');
       return;
     }
@@ -302,7 +340,7 @@ export default function App() {
     const newOrder = {
       order_code: orderCode,
       customer_name: orderType === 'indoor' ? `${firstName} ${lastName}` : firstName,
-      customer_phone: phone,
+      customer_phone: orderType === 'indoor' ? phone : '09000000000',
       order_type: orderType,
       address: orderType === 'indoor' ? address : '',
       plaque: orderType === 'indoor' ? plaque : '',
@@ -927,7 +965,7 @@ export default function App() {
                 </div>
                 <div className="text-center sm:text-right flex-1 w-full">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto">
                       <h2 className="text-2xl font-black text-white">{settings.cafe_name}</h2>
                       <span className="bg-[#c49b63]/20 text-[#c49b63] text-[10px] font-bold px-2.5 py-1 rounded-md border border-[#c49b63]/30">منوی رسمی</span>
                     </div>
@@ -1696,6 +1734,108 @@ export default function App() {
                     <span className="text-2xl font-black text-white block">{toPersianDigits(orders.length)} فاکتور</span>
                   </div>
                 </div>
+
+                {/* نمودار روند فروش کافه */}
+                <div className="glass p-6 rounded-3xl shadow-md space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-black text-white flex items-center gap-2">
+                      <BarChart3 className="w-4.5 h-4.5 text-[#c49b63]" />
+                      <span>نمودار روند فروش کافه (تراکنش‌های موفق)</span>
+                    </h4>
+                    <span className="text-[10px] text-white/45 font-bold">بروزرسانی لحظه‌ای</span>
+                  </div>
+
+                  <div className="relative h-64 w-full flex items-center justify-center bg-black/20 rounded-2xl border border-white/5 p-4 overflow-hidden">
+                    <svg className="w-full h-full" viewBox="0 0 500 180" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#c49b63" stopOpacity="0.25" />
+                          <stop offset="100%" stopColor="#c49b63" stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
+                      
+                      {/* Grid Lines */}
+                      {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => (
+                        <line 
+                          key={idx}
+                          x1="50" 
+                          y1={15 + ratio * 120} 
+                          x2="480" 
+                          y2={15 + ratio * 120} 
+                          stroke="rgba(255,255,255,0.05)" 
+                          strokeWidth="1"
+                        />
+                      ))}
+                      
+                      {/* Area Under Curve */}
+                      <path 
+                        d={`M 50,135 ` + getSalesTrendData().map((d, idx) => {
+                          const x = 50 + (idx / 6) * 430;
+                          const maxS = Math.max(...getSalesTrendData().map(x => x.sales), 1000000);
+                          const y = 15 + 120 - (d.sales / maxS) * 120;
+                          return `L ${x},${y}`;
+                        }).join(' ') + ` L 480,135 Z`}
+                        fill="url(#chartGrad)"
+                      />
+                      
+                      {/* Line Curve */}
+                      <path 
+                        d={getSalesTrendData().map((d, idx) => {
+                          const x = 50 + (idx / 6) * 430;
+                          const maxS = Math.max(...getSalesTrendData().map(x => x.sales), 1000000);
+                          const y = 15 + 120 - (d.sales / maxS) * 120;
+                          return `${idx === 0 ? 'M' : 'L'} ${x},${y}`;
+                        }).join(' ')}
+                        fill="none"
+                        stroke="#c49b63"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+
+                      {/* Dots and Labels */}
+                      {getSalesTrendData().map((d, idx) => {
+                        const x = 50 + (idx / 6) * 430;
+                        const maxS = Math.max(...getSalesTrendData().map(x => x.sales), 1000000);
+                        const y = 15 + 120 - (d.sales / maxS) * 120;
+                        return (
+                          <g key={idx}>
+                            <circle 
+                              cx={x} 
+                              cy={y} 
+                              r="5" 
+                              fill="#141414" 
+                              stroke="#c49b63" 
+                              strokeWidth="2.5" 
+                            />
+                            {/* Value tooltip label (shows above dot) */}
+                            <text 
+                              x={x} 
+                              y={y - 10} 
+                              textAnchor="middle" 
+                              fill="#c49b63" 
+                              fontSize="8" 
+                              fontWeight="bold"
+                            >
+                              {toPersianDigits(Math.round(d.sales / 1000) + 'k')}
+                            </text>
+                            {/* Day under line */}
+                            <text 
+                              x={x} 
+                              y="155" 
+                              textAnchor="middle" 
+                              fill="rgba(255,255,255,0.4)" 
+                              fontSize="9" 
+                              fontWeight="bold"
+                            >
+                              {d.day}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -2111,15 +2251,15 @@ export default function App() {
                     <label className="block text-xs font-bold text-white/40 mb-2">نوع تحویل سفارش</label>
                     <div className="grid grid-cols-2 gap-3">
                       <label className="cursor-pointer">
-                        <input type="radio" name="order_type" checked={orderType === 'indoor'} onChange={() => setOrderType('indoor')} className="sr-only" />
-                        <div className={`p-2.5 text-center border-2 rounded-2xl font-bold text-xs transition-all ${orderType === 'indoor' ? 'border-[#c49b63] bg-[#c49b63]/10 text-[#c49b63]' : 'border-white/10 text-white/50 bg-white/5'}`}>
-                          حضوری در کافه
-                        </div>
-                      </label>
-                      <label className="cursor-pointer">
                         <input type="radio" name="order_type" checked={orderType === 'outdoor'} onChange={() => setOrderType('outdoor')} className="sr-only" />
                         <div className={`p-2.5 text-center border-2 rounded-2xl font-bold text-xs transition-all ${orderType === 'outdoor' ? 'border-[#c49b63] bg-[#c49b63]/10 text-[#c49b63]' : 'border-white/10 text-white/50 bg-white/5'}`}>
                           غیرحضوری (ارسال)
+                        </div>
+                      </label>
+                      <label className="cursor-pointer">
+                        <input type="radio" name="order_type" checked={orderType === 'indoor'} onChange={() => setOrderType('indoor')} className="sr-only" />
+                        <div className={`p-2.5 text-center border-2 rounded-2xl font-bold text-xs transition-all ${orderType === 'indoor' ? 'border-[#c49b63] bg-[#c49b63]/10 text-[#c49b63]' : 'border-white/10 text-white/50 bg-white/5'}`}>
+                          حضوری در کافه
                         </div>
                       </label>
                     </div>
@@ -2172,10 +2312,7 @@ export default function App() {
                         <label className="block text-[10px] font-bold text-white/40 mb-1">نام کامل *</label>
                         <input type="text" required value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors" />
                       </div>
-                      <div>
-                        <label className="block text-[10px] font-bold text-white/40 mb-1">شماره موبایل *</label>
-                        <input type="text" required placeholder="09xxxxxxxxx" value={phone} onChange={e => setPhone(e.target.value)} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors dir-ltr text-right" />
-                      </div>
+                      {/* فیلد شماره موبایل برای غیرحضوری طبق درخواست مشتری حذف شده است */}
                       <div>
                         <label className="block text-[10px] font-bold text-white/40 mb-1">توضیحات ارسال</label>
                         <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="مثلا: لاته بدون شکر باشد." rows={3} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-[#c49b63] transition-colors" />

@@ -91,29 +91,181 @@ if ($pdo) {
     $cancelled_count = 1;
 }
 
-// خروجی اکسل (CSV به همراه BOM برای زبان فارسی)
-if (isset($_GET['export']) && $_GET['export'] === 'excel') {
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="cafe_sales_report_' . $range . '.csv"');
-    
-    $output = fopen('php://output', 'w');
-    // تزریق BOM جهت پشتیبانی از زبان فارسی در نرم‌افزار اکسل ویندوز
-    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-    
-    fputcsv($output, ['شماره سفارش', 'نام مشتری', 'شماره موبایل', 'نوع تحویل', 'مبلغ کل سفارش (تومان)', 'وضعیت سفارش', 'تاریخ و ساعت شمسی']);
-    
-    foreach ($orders_report as $row) {
-        fputcsv($output, [
-            $row['order_code'],
-            $row['customer_name'],
-            $row['customer_phone'],
-            $row['order_type'] === 'indoor' ? 'حضوری' : 'غیرحضوری',
-            $row['total_amount'],
-            $row['status'] === 'completed' ? 'تکمیل شده' : ($row['status'] === 'cancelled' ? 'لغو شده' : 'در صف آماده‌سازی'),
-            $row['created_jalali']
-        ]);
-    }
-    fclose($output);
+// خروجی فایل PDF رسمی (A4 فارسی به همراه فونت وزیر و استایل شیک چاپی)
+if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
+    ?>
+    <!DOCTYPE html>
+    <html lang="fa" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>گزارش فروش رسمی کافه گالری - بازه <?php echo $range; ?></title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
+            body {
+                font-family: 'Vazirmatn', sans-serif;
+                direction: rtl;
+                padding: 40px;
+                background-color: #ffffff;
+                color: #1c1917;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid #c49b63;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }
+            .logo-title {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .title {
+                font-size: 20px;
+                font-weight: 900;
+                color: #1c1917;
+            }
+            .subtitle {
+                font-size: 11px;
+                color: #78716c;
+                margin-top: 4px;
+            }
+            .date-info {
+                text-align: left;
+                font-size: 11px;
+                color: #444;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            .stat-box {
+                border: 1px solid #e7e5e4;
+                border-radius: 16px;
+                padding: 16px;
+                text-align: center;
+                background: #fafaf9;
+            }
+            .stat-label {
+                font-size: 10px;
+                color: #78716c;
+                font-weight: bold;
+            }
+            .stat-value {
+                font-size: 16px;
+                font-weight: 900;
+                color: #1c1917;
+                margin-top: 6px;
+            }
+            .table-title {
+                font-size: 13px;
+                font-weight: 900;
+                color: #1c1917;
+                margin-bottom: 12px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+                text-align: right;
+            }
+            th {
+                background-color: #fafaf9;
+                border-bottom: 2px solid #e7e5e4;
+                padding: 12px;
+                font-weight: bold;
+                color: #78716c;
+            }
+            td {
+                padding: 12px;
+                border-bottom: 1px solid #f5f5f4;
+                color: #444;
+            }
+            tr:hover {
+                background-color: #fafaf9;
+            }
+            .footer {
+                margin-top: 50px;
+                border-top: 1px dashed #e7e5e4;
+                padding-top: 20px;
+                text-align: center;
+                font-size: 10px;
+                color: #a8a29e;
+            }
+            @media print {
+                body { padding: 0; }
+                .no-print { display: none; }
+            }
+        </style>
+    </head>
+    <body onload="window.print()">
+        <div class="header">
+            <div class="logo-title">
+                <div>
+                    <div class="title">گزارش مالی رسمی کافه گالری</div>
+                    <div class="subtitle">فهرست کل تراکنش‌ها و درآمدهای حاصله صندوق ادمین</div>
+                </div>
+            </div>
+            <div class="date-info">
+                <div>بازه گزارش: <?php 
+                    if ($range === 'today') echo 'امروز';
+                    elseif ($range === 'weekly') echo '۷ روز گذشته';
+                    else echo '۳۰ روز گذشته';
+                ?></div>
+                <div style="margin-top: 4px;">تاریخ چاپ گزارش: <?php echo date('Y/m/d'); ?></div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">مجموع درآمد تایید شده</div>
+                <div class="stat-value" style="color: #15803d;"><?php echo number_format($total_income); ?> تومان</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">تعداد کل سفارشات موثر</div>
+                <div class="stat-value"><?php echo number_format($total_orders_count); ?> سفارش</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">سفارشات لغو شده ادمین</div>
+                <div class="stat-value" style="color: #b91c1c;"><?php echo number_format($cancelled_count); ?> لغو</div>
+            </div>
+        </div>
+
+        <div class="table-title">فهرست ریز تراکنش‌ها و فاکتورها</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>شماره سفارش</th>
+                    <th>مشتری</th>
+                    <th>نوع تحویل</th>
+                    <th>تاریخ ثبت</th>
+                    <th>مبلغ فاکتور</th>
+                    <th>وضعیت</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($orders_report as $row): ?>
+                    <tr>
+                        <td style="font-weight: 700;"><?php echo $row['order_code']; ?></td>
+                        <td><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                        <td><?php echo $row['order_type'] === 'indoor' ? 'حضوری' : 'غیرحضوری'; ?></td>
+                        <td><?php echo $row['created_jalali']; ?></td>
+                        <td style="font-weight: 700; color: #15803d;"><?php echo number_format($row['total_amount']); ?> تومان</td>
+                        <td><?php echo $row['status'] === 'completed' ? 'تکمیل شده' : ($row['status'] === 'cancelled' ? 'لغو شده' : 'فعال'); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            این گزارش به صورت رسمی از پنل مدیریت صندوق کافه صادر شده است و دارای اعتبار قانونی است.
+        </div>
+    </body>
+    </html>
+    <?php
     exit;
 }
 ?>
@@ -147,7 +299,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
             <span>داشبورد و سفارشات</span>
         </a>
         <a href="products.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="cup-straw" class="w-5 h-5 text-amber-600"></i>
+            <i data-lucide="coffee" class="w-5 h-5 text-amber-600"></i>
             <span>مدیریت محصولات</span>
         </a>
         <a href="categories.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
@@ -183,13 +335,13 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-2xl font-black text-stone-950 dark:text-white">گزارشات فروش و فاکتورها</h2>
-            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">مشاهده جمع درآمد، فاکتورهای لغو شده و خروجی مستقیم فایل اکسل (Excel)</p>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">مشاهده جمع درآمد، فاکتورهای لغو شده و خروجی مستقیم فایل رسمی گزارشات به صورت PDF فارسی</p>
         </div>
         
-        <!-- دکمه دانلود اکسل -->
-        <a href="reports.php?range=<?php echo $range; ?>&export=excel" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition-all">
-            <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
-            <span>خروجی فایل اکسل</span>
+        <!-- دکمه دانلود PDF -->
+        <a href="reports.php?range=<?php echo $range; ?>&export=pdf" target="_blank" class="bg-red-600 hover:bg-red-500 text-white px-5 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-red-600/20 transition-all">
+            <i data-lucide="printer" class="w-5 h-5"></i>
+            <span>خروجی فایل PDF رسمی (A4)</span>
         </a>
     </div>
 

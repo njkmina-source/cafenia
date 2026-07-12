@@ -49,15 +49,15 @@ if ($order_type === 'indoor') {
 } else {
     // غیرحضوری
     $customer_name = trim($_POST['outdoor_name'] ?? '');
-    $customer_phone = trim($_POST['outdoor_phone'] ?? '');
+    $customer_phone = '09000000000'; // شماره پیش‌فرض غیرحضوری به علت حذف فیلد موبایل طبق درخواست کاربر
     $description = trim($_POST['description_outdoor'] ?? '');
     $address = '';
     $plaque = '';
     $floor = '';
     $unit = '';
 
-    if (empty($customer_name) || empty($customer_phone)) {
-        echo json_encode(['status' => 'error', 'message' => 'لطفاً نام و شماره موبایل خود را وارد نمایید.']);
+    if (empty($customer_name)) {
+        echo json_encode(['status' => 'error', 'message' => 'لطفاً نام خود را وارد نمایید.']);
         exit;
     }
 }

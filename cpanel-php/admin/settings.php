@@ -74,6 +74,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute(['logo_url', $logo_url, $logo_url]);
                 $stmt->execute(['banner_url', $banner_url, $banner_url]);
 
+                // بروزرسانی اطلاعات ادمین در صورت تغییر در فیلدها
+                $new_admin_user = trim($_POST['admin_username'] ?? '');
+                $new_admin_pass = $_POST['admin_password'] ?? '';
+                if (!empty($new_admin_user) || !empty($new_admin_pass)) {
+                    if (!empty($new_admin_user)) {
+                        $stmt_admin = $pdo->prepare("UPDATE admins SET username = ? WHERE id = ?");
+                        $stmt_admin->execute([$new_admin_user, $_SESSION['admin_id'] ?? 1]);
+                        $_SESSION['admin_user'] = $new_admin_user;
+                    }
+                    if (!empty($new_admin_pass)) {
+                        $hashed_pass = password_hash($new_admin_pass, PASSWORD_BCRYPT);
+                        $stmt_admin = $pdo->prepare("UPDATE admins SET password = ? WHERE id = ?");
+                        $stmt_admin->execute([$hashed_pass, $_SESSION['admin_id'] ?? 1]);
+                    }
+                }
+
                 $pdo->commit();
                 logActivity("بروزرسانی کلی تنظیمات سیستم");
                 
@@ -127,7 +143,7 @@ $settings = getSettings();
             <span>داشبورد و سفارشات</span>
         </a>
         <a href="products.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="cup-straw" class="w-5 h-5 text-amber-600"></i>
+            <i data-lucide="coffee" class="w-5 h-5 text-amber-600"></i>
             <span>مدیریت محصولات</span>
         </a>
         <a href="categories.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
@@ -258,6 +274,22 @@ $settings = getSettings();
             </div>
         </div>
 
+        <!-- ۴. هویت و رمز عبور ادمین -->
+        <div class="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+            <h3 class="text-sm font-black text-amber-600 pb-2">تنظیمات هویت و عبور امنیتی پنل مدیریت</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">نام کاربری جدید مدیریت</label>
+                    <input type="text" name="admin_username" placeholder="برای عدم تغییر خالی بگذارید..." class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 font-mono text-center">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">رمز عبور جدید مدیریت</label>
+                    <input type="password" name="admin_password" placeholder="برای عدم تغییر خالی بگذارید..." class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 font-mono text-center">
+                </div>
+            </div>
+            <p class="text-[10px] text-stone-400 mt-1">از این اطلاعات برای احراز هویت در ورود مجدد به مسیر مدیریت استفاده می‌شود.</p>
+        </div>
+
         <div class="pt-4">
             <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all">
                 <i data-lucide="check" class="w-5 h-5"></i>
@@ -271,6 +303,21 @@ $settings = getSettings();
     document.addEventListener("DOMContentLoaded", function() {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+        }
+
+        // سینک کردن مشخصات ادمین در لوکال استوریج برای هماهنگی با فرانت‌اند React و شبیه‌سازها
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const userVal = document.querySelector('input[name="admin_username"]').value.trim();
+                const passVal = document.querySelector('input[name="admin_password"]').value.trim();
+                if (userVal) {
+                    localStorage.setItem('admin_username', userVal);
+                }
+                if (passVal) {
+                    localStorage.setItem('admin_password', passVal);
+                }
+            });
         }
     });
 </script>
