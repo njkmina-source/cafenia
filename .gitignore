@@ -6,3 +6,4 @@ coverage/
 *.log
 .env*
 !.env.example
+cpanel-php/config/config.php

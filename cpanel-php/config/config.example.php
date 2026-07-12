@@ -1,7 +1,9 @@
 <?php
 /**
- * پیکربندی اصلی سامانه منوی دیجیتال کافه
+ * نسخه نمونه پیکربندی اصلی سامانه منوی دیجیتال کافه
  * توسعه داده شده برای پایداری و امنیت بالا بر روی هاست اشتراکی cPanel
+ * 
+ * راهنما: این فایل را به config.php تغییر نام داده و اطلاعات دیتابیس خود را وارد کنید.
  */
 
 // شروع امن نشست (Session)
@@ -17,9 +19,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // تنظیمات اتصال به دیتابیس MySQL
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'my_cafe_db'); // نام دیتابیس در cPanel
-define('DB_USER', 'my_cafe_user'); // نام کاربری دیتابیس در cPanel
-define('DB_PASS', 'my_secure_password_123'); // رمز عبور دیتابیس
+define('DB_NAME', 'your_database_name'); // نام دیتابیس ساخته شده در cPanel
+define('DB_USER', 'your_database_user'); // نام کاربری دیتابیس ساخته شده در cPanel
+define('DB_PASS', 'your_database_password'); // رمز عبور دیتابیس ساخته شده در cPanel
 
 // تنظیمات کلی سیستم
 define('CURRENCY', 'تومان');
