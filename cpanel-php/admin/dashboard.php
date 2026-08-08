@@ -93,7 +93,7 @@ if ($pdo) {
             <span>داشبورد و سفارشات</span>
         </a>
         <a href="products.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="coffee" class="w-5 h-5 text-amber-600"></i>
+            <i data-lucide="package" class="w-5 h-5 text-amber-600"></i>
             <span>مدیریت محصولات</span>
         </a>
         <a href="categories.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
