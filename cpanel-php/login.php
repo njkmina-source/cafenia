@@ -106,44 +106,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" class="dark">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ورود به مدیریت کافه گالری</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#c49b63',
-                        secondary: '#1a1916',
-                    }
-                }
-            }
-        }
-    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
     </style>
 </head>
-<body class="bg-[#0f0e0c] text-stone-100 min-h-screen flex flex-col justify-center items-center p-4">
+<body class="bg-stone-100 dark:bg-stone-950 text-stone-800 dark:text-stone-100 min-h-screen flex flex-col justify-center items-center p-4">
 
-<div class="w-full max-w-md bg-[#131210] rounded-3xl p-8 border border-white/10 shadow-2xl relative">
+<div class="w-full max-w-md bg-white dark:bg-stone-900 rounded-3xl p-8 border border-stone-200 dark:border-stone-800 shadow-2xl relative">
     <div class="text-center mb-8">
-        <div class="w-16 h-16 rounded-2xl bg-[#c49b63]/10 text-[#c49b63] border border-[#c49b63]/20 flex items-center justify-center mx-auto mb-4">
+        <div class="w-16 h-16 rounded-2xl bg-amber-600/10 text-amber-600 flex items-center justify-center mx-auto mb-4">
             <i data-lucide="shield-alert" class="w-8 h-8"></i>
         </div>
-        <h2 class="text-xl font-black text-white">ورود به پنل مدیریت کافه</h2>
-        <p class="text-xs text-stone-400 mt-2">جهت دسترسی به سفارشات، تنظیمات و گزارش‌ها</p>
+        <h2 class="text-xl font-black text-stone-900 dark:text-white">ورود به پنل مدیریت کافه</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400 mt-2">جهت دسترسی به سفارشات، تنظیمات و گزارش‌ها</p>
     </div>
 
     <?php if (!empty($error_message)): ?>
-        <div class="bg-red-950/50 border border-red-500/30 text-red-300 px-4 py-3 rounded-2xl text-xs font-semibold mb-6 flex items-center gap-2">
+        <div class="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-red-800 dark:text-red-300 px-4 py-3 rounded-2xl text-xs font-semibold mb-6 flex items-center gap-2">
             <i data-lucide="alert-octagon" class="w-4 h-4 shrink-0"></i>
             <span><?php echo $error_message; ?></span>
         </div>
@@ -153,33 +140,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="csrf_token" value="<?php echo getCSRFToken(); ?>">
 
         <div>
-            <label class="block text-xs font-bold text-stone-300 mb-2">نام کاربری ادمین</label>
+            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2">نام کاربری ادمین</label>
             <div class="relative">
                 <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-stone-400">
                     <i data-lucide="user" class="w-4 h-4"></i>
                 </span>
-                <input type="text" name="username" required placeholder="admin" class="w-full pl-4 pr-10 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-stone-500 text-sm focus:outline-none focus:border-[#c49b63]">
+                <input type="text" name="username" required placeholder="admin" class="w-full pl-4 pr-10 py-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white text-sm focus:outline-none focus:border-amber-600">
             </div>
         </div>
 
         <div>
-            <label class="block text-xs font-bold text-stone-300 mb-2">رمز عبور</label>
+            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2">رمز عبور عبور</label>
             <div class="relative">
                 <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-stone-400">
                     <i data-lucide="key" class="w-4 h-4"></i>
                 </span>
-                <input type="password" name="password" required placeholder="••••••••" class="w-full pl-4 pr-10 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-stone-500 text-sm focus:outline-none focus:border-[#c49b63]">
+                <input type="password" name="password" required placeholder="••••••••" class="w-full pl-4 pr-10 py-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white text-sm focus:outline-none focus:border-amber-600">
             </div>
         </div>
 
-        <button type="submit" class="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black font-black py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg transition-all">
+        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-600/20 transition-all">
             <i data-lucide="log-in" class="w-5 h-5"></i>
             <span>ورود امن به سیستم</span>
         </button>
     </form>
 
-    <div class="mt-8 text-center border-t border-white/10 pt-5">
-        <a href="index.php" class="text-xs font-semibold text-stone-400 hover:text-white flex items-center justify-center gap-1 transition-colors">
+    <div class="mt-8 text-center border-t border-stone-100 dark:border-stone-800 pt-5">
+        <a href="index.php" class="text-xs font-semibold text-stone-500 hover:text-stone-800 dark:hover:text-white flex items-center justify-center gap-1">
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
             <span>بازگشت به منوی کافه</span>
         </a>

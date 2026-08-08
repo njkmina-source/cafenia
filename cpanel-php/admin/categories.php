@@ -95,19 +95,6 @@ if ($pdo) {
     <title>مدیریت دسته‌بندی‌ها - پنل مدیریت</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#c49b63',
-                        secondary: '#1a1916',
-                    }
-                }
-            }
-        }
-    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
@@ -178,10 +165,10 @@ if ($pdo) {
 <main class="flex-1 p-4 md:p-8 space-y-6 max-w-5xl mx-auto w-full overflow-y-auto">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-black text-white">دسته‌بندی‌های منوی کافه</h2>
-            <p class="text-xs text-stone-400 mt-1">تغییر آیکون‌ها، ایجاد و مرتب‌سازی ترتیب رندر دسته‌ها در صفحه اول</p>
+            <h2 class="text-2xl font-black text-stone-950 dark:text-white">دسته‌بندی‌های منوی کافه</h2>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">تغییر آیکون‌ها، ایجاد و مرتب‌سازی ترتیب رندر دسته‌ها در صفحه اول</p>
         </div>
-        <button onclick="openCategoryModal()" class="bg-[#c49b63] hover:bg-[#b28b58] text-black px-5 py-3 rounded-2xl font-black text-sm flex items-center gap-2 shadow-lg transition-all cursor-pointer">
+        <button onclick="openCategoryModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-5 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-amber-600/20 transition-all">
             <i data-lucide="plus" class="w-5 h-5"></i>
             <span>ایجاد دسته جدید</span>
         </button>
@@ -189,38 +176,38 @@ if ($pdo) {
 
     <!-- اعلان‌ها -->
     <?php if (!empty($message)): ?>
-        <div class="<?php echo $message_type === 'success' ? 'bg-emerald-950/50 border-emerald-500/30 text-emerald-300' : 'bg-red-950/50 border-red-500/30 text-red-300'; ?> border px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-xs">
+        <div class="<?php echo $message_type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'; ?> border px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-xs">
             <i data-lucide="<?php echo $message_type === 'success' ? 'check-circle' : 'alert-octagon'; ?>" class="w-5 h-5 shrink-0"></i>
             <span><?php echo $message; ?></span>
         </div>
     <?php endif; ?>
 
-    <div class="bg-[#131210] rounded-3xl border border-white/10 shadow-sm overflow-hidden max-w-3xl">
+    <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden max-w-3xl">
         <table class="w-full text-right border-collapse text-xs">
             <thead>
-                <tr class="bg-white/5 border-b border-white/10 text-stone-300 font-bold">
+                <tr class="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800 text-stone-500 font-bold">
                     <th class="p-4 w-16">آیکون</th>
                     <th class="p-4">نام دسته‌بندی</th>
                     <th class="p-4 w-28">ترتیب نمایش</th>
                     <th class="p-4 w-32">عملیات ادمین</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-white/10 font-semibold text-stone-200">
+            <tbody class="divide-y divide-stone-100 dark:divide-stone-800 font-semibold text-stone-700 dark:text-stone-300">
                 <?php foreach ($categories as $cat): ?>
-                    <tr class="hover:bg-white/5">
+                    <tr class="hover:bg-stone-50/50 dark:hover:bg-stone-800/10">
                         <td class="p-4">
-                            <div class="w-9 h-9 bg-[#c49b63]/20 border border-[#c49b63]/30 text-[#c49b63] rounded-lg flex items-center justify-center">
+                            <div class="w-9 h-9 bg-amber-50 dark:bg-amber-950/20 text-amber-600 rounded-lg flex items-center justify-center">
                                 <i data-lucide="<?php echo sanitize($cat['icon'] ?: 'coffee'); ?>" class="w-5 h-5"></i>
                             </div>
                         </td>
-                        <td class="p-4 font-bold text-white"><?php echo sanitize($cat['name']); ?></td>
-                        <td class="p-4 text-stone-300"><?php echo $cat['sort_order']; ?></td>
+                        <td class="p-4 font-bold text-stone-900 dark:text-white"><?php echo sanitize($cat['name']); ?></td>
+                        <td class="p-4"><?php echo $cat['sort_order']; ?></td>
                         <td class="p-4">
                             <div class="flex items-center gap-1">
-                                <button onclick="editCategory(<?php echo htmlspecialchars(json_encode($cat)); ?>)" class="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 p-2 rounded-lg transition-all" title="ویرایش">
+                                <button onclick="editCategory(<?php echo htmlspecialchars(json_encode($cat)); ?>)" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 text-blue-600 p-2 rounded-lg transition-all" title="ویرایش">
                                     <i data-lucide="pencil" class="w-4 h-4"></i>
                                 </button>
-                                <a href="categories.php?action=delete&id=<?php echo $cat['id']; ?>" onclick="return confirm('آیا از حذف این دسته مطمئن هستید؟')" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 p-2 rounded-lg transition-all" title="حذف">
+                                <a href="categories.php?action=delete&id=<?php echo $cat['id']; ?>" onclick="return confirm('آیا از حذف این دسته مطمئن هستید؟')" class="bg-red-50 hover:bg-red-100 dark:bg-red-950/30 text-red-600 p-2 rounded-lg transition-all" title="حذف">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </a>
                             </div>
@@ -233,14 +220,14 @@ if ($pdo) {
 </main>
 
 <!-- ==================== مودال فرم دسته‌بندی ==================== -->
-<div id="categoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden transition-all duration-300">
-    <div class="bg-[#131210] rounded-3xl w-full max-w-md overflow-hidden border border-white/10 shadow-2xl relative text-stone-200">
-        <button onclick="closeCategoryModal()" class="absolute top-4 left-4 p-2 rounded-full hover:bg-white/10 text-stone-400 hover:text-white transition-colors">
+<div id="categoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs hidden transition-all duration-300">
+    <div class="bg-white dark:bg-stone-900 rounded-3xl w-full max-w-md overflow-hidden border border-stone-200 dark:border-stone-800 shadow-2xl relative">
+        <button onclick="closeCategoryModal()" class="absolute top-4 left-4 p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
 
-        <div class="p-6 border-b border-white/10">
-            <h3 id="modalTitle" class="text-lg font-black text-white">ایجاد دسته‌بندی جدید</h3>
+        <div class="p-6 border-b border-stone-100 dark:border-stone-800">
+            <h3 id="modalTitle" class="text-lg font-black text-stone-900 dark:text-white">ایجاد دسته‌بندی جدید</h3>
         </div>
 
         <form action="categories.php" method="POST" class="p-6 space-y-4">
@@ -248,13 +235,13 @@ if ($pdo) {
             <input type="hidden" name="cat_id" id="form_cat_id" value="">
 
             <div>
-                <label class="block text-xs font-bold text-stone-300 mb-1.5">نام دسته‌بندی *</label>
-                <input type="text" name="name" id="form_name" required class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63]">
+                <label class="block text-xs font-bold text-stone-500 mb-1.5">نام دسته‌بندی *</label>
+                <input type="text" name="name" id="form_name" required class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-stone-300 mb-1.5">کلاس یا نام آیکون لوساید (Lucide Icon)</label>
-                <select name="icon" id="form_icon" class="w-full px-3 py-2 rounded-xl bg-[#1a1916] border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] cursor-pointer">
+                <label class="block text-xs font-bold text-stone-500 mb-1.5">کلاس یا نام آیکون لوساید (Lucide Icon)</label>
+                <select name="icon" id="form_icon" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 cursor-pointer">
                     <option value="coffee">Farsi Coffee (قهوه)</option>
                     <option value="ice-cream">Ice Cream (بستنی و قهوه سرد)</option>
                     <option value="leaf">Leaf (دمنوش و چای)</option>
@@ -267,14 +254,14 @@ if ($pdo) {
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-stone-300 mb-1.5">ترتیب مرتب‌سازی (Sort Order)</label>
-                <input type="number" name="sort_order" id="form_sort_order" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] text-center">
+                <label class="block text-xs font-bold text-stone-500 mb-1.5">ترتیب مرتب‌سازی (Sort Order)</label>
+                <input type="number" name="sort_order" id="form_sort_order" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 text-center">
             </div>
 
             <div class="pt-4">
-                <button type="submit" class="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black font-black py-3 rounded-xl text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all cursor-pointer">
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all">
                     <i data-lucide="check" class="w-5 h-5"></i>
-                    <span>ذخیره دسته‌بندی</span>
+                    <span>ذخیره تغییرات دسته</span>
                 </button>
             </div>
         </form>

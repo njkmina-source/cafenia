@@ -122,19 +122,6 @@ $settings = getSettings();
     <title>تنظیمات سایت - پنل ادمین</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#c49b63',
-                        secondary: '#1a1916',
-                    }
-                }
-            }
-        }
-    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
@@ -204,82 +191,82 @@ $settings = getSettings();
 
 <main class="flex-1 p-4 md:p-8 space-y-6 max-w-5xl mx-auto w-full overflow-y-auto">
     <div>
-        <h2 class="text-2xl font-black text-white">تنظیمات سراسری سیستم</h2>
-        <p class="text-xs text-stone-400 mt-1">تغییر لوگو، نام تجاری کافه، آدرس، تم رنگی اختصاصی و راه‌های ارتباطی با مشتری</p>
+        <h2 class="text-2xl font-black text-stone-950 dark:text-white">تنظیمات سراسری سیستم</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">تغییر لوگو، نام تجاری کافه، آدرس، تم رنگی اختصاصی و راه‌های ارتباطی با مشتری</p>
     </div>
 
     <!-- اعلان‌ها -->
     <?php if (!empty($message)): ?>
-        <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-xs">
-            <i data-lucide="check-circle" class="w-5 h-5 shrink-0 text-emerald-400"></i>
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-xs">
+            <i data-lucide="check-circle" class="w-5 h-5 shrink-0"></i>
             <span><?php echo $message; ?></span>
         </div>
     <?php endif; ?>
 
-    <form action="settings.php" method="POST" enctype="multipart/form-data" class="bg-[#131210] rounded-3xl p-6 border border-white/10 shadow-sm space-y-6 max-w-4xl">
+    <form action="settings.php" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-200 dark:border-stone-800 shadow-sm space-y-6 max-w-4xl">
         <input type="hidden" name="csrf_token" value="<?php echo getCSRFToken(); ?>">
         <input type="hidden" name="current_logo" value="<?php echo sanitize($settings['logo_url']); ?>">
         <input type="hidden" name="current_banner" value="<?php echo sanitize($settings['banner_url']); ?>">
 
         <!-- ۱. اطلاعات اصلی -->
         <div class="space-y-4">
-            <h3 class="text-sm font-black text-[#c49b63] border-b border-white/10 pb-2">اطلاعات برندینگ کافه</h3>
+            <h3 class="text-sm font-black text-amber-600 border-b border-stone-100 dark:border-stone-800 pb-2">اطلاعات برندینگ کافه</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">نام تجاری کافه/رستوران *</label>
-                    <input type="text" name="cafe_name" required value="<?php echo sanitize($settings['cafe_name']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] font-bold">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">نام تجاری کافه/رستوران *</label>
+                    <input type="text" name="cafe_name" required value="<?php echo sanitize($settings['cafe_name']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 font-bold">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">شماره تلفن تماس *</label>
-                    <input type="text" name="cafe_phone" required value="<?php echo sanitize($settings['cafe_phone']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] text-right dir-ltr">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">شماره تلفن تماس *</label>
+                    <input type="text" name="cafe_phone" required value="<?php echo sanitize($settings['cafe_phone']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 text-right dir-ltr">
                 </div>
             </div>
             <div>
-                <label class="block text-xs font-bold text-stone-300 mb-1.5">توضیح کوتاه کافه (درباره ما کوتاه) *</label>
-                <textarea name="cafe_description" required rows="2" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] leading-relaxed"><?php echo sanitize($settings['cafe_description']); ?></textarea>
+                <label class="block text-xs font-bold text-stone-500 mb-1.5">توضیح کوتاه کافه (درباره ما کوتاه) *</label>
+                <textarea name="cafe_description" required rows="2" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 leading-relaxed"><?php echo sanitize($settings['cafe_description']); ?></textarea>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">ساعات کاری کافه *</label>
-                    <input type="text" name="working_hours" required value="<?php echo sanitize($settings['working_hours']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63]">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">ساعات کاری کافه *</label>
+                    <input type="text" name="working_hours" required value="<?php echo sanitize($settings['working_hours']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">آدرس فیزیکی کافه *</label>
-                    <input type="text" name="cafe_address" required value="<?php echo sanitize($settings['cafe_address']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63]">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">آدرس فیزیکی کافه *</label>
+                    <input type="text" name="cafe_address" required value="<?php echo sanitize($settings['cafe_address']); ?>" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600">
                 </div>
             </div>
         </div>
 
         <!-- ۲. تم رنگی و آپلود لوگو -->
-        <div class="space-y-4 pt-4 border-t border-white/10">
-            <h3 class="text-sm font-black text-[#c49b63] pb-2">هویت بصری و تصاویر</h3>
+        <div class="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+            <h3 class="text-sm font-black text-amber-600 pb-2">هویت بصری و تصاویر</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- لوگو و بنر -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-stone-300 mb-1.5">آپلود لوگو کافه (تصویر مربعی)</label>
-                        <input type="file" name="logo_file" accept="image/*" class="w-full text-xs text-stone-400 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#c49b63]/20 file:text-[#c49b63] hover:file:bg-[#c49b63]/30 cursor-pointer">
+                        <label class="block text-xs font-bold text-stone-500 mb-1.5">آپلود لوگو کافه (تصویر مربعی)</label>
+                        <input type="file" name="logo_file" accept="image/*" class="w-full text-xs text-stone-500 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-stone-300 mb-1.5">آپلود بنر کافه (تصویر افقی عریض)</label>
-                        <input type="file" name="banner_file" accept="image/*" class="w-full text-xs text-stone-400 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#c49b63]/20 file:text-[#c49b63] hover:file:bg-[#c49b63]/30 cursor-pointer">
+                        <label class="block text-xs font-bold text-stone-500 mb-1.5">آپلود بنر کافه (تصویر افقی عریض)</label>
+                        <input type="file" name="banner_file" accept="image/*" class="w-full text-xs text-stone-500 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
                     </div>
                 </div>
 
                 <!-- رنگ‌ها -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-stone-300 mb-1.5">رنگ اصلی (پوسته کلاینت)</label>
+                        <label class="block text-xs font-bold text-stone-500 mb-1.5">رنگ اصلی (پوسته کلاینت)</label>
                         <div class="flex items-center gap-2">
-                            <input type="color" name="primary_color" value="<?php echo sanitize($settings['primary_color']); ?>" class="w-12 h-10 rounded-xl border border-white/20 bg-transparent cursor-pointer">
-                            <input type="text" value="<?php echo sanitize($settings['primary_color']); ?>" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none text-center" readonly>
+                            <input type="color" name="primary_color" value="<?php echo sanitize($settings['primary_color']); ?>" class="w-12 h-10 rounded-xl border border-stone-300 dark:border-stone-700 cursor-pointer">
+                            <input type="text" value="<?php echo sanitize($settings['primary_color']); ?>" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none text-center" readonly>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-stone-300 mb-1.5">رنگ ثانویه</label>
+                        <label class="block text-xs font-bold text-stone-500 mb-1.5">رنگ ثانویه</label>
                         <div class="flex items-center gap-2">
-                            <input type="color" name="secondary_color" value="<?php echo sanitize($settings['secondary_color']); ?>" class="w-12 h-10 rounded-xl border border-white/20 bg-transparent cursor-pointer">
-                            <input type="text" value="<?php echo sanitize($settings['secondary_color']); ?>" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none text-center" readonly>
+                            <input type="color" name="secondary_color" value="<?php echo sanitize($settings['secondary_color']); ?>" class="w-12 h-10 rounded-xl border border-stone-300 dark:border-stone-700 cursor-pointer">
+                            <input type="text" value="<?php echo sanitize($settings['secondary_color']); ?>" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none text-center" readonly>
                         </div>
                     </div>
                 </div>
@@ -287,38 +274,38 @@ $settings = getSettings();
         </div>
 
         <!-- ۳. شبکه‌های اجتماعی -->
-        <div class="space-y-4 pt-4 border-t border-white/10">
-            <h3 class="text-sm font-black text-[#c49b63] pb-2">لینک شبکه‌های اجتماعی</h3>
+        <div class="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+            <h3 class="text-sm font-black text-amber-600 pb-2">لینک شبکه‌های اجتماعی</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">لینک اینستاگرام کافه</label>
-                    <input type="url" name="instagram_link" value="<?php echo sanitize($settings['instagram_link']); ?>" placeholder="https://instagram.com/..." class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] text-right dir-ltr">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">لینک اینستاگرام کافه</label>
+                    <input type="url" name="instagram_link" value="<?php echo sanitize($settings['instagram_link']); ?>" placeholder="https://instagram.com/..." class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 text-right dir-ltr">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">لینک کانال تلگرام</label>
-                    <input type="url" name="telegram_link" value="<?php echo sanitize($settings['telegram_link']); ?>" placeholder="https://t.me/..." class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] text-right dir-ltr">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">لینک کانال تلگرام</label>
+                    <input type="url" name="telegram_link" value="<?php echo sanitize($settings['telegram_link']); ?>" placeholder="https://t.me/..." class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 text-right dir-ltr">
                 </div>
             </div>
         </div>
 
         <!-- ۴. هویت و رمز عبور ادمین -->
-        <div class="space-y-4 pt-4 border-t border-white/10">
-            <h3 class="text-sm font-black text-[#c49b63] pb-2">تنظیمات هویت و عبور امنیتی پنل مدیریت</h3>
+        <div class="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+            <h3 class="text-sm font-black text-amber-600 pb-2">تنظیمات هویت و عبور امنیتی پنل مدیریت</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">نام کاربری جدید مدیریت</label>
-                    <input type="text" name="admin_username" placeholder="برای عدم تغییر خالی بگذارید..." class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] font-mono text-center">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">نام کاربری جدید مدیریت</label>
+                    <input type="text" name="admin_username" placeholder="برای عدم تغییر خالی بگذارید..." class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 font-mono text-center">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-300 mb-1.5">رمز عبور جدید مدیریت</label>
-                    <input type="password" name="admin_password" placeholder="برای عدم تغییر خالی بگذارید..." class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] font-mono text-center">
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">رمز عبور جدید مدیریت</label>
+                    <input type="password" name="admin_password" placeholder="برای عدم تغییر خالی بگذارید..." class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 font-mono text-center">
                 </div>
             </div>
             <p class="text-[10px] text-stone-400 mt-1">از این اطلاعات برای احراز هویت در ورود مجدد به مسیر مدیریت استفاده می‌شود.</p>
         </div>
 
         <div class="pt-4">
-            <button type="submit" class="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black py-3.5 rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer">
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all">
                 <i data-lucide="check" class="w-5 h-5"></i>
                 <span>ذخیره نهایی تنظیمات و تصاویر</span>
             </button>

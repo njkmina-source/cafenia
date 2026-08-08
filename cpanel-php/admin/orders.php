@@ -125,19 +125,6 @@ if ($pdo) {
     <title>آرشیو سفارشات - پنل مدیریت</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#c49b63',
-                        secondary: '#1a1916',
-                    }
-                }
-            }
-        }
-    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
@@ -208,28 +195,28 @@ if ($pdo) {
 <!-- بدنه اصلی آرشیو سفارشات -->
 <main class="flex-1 p-4 md:p-8 space-y-6 max-w-5xl mx-auto w-full overflow-y-auto">
     <div>
-        <h2 class="text-2xl font-black text-white">آرشیو و جستجوی سفارشات</h2>
-        <p class="text-xs text-stone-400 mt-1">امکان فیلتر، مشاهده اقلام و پرینت مجدد فیش رسمی صندوق</p>
+        <h2 class="text-2xl font-black text-stone-950 dark:text-white">آرشیو و جستجوی سفارشات</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">امکان فیلتر، مشاهده اقلام و پرینت مجدد فیش رسمی صندوق</p>
     </div>
 
     <!-- فرم فیلترگذاری و سرچ -->
-    <div class="bg-[#131210] rounded-3xl p-6 border border-white/10 shadow-xs">
+    <div class="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-200 dark:border-stone-800 shadow-xs">
         <form action="orders.php" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- فیلد جستجوی کلمات کلیدی -->
             <div>
-                <label class="block text-xs font-bold text-stone-300 mb-1.5">جستجوی مشتری یا شماره سفارش</label>
+                <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">جستجوی مشتری یا شماره سفارش</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-stone-400">
                         <i data-lucide="search" class="w-4 h-4"></i>
                     </span>
-                    <input type="text" name="search" value="<?php echo sanitize($search); ?>" placeholder="مثلاً: امیرحسین رضایی" class="w-full pl-4 pr-9 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63]">
+                    <input type="text" name="search" value="<?php echo sanitize($search); ?>" placeholder="مثلاً: امیرحسین رضایی" class="w-full pl-4 pr-9 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white text-xs focus:outline-none focus:border-amber-600">
                 </div>
             </div>
 
             <!-- فیلتر وضعیت فاکتور -->
             <div>
-                <label class="block text-xs font-bold text-stone-300 mb-1.5">فیلتر وضعیت سفارش</label>
-                <select name="status" class="w-full px-3 py-2.5 rounded-xl bg-[#1a1916] border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] font-semibold cursor-pointer">
+                <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">فیلتر وضعیت سفارش</label>
+                <select name="status" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-xs focus:outline-none focus:border-amber-600 font-semibold cursor-pointer">
                     <option value="">همه وضعیت‌ها</option>
                     <option value="registered" <?php echo $status_filter === 'registered' ? 'selected' : ''; ?>>ثبت شده</option>
                     <option value="preparing" <?php echo $status_filter === 'preparing' ? 'selected' : ''; ?>>در حال آماده‌سازی</option>
@@ -242,8 +229,8 @@ if ($pdo) {
 
             <!-- فیلتر نوع تحویل -->
             <div>
-                <label class="block text-xs font-bold text-stone-300 mb-1.5">نوع تحویل سفارش</label>
-                <select name="type" class="w-full px-3 py-2.5 rounded-xl bg-[#1a1916] border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] font-semibold cursor-pointer">
+                <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نوع تحویل سفارش</label>
+                <select name="type" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-xs focus:outline-none focus:border-amber-600 font-semibold cursor-pointer">
                     <option value="">همه روش‌ها</option>
                     <option value="indoor" <?php echo $type_filter === 'indoor' ? 'selected' : ''; ?>>حضوری در کافه</option>
                     <option value="outdoor" <?php echo $type_filter === 'outdoor' ? 'selected' : ''; ?>>ارسال غیرحضوری</option>
@@ -252,11 +239,11 @@ if ($pdo) {
 
             <!-- دکمه‌های فرم -->
             <div class="flex items-end gap-2">
-                <button type="submit" class="flex-1 bg-[#c49b63] hover:bg-[#b28b58] text-black py-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer">
+                <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md">
                     <i data-lucide="filter" class="w-4 h-4"></i>
                     <span>اعمال فیلترها</span>
                 </button>
-                <a href="orders.php" class="bg-white/10 hover:bg-white/20 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center" title="پاک کردن فیلتر">
+                <a href="orders.php" class="bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-600 dark:text-white px-3 py-2.5 rounded-xl text-xs font-bold transition-all" title="پاک کردن فیلتر">
                     <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                 </a>
             </div>
@@ -264,11 +251,11 @@ if ($pdo) {
     </div>
 
     <!-- جدول نمایش اطلاعات آرشیو -->
-    <div class="bg-[#131210] rounded-3xl border border-white/10 shadow-sm overflow-hidden">
+    <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-right border-collapse">
                 <thead>
-                    <tr class="bg-white/5 border-b border-white/10 text-xs text-stone-300 font-bold">
+                    <tr class="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800 text-xs text-stone-500 font-bold">
                         <th class="p-4">شماره سفارش</th>
                         <th class="p-4">تاریخ ثبت (شمسی)</th>
                         <th class="p-4">مشخصات مشتری</th>
@@ -279,7 +266,7 @@ if ($pdo) {
                         <th class="p-4">اقدامات ادمین</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-white/10 text-xs font-semibold text-stone-200">
+                <tbody class="divide-y divide-stone-100 dark:divide-stone-800 text-xs font-semibold">
                     <?php if (empty($orders)): ?>
                         <tr>
                             <td colspan="8" class="p-8 text-center text-stone-400">سفارشی با شرایط جستجو یافت نگردید.</td>
@@ -289,42 +276,42 @@ if ($pdo) {
                             $statusStyle = getStatusStyle($order['status']);
                             $isIndoor = $order['order_type'] === 'indoor';
                         ?>
-                            <tr class="hover:bg-white/5">
-                                <td class="p-4 font-black text-white"><?php echo $order['order_code']; ?></td>
-                                <td class="p-4 font-bold text-stone-400"><?php echo $order['created_jalali']; ?></td>
+                            <tr class="hover:bg-stone-50/50 dark:hover:bg-stone-800/10">
+                                <td class="p-4 font-black text-stone-900 dark:text-white"><?php echo $order['order_code']; ?></td>
+                                <td class="p-4 font-bold text-stone-500"><?php echo $order['created_jalali']; ?></td>
                                 <td class="p-4">
                                     <div class="flex flex-col">
-                                        <span class="font-bold text-white"><?php echo sanitize($order['customer_name']); ?></span>
+                                        <span class="font-bold text-stone-800 dark:text-stone-200"><?php echo sanitize($order['customer_name']); ?></span>
                                         <span class="text-[10px] text-stone-400 mt-0.5"><?php echo $order['customer_phone']; ?></span>
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <span class="px-2 py-1 rounded bg-white/10 text-stone-300 font-bold">
+                                    <span class="px-2 py-1 rounded bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-bold">
                                         <?php echo $isIndoor ? 'حضوری' : 'غیرحضوری'; ?>
                                     </span>
                                 </td>
-                                <td class="p-4 font-black text-emerald-400"><?php echo number_format($order['total_amount']); ?> تومان</td>
+                                <td class="p-4 font-black text-emerald-600"><?php echo number_format($order['total_amount']); ?> تومان</td>
                                 <td class="p-4 max-w-xs">
                                     <div class="space-y-1">
                                         <?php foreach ($order['items'] as $item): ?>
-                                            <div class="text-[11px] text-stone-300">
+                                            <div class="text-[11px] text-stone-500">
                                                 • <?php echo $item['product_name']; ?> <span class="text-stone-400">× <?php echo $item['quantity']; ?></span>
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <span class="px-2.5 py-1 rounded-full <?php echo $statusStyle; ?> font-black border">
+                                    <span class="px-2.5 py-1 rounded-full <?php echo $statusStyle; ?> font-black">
                                         <?php echo getStatusFarsi($order['status']); ?>
                                     </span>
                                 </td>
                                 <td class="p-4">
                                     <div class="flex items-center gap-1.5">
-                                        <button onclick="printOrderInvoice('<?php echo $order['order_code']; ?>')" class="bg-[#c49b63]/20 text-[#c49b63] border border-[#c49b63]/30 p-2 rounded-lg transition-all hover:bg-[#c49b63]/30" title="چاپ فاکتور صندوق">
+                                        <button onclick="printOrderInvoice('<?php echo $order['order_code']; ?>')" class="bg-amber-50 dark:bg-amber-950/20 text-amber-600 border border-amber-200/50 p-2 rounded-lg transition-all" title="چاپ فاکتور صندوق">
                                             <i data-lucide="printer" class="w-4 h-4"></i>
                                         </button>
                                         <!-- تغییر وضعیت سریع -->
-                                        <select onchange="updateOrderStatus('<?php echo $order['order_code']; ?>', this.value)" class="bg-[#1a1916] border border-white/20 px-2 py-1.5 rounded-lg text-[10px] font-bold text-white focus:outline-none focus:border-[#c49b63] cursor-pointer">
+                                        <select onchange="updateOrderStatus('<?php echo $order['order_code']; ?>', this.value)" class="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 px-2 py-1.5 rounded-lg text-[10px] font-bold text-stone-600 dark:text-stone-300 focus:outline-none cursor-pointer">
                                             <option value="registered" <?php echo $order['status'] === 'registered' ? 'selected' : ''; ?>>ثبت شده</option>
                                             <option value="preparing" <?php echo $order['status'] === 'preparing' ? 'selected' : ''; ?>>آماده‌سازی</option>
                                             <option value="ready" <?php echo $order['status'] === 'ready' ? 'selected' : ''; ?>>آماده تحویل</option>
@@ -441,13 +428,13 @@ if ($pdo) {
 // توابع راه‌انداز استایل وضعیت
 function getStatusStyle($status) {
     switch ($status) {
-        case 'registered': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-        case 'preparing': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-        case 'ready': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-        case 'sent': return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30';
-        case 'completed': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-        case 'cancelled': return 'bg-red-500/20 text-red-300 border-red-500/30';
-        default: return 'bg-white/10 text-stone-300 border-white/10';
+        case 'registered': return 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300';
+        case 'preparing': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-300';
+        case 'ready': return 'bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300';
+        case 'sent': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300';
+        case 'completed': return 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-300';
+        case 'cancelled': return 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300';
+        default: return 'bg-stone-100 text-stone-700';
     }
 }
 
