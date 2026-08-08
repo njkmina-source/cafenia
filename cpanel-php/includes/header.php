@@ -103,50 +103,44 @@ $settings = getSettings();
         }
     </style>
 </head>
-<body class="bg-stone-50 text-stone-800 dark:bg-[#0f0e0c] dark:text-stone-100 min-h-screen flex flex-col transition-colors duration-300">
+<body class="bg-[#0f0e0c] text-stone-100 min-h-screen flex flex-col">
 
-<!-- ناوبری هدر همراه با حالت شب و روز -->
-<header class="sticky top-0 z-40 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 transition-colors duration-300">
+<!-- ناوبری هدر کافه (حالت تاریک لوکس دائمی) -->
+<header class="sticky top-0 z-40 bg-[#131210]/95 backdrop-blur-md border-b border-white/10">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <!-- لوگو و نام کافه -->
         <a href="index.php" class="flex items-center gap-3">
             <?php if (!empty($settings['logo_url'])): ?>
-                <img src="<?php echo sanitize($settings['logo_url']); ?>" alt="لوگو" class="w-10 h-10 rounded-full object-cover border border-stone-200 dark:border-stone-700">
+                <img src="<?php echo sanitize($settings['logo_url']); ?>" alt="لوگو" class="w-10 h-10 rounded-full object-cover border border-white/10">
             <?php else: ?>
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <div class="w-10 h-10 rounded-full bg-[#c49b63]/10 flex items-center justify-center text-[#c49b63] border border-[#c49b63]/25">
                     <i data-lucide="coffee" class="w-6 h-6"></i>
                 </div>
             <?php endif; ?>
             <div>
-                <h1 class="text-lg font-bold text-stone-900 dark:text-white leading-tight"><?php echo sanitize($settings['cafe_name']); ?></h1>
-                <p class="text-xs text-stone-500 dark:text-stone-400">سفارش آسان و هوشمند</p>
+                <h1 class="text-lg font-bold text-white leading-tight"><?php echo sanitize($settings['cafe_name']); ?></h1>
+                <p class="text-xs text-stone-400">سفارش آسان و هوشمند</p>
             </div>
         </a>
 
         <!-- دکمه‌های کنترل هدر -->
         <div class="flex items-center gap-2">
-            <!-- سوئیچر تم تاریک/روشن -->
-            <button id="themeToggleBtn" class="p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition-colors" title="تغییر تم">
-                <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
-            </button>
-
             <!-- دکمه سبد خرید در هدر (مخصوص مشتری) -->
             <?php if(basename($_SERVER['PHP_SELF']) == 'index.php'): ?>
-            <button onclick="openCartModal()" class="relative p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition-colors">
+            <button onclick="openCartModal()" class="relative p-2 rounded-full hover:bg-white/5 text-stone-300 transition-colors">
                 <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-                <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-primary text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
             </button>
             <?php endif; ?>
 
             <!-- پنل ادمین سریع -->
             <?php if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true): ?>
-                <a href="admin/dashboard.php" class="flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary py-1.5 px-3 rounded-full transition-colors font-medium">
+                <a href="admin/dashboard.php" class="flex items-center gap-1.5 text-xs bg-primary/15 hover:bg-primary/25 text-primary py-1.5 px-3 rounded-full transition-colors font-medium border border-primary/30">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>داشبورد ادمین</span>
                 </a>
             <?php else: ?>
-                <a href="login.php" class="p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 transition-colors" title="ورود مدیریت">
+                <a href="login.php" class="p-2 rounded-full hover:bg-white/5 text-stone-400 transition-colors" title="ورود مدیریت">
                     <i data-lucide="user-cog" class="w-5 h-5"></i>
                 </a>
             <?php endif; ?>

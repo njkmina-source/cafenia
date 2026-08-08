@@ -115,7 +115,7 @@ $settings = getSettings();
 ?>
 
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,57 +125,71 @@ $settings = getSettings();
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-stone-100 dark:bg-stone-950 text-stone-800 dark:text-stone-100 min-h-screen flex flex-col md:flex-row">
+<body class="bg-[#0f0e0c] text-stone-100 min-h-screen flex flex-col font-sans">
 
-<aside class="w-full md:w-64 bg-white dark:bg-stone-900 border-b md:border-b-0 md:border-l border-stone-200 dark:border-stone-800 flex flex-col shrink-0">
-    <div class="p-6 border-b border-stone-100 dark:border-stone-800">
-        <h3 class="text-lg font-black text-stone-900 dark:text-white flex items-center gap-2">
-            <i data-lucide="coffee" class="text-amber-600"></i>
-            <span>مدیریت کافه گالری</span>
-        </h3>
-        <p class="text-[10px] text-stone-500 mt-1">خوش آمدید، ‏<?php echo sanitize($_SESSION['admin_fullname'] ?? 'مدیر سیستم'); ?></p>
+<!-- هدر یکپارچه جدید پنل مدیریت ادمین -->
+<header class="sticky top-0 z-50 bg-[#131210]/95 backdrop-blur-md border-b border-white/10 px-3 py-2.5 flex items-center justify-between gap-2 shadow-lg">
+    <!-- نام کافه و عنوان پنل مدیریت -->
+    <div class="flex items-center gap-2 shrink-0">
+        <div class="w-8 h-8 rounded-full bg-[#c49b63]/10 flex items-center justify-center text-[#c49b63] border border-[#c49b63]/25">
+            <i data-lucide="coffee" class="w-4 h-4"></i>
+        </div>
+        <div class="hidden sm:block">
+            <h1 class="text-xs font-black text-white"><?php echo sanitize($settings['cafe_name'] ?? 'کافه گالری'); ?></h1>
+            <p class="text-[9px] text-white/40 font-bold">پنل مدیریت یکپارچه</p>
+        </div>
     </div>
-    <nav class="flex-1 p-4 space-y-1">
-        <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="layout-dashboard" class="w-5 h-5 text-amber-600"></i>
-            <span>داشبورد و سفارشات</span>
+
+    <!-- دکمه‌های ناوبری تب‌های ادمین با آیکون‌های فشرده برای موبایل و دسکتاپ -->
+    <div class="flex items-center gap-1 bg-white/5 border border-white/10 p-1 rounded-2xl overflow-x-auto scrollbar-none max-w-[calc(100vw-130px)] sm:max-w-none">
+        <a href="dashboard.php" title="داشبورد و آمار" class="relative p-2 sm:px-3 sm:py-2 rounded-xl transition-all cursor-pointer group shrink-0 flex items-center gap-1.5 text-stone-300 hover:bg-white/5 hover:text-white">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i>
+            <span class="text-[11px] hidden md:inline whitespace-nowrap font-bold">داشبورد و آمار</span>
         </a>
-        <a href="products.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="package" class="w-5 h-5 text-amber-600"></i>
-            <span>مدیریت محصولات</span>
+        <a href="products.php" title="مدیریت محصولات" class="relative p-2 sm:px-3 sm:py-2 rounded-xl transition-all cursor-pointer group shrink-0 flex items-center gap-1.5 text-stone-300 hover:bg-white/5 hover:text-white">
+            <i data-lucide="package" class="w-4 h-4 shrink-0"></i>
+            <span class="text-[11px] hidden md:inline whitespace-nowrap font-bold">مدیریت محصولات</span>
         </a>
-        <a href="categories.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="layers" class="w-5 h-5 text-amber-600"></i>
-            <span>مدیریت دسته‌بندی‌ها</span>
+        <a href="categories.php" title="مدیریت دسته‌ها" class="relative p-2 sm:px-3 sm:py-2 rounded-xl transition-all cursor-pointer group shrink-0 flex items-center gap-1.5 text-stone-300 hover:bg-white/5 hover:text-white">
+            <i data-lucide="layers" class="w-4 h-4 shrink-0"></i>
+            <span class="text-[11px] hidden md:inline whitespace-nowrap font-bold">مدیریت دسته‌ها</span>
         </a>
-        <a href="orders.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="shopping-bag" class="w-5 h-5 text-amber-600"></i>
-            <span>آرشیو سفارشات</span>
+        <a href="orders.php" title="آرشیو سفارشات" class="relative p-2 sm:px-3 sm:py-2 rounded-xl transition-all cursor-pointer group shrink-0 flex items-center gap-1.5 text-stone-300 hover:bg-white/5 hover:text-white">
+            <i data-lucide="shopping-bag" class="w-4 h-4 shrink-0"></i>
+            <span class="text-[11px] hidden md:inline whitespace-nowrap font-bold">آرشیو سفارشات</span>
         </a>
-        <a href="reports.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all">
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-amber-600"></i>
-            <span>گزارشات و خروجی</span>
+        <a href="reports.php" title="گزارشات و PDF" class="relative p-2 sm:px-3 sm:py-2 rounded-xl transition-all cursor-pointer group shrink-0 flex items-center gap-1.5 text-stone-300 hover:bg-white/5 hover:text-white">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 shrink-0"></i>
+            <span class="text-[11px] hidden md:inline whitespace-nowrap font-bold">گزارشات و PDF</span>
         </a>
-        <a href="settings.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-600 text-white font-bold text-sm shadow-md transition-all">
-            <i data-lucide="settings" class="w-5 h-5"></i>
-            <span>تنظیمات سیستم</span>
-        </a>
-        <a href="../index.php" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 font-bold text-sm transition-all">
-            <i data-lucide="external-link" class="w-5 h-5"></i>
-            <span>مشاهده منوی مشتری</span>
-        </a>
-    </nav>
-    <div class="p-4 border-t border-stone-100 dark:border-stone-800">
-        <a href="../logout.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold text-sm transition-all">
-            <i data-lucide="log-out" class="w-5 h-5"></i>
-            <span>خروج از پنل</span>
+        <a href="settings.php" title="تنظیمات سیستم" class="relative p-2 sm:px-3 sm:py-2 rounded-xl transition-all cursor-pointer group shrink-0 flex items-center gap-1.5 bg-[#c49b63] text-black shadow-md font-black">
+            <i data-lucide="settings" class="w-4 h-4 shrink-0"></i>
+            <span class="text-[11px] hidden md:inline whitespace-nowrap font-bold">تنظیمات سیستم</span>
         </a>
     </div>
-</aside>
 
-<main class="flex-1 p-6 md:p-8 space-y-8 overflow-y-auto">
+    <!-- بخش دکمه‌های اکشن -->
+    <div class="flex items-center gap-1.5 shrink-0">
+        <a href="../index.php" target="_blank" title="📱 مشاهده منوی مشتری" class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all cursor-pointer group relative flex items-center justify-center">
+            <i data-lucide="external-link" class="w-4.5 h-4.5"></i>
+        </a>
+        <a href="../logout.php" title="خروج از پنل" class="p-2.5 rounded-xl bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 transition-all cursor-pointer group relative flex items-center justify-center">
+            <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
+        </a>
+    </div>
+</header>
+
+<main class="flex-1 p-4 md:p-8 space-y-6 max-w-5xl mx-auto w-full overflow-y-auto">
     <div>
         <h2 class="text-2xl font-black text-stone-950 dark:text-white">تنظیمات سراسری سیستم</h2>
         <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">تغییر لوگو، نام تجاری کافه، آدرس، تم رنگی اختصاصی و راه‌های ارتباطی با مشتری</p>

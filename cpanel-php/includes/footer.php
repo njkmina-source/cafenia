@@ -3,12 +3,12 @@
  * فوتر استاندارد منوی دیجیتال کافه
  */
 ?>
-<footer class="mt-auto bg-stone-100 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 transition-colors duration-300 py-6">
+<footer class="mt-auto bg-[#131210] border-t border-white/10 py-6">
     <div class="max-w-6xl mx-auto px-4 text-center">
-        <p class="text-xs text-stone-500 dark:text-stone-400">
+        <p class="text-xs text-stone-400">
             تمامی حقوق مادی و معنوی متعلق به <?php echo sanitize($settings['cafe_name'] ?? 'کافه گالری'); ?> می‌باشد. © ۱۴۰۵
         </p>
-        <p class="text-[10px] text-stone-400 dark:text-stone-500 mt-2 flex items-center justify-center gap-1">
+        <p class="text-[10px] text-stone-500 mt-2 flex items-center justify-center gap-1">
             <span>توسعه یافته با</span>
             <i data-lucide="heart" class="w-3 h-3 text-red-500 fill-red-500"></i>
             <span>به صورت امن و مدرن برای هاست سی‌پنل</span>
@@ -16,45 +16,15 @@
     </div>
 </footer>
 
-<!-- اسکریپت‌های سیستمی و تغییر تم -->
+<!-- اسکریپت‌های سیستمی -->
 <script>
     // راه‌اندازی آیکون‌های زیبای لوساید در تمام صفحات
     document.addEventListener("DOMContentLoaded", function() {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+        document.documentElement.classList.add('dark');
     });
-
-    // مدیریت تم تاریک و روشن (Dark Mode)
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    
-    // تابع تنظیم تم
-    function setTheme(mode) {
-        if (mode === 'dark') {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
-    }
-
-    // بررسی تم ترجیحی کاربر هنگام بارگذاری اولیه صفحه
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'light') {
-        setTheme('light');
-    } else {
-        setTheme('dark');
-    }
-
-    // شنود کلیک دکمه سوئیچر تم
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            const isDarkNow = document.documentElement.classList.contains('dark');
-            setTheme(isDarkNow ? 'light' : 'dark');
-        });
-    }
 </script>
 </body>
 </html>
