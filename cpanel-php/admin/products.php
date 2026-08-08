@@ -156,6 +156,19 @@ if ($pdo) {
     <title>مدیریت محصولات - پنل ادمین</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#c49b63',
+                        secondary: '#1a1916',
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
@@ -227,10 +240,10 @@ if ($pdo) {
 <main class="flex-1 p-4 md:p-8 space-y-6 max-w-5xl mx-auto w-full overflow-y-auto">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-black text-stone-950 dark:text-white">مدیریت محصولات منو</h2>
-            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">افزودن محصولات جدید، قیمت‌گذاری، تخفیف‌ها و آپلود عکس محصول</p>
+            <h2 class="text-2xl font-black text-white">مدیریت محصولات منو</h2>
+            <p class="text-xs text-stone-400 mt-1">افزودن محصولات جدید، قیمت‌گذاری، تخفیف‌ها و آپلود عکس محصول</p>
         </div>
-        <button onclick="openProductFormModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-5 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-amber-600/20 transition-all">
+        <button onclick="openProductFormModal()" class="bg-[#c49b63] hover:bg-[#b28b58] text-black px-5 py-3 rounded-2xl font-black text-sm flex items-center gap-2 shadow-lg transition-all cursor-pointer">
             <i data-lucide="plus" class="w-5 h-5"></i>
             <span>افزودن محصول جدید</span>
         </button>
@@ -238,18 +251,18 @@ if ($pdo) {
 
     <!-- اعلان‌ها -->
     <?php if (!empty($message)): ?>
-        <div class="<?php echo $message_type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/50' : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950/50'; ?> border px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-xs">
+        <div class="<?php echo $message_type === 'success' ? 'bg-emerald-950/50 border-emerald-500/30 text-emerald-300' : 'bg-red-950/50 border-red-500/30 text-red-300'; ?> border px-5 py-3.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-xs">
             <i data-lucide="<?php echo $message_type === 'success' ? 'check-circle' : 'alert-octagon'; ?>" class="w-5 h-5 shrink-0"></i>
             <span><?php echo $message; ?></span>
         </div>
     <?php endif; ?>
 
     <!-- جدول محصولات موجود -->
-    <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
+    <div class="bg-[#131210] rounded-3xl border border-white/10 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-right border-collapse text-xs table-auto md:table-fixed">
                 <thead>
-                    <tr class="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800 text-stone-500 font-bold">
+                    <tr class="bg-white/5 border-b border-white/10 text-stone-300 font-bold">
                         <th class="p-4 w-12 md:w-16">عکس</th>
                         <th class="p-4">نام محصول</th>
                         <th class="p-4 hidden md:table-cell md:w-28">دسته‌بندی</th>
@@ -262,7 +275,7 @@ if ($pdo) {
                         <th class="p-4 w-24 md:w-28 text-center">عملیات</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-stone-100 dark:divide-stone-800 font-semibold text-stone-700 dark:text-stone-300">
+                <tbody class="divide-y divide-white/10 font-semibold text-stone-200">
                     <?php if (empty($products)): ?>
                         <tr>
                             <td colspan="10" class="p-8 text-center text-stone-400">هیچ محصولی در دیتابیس ثبت نشده است.</td>
@@ -271,39 +284,39 @@ if ($pdo) {
                         <?php foreach ($products as $prod): 
                             $final_price = $prod['price'] - ($prod['price'] * $prod['discount'] / 100);
                         ?>
-                            <tr class="hover:bg-stone-50/50 dark:hover:bg-stone-800/10">
+                            <tr class="hover:bg-white/5">
                                 <td class="p-4">
                                     <?php if (!empty($prod['image'])): ?>
                                         <img src="../<?php echo sanitize($prod['image']); ?>" class="w-8 h-8 md:w-10 md:h-10 rounded-lg object-cover">
                                     <?php else: ?>
-                                        <div class="w-8 h-8 md:w-10 md:h-10 bg-stone-100 dark:bg-stone-800 rounded-lg flex items-center justify-center text-stone-400"><i data-lucide="image" class="w-4 h-4"></i></div>
+                                        <div class="w-8 h-8 md:w-10 md:h-10 bg-white/5 rounded-lg flex items-center justify-center text-stone-400"><i data-lucide="image" class="w-4 h-4"></i></div>
                                     <?php endif; ?>
                                 </td>
-                                <td class="p-4 font-bold text-stone-900 dark:text-white truncate max-w-[120px]" title="<?php echo sanitize($prod['name']); ?>"><?php echo sanitize($prod['name']); ?></td>
-                                <td class="p-4 hidden md:table-cell"><?php echo sanitize($prod['category_name']); ?></td>
-                                <td class="p-4"><?php echo number_format($prod['price']); ?></td>
-                                <td class="p-4 hidden sm:table-cell text-red-500 text-center">%<?php echo $prod['discount']; ?></td>
-                                <td class="p-4 font-black text-emerald-600"><?php echo number_format($final_price); ?> تومان</td>
+                                <td class="p-4 font-bold text-white truncate max-w-[120px]" title="<?php echo sanitize($prod['name']); ?>"><?php echo sanitize($prod['name']); ?></td>
+                                <td class="p-4 hidden md:table-cell text-stone-300"><?php echo sanitize($prod['category_name']); ?></td>
+                                <td class="p-4 text-stone-300"><?php echo number_format($prod['price']); ?></td>
+                                <td class="p-4 hidden sm:table-cell text-red-400 text-center">%<?php echo $prod['discount']; ?></td>
+                                <td class="p-4 font-black text-emerald-400"><?php echo number_format($final_price); ?> تومان</td>
                                 <td class="p-4 text-center">
-                                    <span class="px-1.5 py-0.5 rounded text-[9px] <?php echo $prod['is_available'] ? 'bg-green-100 text-green-700 dark:bg-green-950/40' : 'bg-red-100 text-red-700 dark:bg-red-950/40'; ?>">
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold <?php echo $prod['is_available'] ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/20 text-red-300 border border-red-500/30'; ?>">
                                         <?php echo $prod['is_available'] ? 'بله' : 'خیر'; ?>
                                     </span>
                                 </td>
                                 <td class="p-4 hidden lg:table-cell">
                                     <div class="flex gap-1">
-                                        <?php if ($prod['is_popular']): ?><span class="bg-amber-100 text-amber-700 text-[9px] px-1.5 py-0.5 rounded">محبوب</span><?php endif; ?>
-                                        <?php if ($prod['is_new']): ?><span class="bg-teal-100 text-teal-700 text-[9px] px-1.5 py-0.5 rounded">جدید</span><?php endif; ?>
+                                        <?php if ($prod['is_popular']): ?><span class="bg-[#c49b63]/20 text-[#c49b63] border border-[#c49b63]/30 text-[9px] px-1.5 py-0.5 rounded font-bold">محبوب</span><?php endif; ?>
+                                        <?php if ($prod['is_new']): ?><span class="bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[9px] px-1.5 py-0.5 rounded font-bold">جدید</span><?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="p-4 hidden xl:table-cell text-center">
-                                    <i data-lucide="<?php echo $prod['is_visible'] ? 'eye' : 'eye-off'; ?>" class="w-4 h-4 mx-auto <?php echo $prod['is_visible'] ? 'text-stone-500' : 'text-stone-300'; ?>"></i>
+                                    <i data-lucide="<?php echo $prod['is_visible'] ? 'eye' : 'eye-off'; ?>" class="w-4 h-4 mx-auto <?php echo $prod['is_visible'] ? 'text-emerald-400' : 'text-stone-500'; ?>"></i>
                                 </td>
                                 <td class="p-4 text-center">
                                     <div class="flex items-center justify-center gap-1">
-                                        <button onclick="editProduct(<?php echo htmlspecialchars(json_encode($prod)); ?>)" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 text-blue-600 p-1.5 rounded-lg transition-all" title="ویرایش">
+                                        <button onclick="editProduct(<?php echo htmlspecialchars(json_encode($prod)); ?>)" class="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 p-1.5 rounded-lg transition-all" title="ویرایش">
                                             <i data-lucide="pencil" class="w-4 h-4"></i>
                                         </button>
-                                        <a href="products.php?action=delete&id=<?php echo $prod['id']; ?>" onclick="return confirm('آیا از حذف این محصول اطمینان دارید؟')" class="bg-red-50 hover:bg-red-100 dark:bg-red-950/30 text-red-600 p-1.5 rounded-lg transition-all" title="حذف">
+                                        <a href="products.php?action=delete&id=<?php echo $prod['id']; ?>" onclick="return confirm('آیا از حذف این محصول اطمینان دارید؟')" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 p-1.5 rounded-lg transition-all" title="حذف">
                                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         </a>
                                     </div>
@@ -318,14 +331,14 @@ if ($pdo) {
 </main>
 
 <!-- ==================== مودال فرم محصول (افزودن و ویرایش) ==================== -->
-<div id="productFormModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs hidden transition-all duration-300">
-    <div class="bg-white dark:bg-stone-900 rounded-3xl w-full max-w-xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-2xl relative">
-        <button onclick="closeProductFormModal()" class="absolute top-4 left-4 p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500">
+<div id="productFormModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden transition-all duration-300">
+    <div class="bg-[#131210] rounded-3xl w-full max-w-xl overflow-hidden border border-white/10 shadow-2xl relative text-stone-200">
+        <button onclick="closeProductFormModal()" class="absolute top-4 left-4 p-2 rounded-full hover:bg-white/10 text-stone-400 hover:text-white transition-colors">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
 
-        <div class="p-6 border-b border-stone-100 dark:border-stone-800">
-            <h3 id="modalTitle" class="text-lg font-black text-stone-900 dark:text-white">افزودن محصول جدید</h3>
+        <div class="p-6 border-b border-white/10">
+            <h3 id="modalTitle" class="text-lg font-black text-white">افزودن محصول جدید</h3>
         </div>
 
         <form action="products.php" method="POST" enctype="multipart/form-data" class="p-6 space-y-4 max-h-[500px] overflow-y-auto">
@@ -335,12 +348,12 @@ if ($pdo) {
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-stone-500 mb-1.5">نام محصول *</label>
-                    <input type="text" name="name" id="form_name" required class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600">
+                    <label class="block text-xs font-bold text-stone-300 mb-1.5">نام محصول *</label>
+                    <input type="text" name="name" id="form_name" required class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63]">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-500 mb-1.5">دسته‌بندی *</label>
-                    <select name="category_id" id="form_category_id" required class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 cursor-pointer">
+                    <label class="block text-xs font-bold text-stone-300 mb-1.5">دسته‌بندی *</label>
+                    <select name="category_id" id="form_category_id" required class="w-full px-3 py-2 rounded-xl bg-[#1a1916] border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] cursor-pointer">
                         <?php foreach ($categories as $cat): ?>
                             <option value="<?php echo $cat['id']; ?>"><?php echo sanitize($cat['name']); ?></option>
                         <?php endforeach; ?>
@@ -350,57 +363,57 @@ if ($pdo) {
 
             <div class="grid grid-cols-3 gap-3">
                 <div>
-                    <label class="block text-xs font-bold text-stone-500 mb-1.5">قیمت (تومان) *</label>
-                    <input type="number" name="price" id="form_price" required class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 text-center">
+                    <label class="block text-xs font-bold text-stone-300 mb-1.5">قیمت (تومان) *</label>
+                    <input type="number" name="price" id="form_price" required class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] text-center">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-500 mb-1.5">درصد تخفیف</label>
-                    <input type="number" name="discount" id="form_discount" min="0" max="100" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 text-center">
+                    <label class="block text-xs font-bold text-stone-300 mb-1.5">درصد تخفیف</label>
+                    <input type="number" name="discount" id="form_discount" min="0" max="100" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] text-center">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-500 mb-1.5">ترتیب نمایش</label>
-                    <input type="number" name="sort_order" id="form_sort_order" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 text-center">
+                    <label class="block text-xs font-bold text-stone-300 mb-1.5">ترتیب نمایش</label>
+                    <input type="number" name="sort_order" id="form_sort_order" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63] text-center">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-stone-500 mb-1.5">توضیحات کوتاه</label>
-                <textarea name="description" id="form_description" rows="2" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600"></textarea>
+                <label class="block text-xs font-bold text-stone-300 mb-1.5">توضیحات کوتاه</label>
+                <textarea name="description" id="form_description" rows="2" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63]"></textarea>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-stone-500 mb-1.5">مواد تشکیل دهنده (با ویرگول جدا کنید)</label>
-                <input type="text" name="ingredients" id="form_ingredients" placeholder="مثال: لیمو، نعنا، سیروپ نعنا، آب گازدار" class="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600">
+                <label class="block text-xs font-bold text-stone-300 mb-1.5">مواد تشکیل دهنده (با ویرگول جدا کنید)</label>
+                <input type="text" name="ingredients" id="form_ingredients" placeholder="مثال: لیمو، نعنا، سیروپ نعنا، آب گازدار" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#c49b63]">
             </div>
 
             <!-- آپلود تصویر -->
             <div>
-                <label class="block text-xs font-bold text-stone-500 mb-1.5">آپلود تصویر محصول</label>
-                <input type="file" name="image" accept="image/*" class="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
+                <label class="block text-xs font-bold text-stone-300 mb-1.5">آپلود تصویر محصول</label>
+                <input type="file" name="image" accept="image/*" class="w-full text-xs text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#c49b63]/20 file:text-[#c49b63] hover:file:bg-[#c49b63]/30 cursor-pointer">
             </div>
 
             <!-- چک‌باکس‌های برچسب‌ها و موجودی -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-stone-50 dark:bg-stone-800/40 p-4 rounded-2xl border border-stone-100 dark:border-stone-800">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 text-stone-200">
                 <label class="flex items-center gap-2 cursor-pointer font-bold text-xs">
-                    <input type="checkbox" name="is_available" id="form_is_available" value="1" checked class="rounded border-stone-300 text-amber-600 focus:ring-amber-500">
+                    <input type="checkbox" name="is_available" id="form_is_available" value="1" checked class="rounded border-white/20 bg-stone-900 text-[#c49b63] focus:ring-[#c49b63]">
                     <span>موجودی فعال</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer font-bold text-xs">
-                    <input type="checkbox" name="is_popular" id="form_is_popular" value="1" class="rounded border-stone-300 text-amber-600 focus:ring-amber-500">
+                    <input type="checkbox" name="is_popular" id="form_is_popular" value="1" class="rounded border-white/20 bg-stone-900 text-[#c49b63] focus:ring-[#c49b63]">
                     <span>محبوب‌ترین</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer font-bold text-xs">
-                    <input type="checkbox" name="is_new" id="form_is_new" value="1" class="rounded border-stone-300 text-amber-600 focus:ring-amber-500">
+                    <input type="checkbox" name="is_new" id="form_is_new" value="1" class="rounded border-white/20 bg-stone-900 text-[#c49b63] focus:ring-[#c49b63]">
                     <span>محصول جدید</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer font-bold text-xs">
-                    <input type="checkbox" name="is_visible" id="form_is_visible" value="1" checked class="rounded border-stone-300 text-amber-600 focus:ring-amber-500">
+                    <input type="checkbox" name="is_visible" id="form_is_visible" value="1" checked class="rounded border-white/20 bg-stone-900 text-[#c49b63] focus:ring-[#c49b63]">
                     <span>نمایش در منو</span>
                 </label>
             </div>
 
             <div class="pt-4">
-                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all">
+                <button type="submit" class="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black font-black py-3 rounded-xl text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all cursor-pointer">
                     <i data-lucide="check" class="w-5 h-5"></i>
                     <span>ذخیره تغییرات محصول</span>
                 </button>

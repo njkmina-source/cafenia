@@ -278,6 +278,19 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
     <title>گزارشات مالی کافه</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#c49b63',
+                        secondary: '#1a1916',
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
@@ -348,12 +361,12 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
 <main class="flex-1 p-4 md:p-8 space-y-6 max-w-5xl mx-auto w-full overflow-y-auto">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-black text-stone-950 dark:text-white">گزارشات فروش و فاکتورها</h2>
-            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">مشاهده جمع درآمد، فاکتورهای لغو شده و خروجی مستقیم فایل رسمی گزارشات به صورت PDF فارسی</p>
+            <h2 class="text-2xl font-black text-white">گزارشات فروش و فاکتورها</h2>
+            <p class="text-xs text-stone-400 mt-1">مشاهده جمع درآمد، فاکتورهای لغو شده و خروجی مستقیم فایل رسمی گزارشات به صورت PDF فارسی</p>
         </div>
         
         <!-- دکمه دانلود PDF -->
-        <a href="reports.php?range=<?php echo $range; ?>&export=pdf" target="_blank" class="bg-red-600 hover:bg-red-500 text-white px-5 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-red-600/20 transition-all">
+        <a href="reports.php?range=<?php echo $range; ?>&export=pdf" target="_blank" class="bg-red-600/80 hover:bg-red-600 text-white px-5 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg transition-all border border-red-500/30">
             <i data-lucide="printer" class="w-5 h-5"></i>
             <span>خروجی فایل PDF رسمی (A4)</span>
         </a>
@@ -361,51 +374,51 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
 
     <!-- فیلتر محدوده زمان گزارش -->
     <div class="flex gap-2">
-        <a href="reports.php?range=today" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'today' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-stone-900 border border-stone-200 text-stone-600 dark:text-stone-300'; ?> transition-all">گزارش امروز</a>
-        <a href="reports.php?range=weekly" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'weekly' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-stone-900 border border-stone-200 text-stone-600 dark:text-stone-300'; ?> transition-all">۷ روز گذشته</a>
-        <a href="reports.php?range=monthly" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'monthly' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-stone-900 border border-stone-200 text-stone-600 dark:text-stone-300'; ?> transition-all">۳۰ روز گذشته</a>
-        <a href="reports.php?range=annual" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'annual' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-stone-900 border border-stone-200 text-stone-600 dark:text-stone-300'; ?> transition-all">یک سال اخیر</a>
+        <a href="reports.php?range=today" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'today' ? 'bg-[#c49b63] text-black shadow-md font-black' : 'bg-white/5 border border-white/10 text-stone-300 hover:text-white'; ?> transition-all">گزارش امروز</a>
+        <a href="reports.php?range=weekly" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'weekly' ? 'bg-[#c49b63] text-black shadow-md font-black' : 'bg-white/5 border border-white/10 text-stone-300 hover:text-white'; ?> transition-all">۷ روز گذشته</a>
+        <a href="reports.php?range=monthly" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'monthly' ? 'bg-[#c49b63] text-black shadow-md font-black' : 'bg-white/5 border border-white/10 text-stone-300 hover:text-white'; ?> transition-all">۳۰ روز گذشته</a>
+        <a href="reports.php?range=annual" class="px-4 py-2 rounded-xl text-xs font-bold <?php echo $range === 'annual' ? 'bg-[#c49b63] text-black shadow-md font-black' : 'bg-white/5 border border-white/10 text-stone-300 hover:text-white'; ?> transition-all">یک سال اخیر</a>
     </div>
 
     <!-- کارت‌های آمار خلاصه گزارش مالی -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center">
+        <div class="bg-[#131210] p-6 rounded-3xl border border-white/10 shadow-xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
                 <i data-lucide="wallet" class="w-6 h-6"></i>
             </div>
             <div>
                 <span class="text-[10px] text-stone-400 font-bold block">مجموع درآمد (فاکتورهای تایید شده)</span>
-                <span class="text-xl font-black text-emerald-600 mt-1 block"><?php echo number_format($total_income); ?> <span class="text-xs font-normal">تومان</span></span>
+                <span class="text-xl font-black text-emerald-400 mt-1 block"><?php echo number_format($total_income); ?> <span class="text-xs font-normal">تومان</span></span>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center">
+        <div class="bg-[#131210] p-6 rounded-3xl border border-white/10 shadow-xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-[#c49b63]/20 text-[#c49b63] border border-[#c49b63]/30 flex items-center justify-center">
                 <i data-lucide="shopping-bag" class="w-6 h-6"></i>
             </div>
             <div>
                 <span class="text-[10px] text-stone-400 font-bold block">تعداد کل سفارشات موثر</span>
-                <span class="text-xl font-black text-stone-950 dark:text-white mt-1 block"><?php echo number_format($total_orders_count); ?> سفارش</span>
+                <span class="text-xl font-black text-white mt-1 block"><?php echo number_format($total_orders_count); ?> سفارش</span>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center">
+        <div class="bg-[#131210] p-6 rounded-3xl border border-white/10 shadow-xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center">
                 <i data-lucide="x-circle" class="w-6 h-6"></i>
             </div>
             <div>
                 <span class="text-[10px] text-stone-400 font-bold block">سفارشات لغو شده ادمین</span>
-                <span class="text-xl font-black text-red-500 mt-1 block"><?php echo number_format($cancelled_count); ?> لغو شده</span>
+                <span class="text-xl font-black text-red-400 mt-1 block"><?php echo number_format($cancelled_count); ?> لغو شده</span>
             </div>
         </div>
     </div>
 
     <!-- جدول تراکنش‌های مالی گزارش -->
-    <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
+    <div class="bg-[#131210] rounded-3xl border border-white/10 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-right border-collapse text-xs">
                 <thead>
-                    <tr class="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800 text-stone-500 font-bold">
+                    <tr class="bg-white/5 border-b border-white/10 text-stone-300 font-bold">
                         <th class="p-4">شماره سفارش</th>
                         <th class="p-4">مشتری</th>
                         <th class="p-4">نوع تحویل</th>
@@ -414,21 +427,21 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
                         <th class="p-4">وضعیت فاکتور</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-stone-100 dark:divide-stone-800 font-semibold text-stone-700 dark:text-stone-300">
+                <tbody class="divide-y divide-white/10 font-semibold text-stone-200">
                     <?php if (empty($orders_report)): ?>
                         <tr>
                             <td colspan="6" class="p-8 text-center text-stone-400">تراکنی در بازه زمانی مورد نظر ثبت نشده است.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($orders_report as $row): ?>
-                            <tr class="hover:bg-stone-50/50 dark:hover:bg-stone-800/10">
-                                <td class="p-4 font-bold text-stone-900 dark:text-white"><?php echo $row['order_code']; ?></td>
-                                <td class="p-4"><?php echo sanitize($row['customer_name']); ?></td>
-                                <td class="p-4"><?php echo $row['order_type'] === 'indoor' ? 'حضوری' : 'غیرحضوری'; ?></td>
-                                <td class="p-4"><?php echo $row['created_jalali']; ?></td>
-                                <td class="p-4 font-black text-emerald-600"><?php echo number_format($row['total_amount']); ?> تومان</td>
+                            <tr class="hover:bg-white/5">
+                                <td class="p-4 font-bold text-white"><?php echo $row['order_code']; ?></td>
+                                <td class="p-4 text-stone-200"><?php echo sanitize($row['customer_name']); ?></td>
+                                <td class="p-4 text-stone-300"><?php echo $row['order_type'] === 'indoor' ? 'حضوری' : 'غیرحضوری'; ?></td>
+                                <td class="p-4 text-stone-400"><?php echo $row['created_jalali']; ?></td>
+                                <td class="p-4 font-black text-emerald-400"><?php echo number_format($row['total_amount']); ?> تومان</td>
                                 <td class="p-4">
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] <?php echo $row['status'] === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-950/40' : ($row['status'] === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'); ?> font-bold">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?php echo $row['status'] === 'completed' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : ($row['status'] === 'cancelled' ? 'bg-red-500/20 text-red-300 border-red-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'); ?>">
                                         <?php echo $row['status'] === 'completed' ? 'تکمیل شده' : ($row['status'] === 'cancelled' ? 'لغو شده' : 'فعال'); ?>
                                     </span>
                                 </td>

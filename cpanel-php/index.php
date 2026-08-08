@@ -242,31 +242,31 @@ if (empty($products)) {
 </button>
 
 <!-- ==================== مودال جزئیات محصول ==================== -->
-<div id="productDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs hidden transition-all duration-300">
-    <div class="bg-white dark:bg-stone-900 rounded-3xl w-full max-w-lg overflow-hidden border border-stone-200 dark:border-stone-800 shadow-2xl relative">
-        <button onclick="closeProductDetailModal()" class="absolute top-4 left-4 bg-white/90 dark:bg-stone-950/90 hover:bg-white p-2 rounded-full text-stone-700 dark:text-stone-300 shadow-md z-10 transition-transform hover:scale-105">
+<div id="productDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs hidden transition-all duration-300">
+    <div class="bg-[#131210] rounded-3xl w-full max-w-lg overflow-hidden border border-white/10 shadow-2xl relative text-stone-100">
+        <button onclick="closeProductDetailModal()" class="absolute top-4 left-4 bg-black/60 hover:bg-black/90 p-2 rounded-full text-white shadow-md z-10 transition-transform hover:scale-105 border border-white/10">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
 
-        <div id="modalProductImageContainer" class="w-full h-56 md:h-64 bg-stone-100 dark:bg-stone-800 relative">
+        <div id="modalProductImageContainer" class="w-full h-56 md:h-64 bg-[#1a1916] relative">
             <img id="modalProductImage" src="" alt="" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#131210] via-black/30 to-transparent"></div>
             <h3 id="modalProductName" class="absolute bottom-5 right-5 text-xl font-black text-white"></h3>
         </div>
 
         <div class="p-6">
             <h4 class="text-xs font-bold text-stone-400 mb-1">توضیحات محصول</h4>
-            <p id="modalProductDesc" class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed mb-4"></p>
+            <p id="modalProductDesc" class="text-sm text-stone-300 leading-relaxed mb-4"></p>
 
             <div id="modalIngredientsContainer" class="mb-4">
                 <h4 class="text-xs font-bold text-stone-400 mb-1">مواد تشکیل‌دهنده</h4>
-                <p id="modalProductIngredients" class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed bg-stone-50 dark:bg-stone-800/50 p-3 rounded-2xl border border-stone-100 dark:border-stone-800"></p>
+                <p id="modalProductIngredients" class="text-sm text-stone-300 leading-relaxed bg-[#1a1916] p-3 rounded-2xl border border-white/10"></p>
             </div>
 
-            <div class="flex items-center justify-between border-t border-stone-100 dark:border-stone-800 pt-4 mt-6">
+            <div class="flex items-center justify-between border-t border-white/10 pt-4 mt-6">
                 <div class="flex flex-col">
                     <span class="text-xs text-stone-400">قیمت نهایی</span>
-                    <span id="modalProductPrice" class="text-lg font-black text-primary"></span>
+                    <span id="modalProductPrice" class="text-lg font-black text-[#c49b63]"></span>
                 </div>
                 <div id="modalAddBtnContainer"></div>
             </div>
@@ -275,15 +275,15 @@ if (empty($products)) {
 </div>
 
 <!-- ==================== مودال سبد خرید ==================== -->
-<div id="cartModal" class="fixed inset-0 z-50 flex items-center justify-end bg-stone-950/70 backdrop-blur-xs hidden transition-all duration-300">
-    <div class="bg-white dark:bg-stone-900 w-full max-w-md h-full flex flex-col border-r border-stone-200 dark:border-stone-800 shadow-2xl relative">
+<div id="cartModal" class="fixed inset-0 z-50 flex items-center justify-end bg-black/80 backdrop-blur-xs hidden transition-all duration-300">
+    <div class="bg-[#131210] w-full max-w-md h-full flex flex-col border-r border-white/10 shadow-2xl relative text-stone-100">
         <!-- هدر سبد خرید -->
-        <div class="p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
+        <div class="p-5 border-b border-white/10 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <i data-lucide="shopping-bag" class="w-5 h-5 text-primary"></i>
-                <h3 class="text-lg font-black text-stone-900 dark:text-white">سبد خرید شما</h3>
+                <i data-lucide="shopping-bag" class="w-5 h-5 text-[#c49b63]"></i>
+                <h3 class="text-lg font-black text-white">سبد خرید شما</h3>
             </div>
-            <button onclick="closeCartModal()" class="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 transition-colors">
+            <button onclick="closeCartModal()" class="p-1.5 rounded-full hover:bg-white/10 text-stone-400 hover:text-white transition-colors">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
@@ -294,26 +294,26 @@ if (empty($products)) {
         </div>
 
         <!-- فوتر سبد خرید و فرم ثبت سفارش -->
-        <div class="p-5 border-t border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-950 space-y-4 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]" id="cartCheckoutContainer">
+        <div class="p-5 border-t border-white/10 bg-[#131210] space-y-4 shadow-lg" id="cartCheckoutContainer">
             <div class="flex items-center justify-between text-sm font-semibold">
-                <span class="text-stone-500 dark:text-stone-400">جمع کل سبد:</span>
-                <span id="cartTotalPrice" class="font-black text-stone-950 dark:text-white">۰ <span class="text-xs font-normal">تومان</span></span>
+                <span class="text-stone-400">جمع کل سبد:</span>
+                <span id="cartTotalPrice" class="font-black text-white">۰ <span class="text-xs font-normal">تومان</span></span>
             </div>
 
             <!-- دکمه رفتن به مرحله ثبت سفارش -->
-            <button onclick="openCheckoutForm()" id="checkoutStepBtn" class="w-full bg-primary hover:bg-primary/95 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-primary/30 transition-all active:scale-98">
+            <button onclick="openCheckoutForm()" id="checkoutStepBtn" class="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 shadow-lg transition-all active:scale-98 cursor-pointer">
                 <span>ثبت سفارش و پرداخت</span>
                 <i data-lucide="chevron-left" class="w-5 h-5"></i>
             </button>
         </div>
 
         <!-- کارت سفارش نهایی (فرم ثبت آدرس و موبایل) -->
-        <div class="absolute inset-x-0 bottom-0 top-[65px] bg-white dark:bg-stone-900 z-10 flex flex-col hidden" id="checkoutFormContainer">
-            <div class="p-5 border-b border-stone-100 dark:border-stone-800 flex items-center gap-3">
-                <button onclick="closeCheckoutForm()" class="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400">
+        <div class="absolute inset-x-0 bottom-0 top-[65px] bg-[#131210] z-10 flex flex-col hidden" id="checkoutFormContainer">
+            <div class="p-5 border-b border-white/10 flex items-center gap-3">
+                <button onclick="closeCheckoutForm()" class="p-1 rounded-full hover:bg-white/10 text-stone-400 hover:text-white">
                     <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </button>
-                <h4 class="font-black text-stone-900 dark:text-white">اطلاعات سفارش‌دهنده</h4>
+                <h4 class="font-black text-white">اطلاعات سفارش‌دهنده</h4>
             </div>
 
             <form id="orderForm" onsubmit="submitOrder(event)" class="flex-1 overflow-y-auto p-5 space-y-4">
@@ -325,14 +325,14 @@ if (empty($products)) {
                     <div class="grid grid-cols-2 gap-3">
                         <label class="cursor-pointer">
                             <input type="radio" name="order_type" value="indoor" checked onchange="toggleOrderTypeFields('indoor')" class="peer sr-only">
-                            <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
+                            <div class="p-3 text-center border-2 border-white/10 rounded-2xl font-bold text-sm text-stone-300 peer-checked:border-[#c49b63] peer-checked:bg-[#c49b63]/10 peer-checked:text-[#c49b63] transition-all">
                                 <i data-lucide="coffee" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
                                 حضوری در کافه
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="order_type" value="outdoor" onchange="toggleOrderTypeFields('outdoor')" class="peer sr-only">
-                            <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
+                            <div class="p-3 text-center border-2 border-white/10 rounded-2xl font-bold text-sm text-stone-300 peer-checked:border-[#c49b63] peer-checked:bg-[#c49b63]/10 peer-checked:text-[#c49b63] transition-all">
                                 <i data-lucide="truck" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
                                 غیرحضوری (ارسال)
                             </div>
@@ -345,8 +345,8 @@ if (empty($products)) {
                 <div id="indoorFields" class="space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">شماره میز *</label>
-                            <select name="table_number" id="indoor_table" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                            <label class="block text-xs font-bold text-stone-300 mb-1.5">شماره میز *</label>
+                            <select name="table_number" id="indoor_table" class="w-full px-3 py-2.5 rounded-xl bg-[#1a1916] border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63]">
                                 <option value="میز ۱">میز ۱</option>
                                 <option value="میز ۲">میز ۲</option>
                                 <option value="میز ۳">میز ۳</option>
@@ -359,13 +359,13 @@ if (empty($products)) {
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام سفارش‌دهنده *</label>
-                            <input type="text" name="first_name" id="indoor_first_name" placeholder="نام شما" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                            <label class="block text-xs font-bold text-stone-300 mb-1.5">نام سفارش‌دهنده *</label>
+                            <input type="text" name="first_name" id="indoor_first_name" placeholder="نام شما" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63]">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">توضیحات و سفارش ویژه</label>
-                        <textarea name="description_indoor" id="indoor_desc" placeholder="توضیحات سفارش، کم شکر، بدون نی و..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
+                        <label class="block text-xs font-bold text-stone-300 mb-1.5">توضیحات و سفارش ویژه</label>
+                        <textarea name="description_indoor" id="indoor_desc" placeholder="توضیحات سفارش، کم شکر، بدون نی و..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63]"></textarea>
                     </div>
                 </div>
 
@@ -373,41 +373,41 @@ if (empty($products)) {
                 <div id="outdoorFields" class="space-y-4 hidden">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام *</label>
-                            <input type="text" name="outdoor_name" id="outdoor_name_input" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                            <label class="block text-xs font-bold text-stone-300 mb-1.5">نام *</label>
+                            <input type="text" name="outdoor_name" id="outdoor_name_input" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63]">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">شماره موبایل *</label>
-                            <input type="text" name="phone" id="outdoor_phone" placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-right dir-ltr">
+                            <label class="block text-xs font-bold text-stone-300 mb-1.5">شماره موبایل *</label>
+                            <input type="text" name="phone" id="outdoor_phone" placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63] text-right dir-ltr">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">آدرس دقیق تحویل *</label>
-                        <textarea name="address" id="outdoor_address" placeholder="نام خیابان، کوچه، پلاک..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
+                        <label class="block text-xs font-bold text-stone-300 mb-1.5">آدرس دقیق تحویل *</label>
+                        <textarea name="address" id="outdoor_address" placeholder="نام خیابان، کوچه، پلاک..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63]"></textarea>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">پلاک *</label>
-                            <input type="text" name="plaque" id="outdoor_plaque" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <label class="block text-xs font-bold text-stone-300 mb-1.5">پلاک *</label>
+                            <input type="text" name="plaque" id="outdoor_plaque" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63] text-center">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">طبقه *</label>
-                            <input type="text" name="floor" id="outdoor_floor" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <label class="block text-xs font-bold text-stone-300 mb-1.5">طبقه *</label>
+                            <input type="text" name="floor" id="outdoor_floor" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63] text-center">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">واحد *</label>
-                            <input type="text" name="unit" id="outdoor_unit" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <label class="block text-xs font-bold text-stone-300 mb-1.5">واحد *</label>
+                            <input type="text" name="unit" id="outdoor_unit" class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63] text-center">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">توضیحات پیک</label>
-                        <textarea name="description_outdoor" id="outdoor_desc_input" placeholder="مثلاً: زنگ واحد ۳ زده شود" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
+                        <label class="block text-xs font-bold text-stone-300 mb-1.5">توضیحات پیک</label>
+                        <textarea name="description_outdoor" id="outdoor_desc_input" placeholder="مثلاً: زنگ واحد ۳ زده شود" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-[#c49b63]"></textarea>
                     </div>
                 </div>
 
                 <!-- دکمه پرداخت و ارسال نهایی -->
                 <div class="pt-4">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all">
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer">
                         <i data-lucide="check" class="w-5 h-5"></i>
                         <span>ثبت و پرداخت نهایی</span>
                     </button>
@@ -530,24 +530,24 @@ if (empty($products)) {
             const itemTotal = item.price * item.quantity;
             total += itemTotal;
             html += `
-                <div class="bg-stone-50 dark:bg-stone-800/50 p-4 rounded-2xl flex items-center gap-3 border border-stone-100 dark:border-stone-800 transition-all">
-                    ${item.image ? `<img src="${item.image}" class="w-16 h-16 rounded-xl object-cover">` : `<div class="w-16 h-16 bg-stone-100 dark:bg-stone-800 rounded-xl flex items-center justify-center"><i data-lucide="coffee" class="w-6 h-6 text-stone-400"></i></div>`}
+                <div class="bg-[#1a1916] p-4 rounded-2xl flex items-center gap-3 border border-white/10 transition-all">
+                    ${item.image ? `<img src="${item.image}" class="w-16 h-16 rounded-xl object-cover">` : `<div class="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center"><i data-lucide="coffee" class="w-6 h-6 text-stone-400"></i></div>`}
                     <div class="flex-1">
-                        <h4 class="text-sm font-bold text-stone-900 dark:text-white">${item.name}</h4>
-                        <span class="text-xs font-semibold text-primary block mt-1">${formatNumber(item.price)} تومان</span>
+                        <h4 class="text-sm font-bold text-white">${item.name}</h4>
+                        <span class="text-xs font-semibold text-[#c49b63] block mt-1">${formatNumber(item.price)} تومان</span>
                     </div>
                     <div class="flex flex-col items-end gap-2">
                         <!-- دکمه‌های شمارنده -->
-                        <div class="flex items-center gap-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 px-2.5 py-1.5 rounded-xl shadow-sm">
-                            <button onclick="changeQuantity(${item.id}, 1)" class="text-stone-500 hover:text-stone-800 dark:hover:text-white transition-colors">
+                        <div class="flex items-center gap-2 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-xl text-white">
+                            <button onclick="changeQuantity(${item.id}, 1)" class="text-stone-300 hover:text-white transition-colors cursor-pointer">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
                             <span class="text-xs font-bold px-1 min-w-[14px] text-center">${item.quantity}</span>
-                            <button onclick="changeQuantity(${item.id}, -1)" class="text-stone-500 hover:text-stone-800 dark:hover:text-white transition-colors">
+                            <button onclick="changeQuantity(${item.id}, -1)" class="text-stone-300 hover:text-white transition-colors cursor-pointer">
                                 <i data-lucide="minus" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-600 p-1 transition-colors" title="حذف">
+                        <button onclick="removeFromCart(${item.id})" class="text-red-400 hover:text-red-300 p-1 transition-colors cursor-pointer" title="حذف">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>

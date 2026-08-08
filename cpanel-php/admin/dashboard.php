@@ -67,6 +67,19 @@ if ($pdo) {
     <title>پنل مدیریت کافه - داشبورد</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#c49b63',
+                        secondary: '#1a1916',
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -141,58 +154,58 @@ if ($pdo) {
     <!-- هدر بالای صفحه -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-black text-stone-950 dark:text-white">میز مانیتورینگ سفارشات</h2>
-            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">سفارش‌ها به محض ثبت با صدای هشدار در اینجا لود خواهند شد</p>
+            <h2 class="text-2xl font-black text-white">میز مانیتورینگ سفارشات</h2>
+            <p class="text-xs text-stone-400 mt-1">سفارش‌ها به محض ثبت با صدای هشدار در اینجا لود خواهند شد</p>
         </div>
         
         <!-- نمایش زمان زنده ایران -->
-        <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 px-5 py-3 rounded-2xl text-center shadow-sm shrink-0">
+        <div class="bg-[#131210] border border-white/10 px-5 py-3 rounded-2xl text-center shadow-sm shrink-0">
             <span class="text-xs font-bold text-stone-400 block">ساعت و تاریخ رسمی</span>
-            <span id="liveClock" class="text-sm font-black text-amber-600 tracking-wider">۱۴۰۵/۰۴/۱۵ - ۱۲:۳۴:۵۶</span>
+            <span id="liveClock" class="text-sm font-black text-[#c49b63] tracking-wider">۱۴۰۵/۰۴/۱۵ - ۱۲:۳۴:۵۶</span>
         </div>
     </div>
 
     <!-- بخش کارت‌های آمار بالای صفحه -->
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- کارت ۱ -->
-        <div class="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs">
-            <div class="text-amber-600 bg-amber-50 dark:bg-amber-950/50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
+        <div class="bg-[#131210] p-5 rounded-3xl border border-white/10 shadow-xs">
+            <div class="text-[#c49b63] bg-[#c49b63]/10 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
                 <i data-lucide="shopping-cart" class="w-5 h-5"></i>
             </div>
             <span class="text-xs text-stone-400 font-semibold">سفارشات امروز</span>
-            <span class="text-xl font-black text-stone-950 dark:text-white block mt-1"><?php echo number_format($stats['orders_today']); ?></span>
+            <span class="text-xl font-black text-white block mt-1"><?php echo number_format($stats['orders_today']); ?></span>
         </div>
         <!-- کارت ۲ -->
-        <div class="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs">
-            <div class="text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
+        <div class="bg-[#131210] p-5 rounded-3xl border border-white/10 shadow-xs">
+            <div class="text-emerald-400 bg-emerald-500/10 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
                 <i data-lucide="banknote" class="w-5 h-5"></i>
             </div>
             <span class="text-xs text-stone-400 font-semibold">فروش امروز</span>
-            <span class="text-xl font-black text-stone-950 dark:text-white block mt-1"><?php echo number_format($stats['sales_today']); ?> <span class="text-xs font-normal">تومان</span></span>
+            <span class="text-xl font-black text-white block mt-1"><?php echo number_format($stats['sales_today']); ?> <span class="text-xs font-normal">تومان</span></span>
         </div>
         <!-- کارت ۳ -->
-        <div class="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs col-span-2 lg:col-span-1">
-            <div class="text-blue-600 bg-blue-50 dark:bg-blue-950/50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
+        <div class="bg-[#131210] p-5 rounded-3xl border border-white/10 shadow-xs col-span-2 lg:col-span-1">
+            <div class="text-blue-400 bg-blue-500/10 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
                 <i data-lucide="trending-up" class="w-5 h-5"></i>
             </div>
             <span class="text-xs text-stone-400 font-semibold">فروش ماه جاری</span>
-            <span class="text-xl font-black text-stone-950 dark:text-white block mt-1"><?php echo number_format($stats['sales_month']); ?> <span class="text-xs font-normal">تومان</span></span>
+            <span class="text-xl font-black text-white block mt-1"><?php echo number_format($stats['sales_month']); ?> <span class="text-xs font-normal">تومان</span></span>
         </div>
         <!-- کارت ۴ -->
-        <div class="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs">
-            <div class="text-violet-600 bg-violet-50 dark:bg-violet-950/50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
+        <div class="bg-[#131210] p-5 rounded-3xl border border-white/10 shadow-xs">
+            <div class="text-purple-400 bg-purple-500/10 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
                 <i data-lucide="coffee" class="w-5 h-5"></i>
             </div>
             <span class="text-xs text-stone-400 font-semibold">تعداد کل محصولات</span>
-            <span class="text-xl font-black text-stone-950 dark:text-white block mt-1"><?php echo number_format($stats['total_products']); ?></span>
+            <span class="text-xl font-black text-white block mt-1"><?php echo number_format($stats['total_products']); ?></span>
         </div>
         <!-- کارت ۵ -->
-        <div class="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xs">
-            <div class="text-teal-600 bg-teal-50 dark:bg-teal-950/50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
+        <div class="bg-[#131210] p-5 rounded-3xl border border-white/10 shadow-xs">
+            <div class="text-teal-400 bg-teal-500/10 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
                 <i data-lucide="layers" class="w-5 h-5"></i>
             </div>
             <span class="text-xs text-stone-400 font-semibold">کل دسته‌بندی‌ها</span>
-            <span class="text-xl font-black text-stone-950 dark:text-white block mt-1"><?php echo number_format($stats['total_categories']); ?></span>
+            <span class="text-xl font-black text-white block mt-1"><?php echo number_format($stats['total_categories']); ?></span>
         </div>
     </div>
 
@@ -200,41 +213,48 @@ if ($pdo) {
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- ستون سفارشات جدید و فعال (لانگ پولینگ / لایو مانیتور) -->
-        <div class="lg:col-span-2 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 shadow-sm flex flex-col min-h-[500px]">
-            <div class="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-4 mb-4 shrink-0">
+        <div class="lg:col-span-2 bg-[#131210] rounded-3xl border border-white/10 p-6 shadow-sm flex flex-col min-h-[500px]">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4 shrink-0">
                 <div class="flex items-center gap-2">
                     <span class="w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
-                    <h3 class="text-lg font-black text-stone-900 dark:text-white">سفارش‌های جدید دریافت شده</h3>
+                    <h3 class="text-lg font-black text-white">سفارش‌های جدید دریافت شده</h3>
                 </div>
-                <span id="activeOrdersCount" class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">0 جدید</span>
+                <span id="activeOrdersCount" class="bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold px-3 py-1 rounded-full">0 جدید</span>
             </div>
 
             <!-- اسکرول‌بار سفارشات زنده -->
             <div id="liveOrdersContainer" class="flex-1 space-y-4 overflow-y-auto max-h-[550px] pr-1">
                 <!-- سفارشات لایو با JS رندر می‌شوند -->
                 <div class="h-64 flex flex-col items-center justify-center text-stone-400">
-                    <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-amber-600 mb-4"></i>
+                    <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-[#c49b63] mb-4"></i>
                     <p class="text-sm font-semibold">در حال همگام‌سازی سفارشات زنده...</p>
                 </div>
             </div>
         </div>
 
         <!-- ستون نمودار فروش و آمار فرعی -->
-        <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 shadow-sm flex flex-col justify-between">
+        <div class="bg-[#131210] rounded-3xl border border-white/10 p-6 shadow-sm flex flex-col justify-between">
             <div>
-                <h3 class="text-base font-black text-stone-900 dark:text-white mb-4">نمودار روند فروش کافه</h3>
+                <h3 class="text-base font-black text-white mb-4">نمودار روند فروش کافه</h3>
                 <div class="w-full h-64 flex items-center justify-center">
                     <canvas id="salesTrendsChart"></canvas>
                 </div>
             </div>
 
-            <div class="mt-6 pt-6 border-t border-stone-100 dark:border-stone-800 space-y-4">
+            <div class="mt-6 pt-6 border-t border-white/10 space-y-4">
                 <h4 class="text-xs font-bold text-stone-400">راهنمای وضعیت سفارشات</h4>
-                <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                <div class="grid grid-cols-2 gap-2 text-xs font-bold text-stone-300">
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>ثبت شد</span>
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>در حال آماده‌سازی</span>
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>آماده تحویل</span>
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>ارسال شد</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>تکمیل شد</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>لغو شد</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>تکمیل شد</span>
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>لغو شد</span>
                 </div>
@@ -321,27 +341,27 @@ if ($pdo) {
             const isIndoor = order.order_type === 'indoor';
 
             html += `
-                <div class="bg-stone-50 dark:bg-stone-800/40 p-5 rounded-2xl border border-stone-200 dark:border-stone-800 flex flex-col md:flex-row justify-between gap-4 transition-all hover:border-amber-600/30">
+                <div class="bg-white/5 p-5 rounded-2xl border border-white/10 flex flex-col md:flex-row justify-between gap-4 transition-all hover:border-[#c49b63]/40">
                     <div class="space-y-2">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-sm font-black text-stone-900 dark:text-white">${order.order_code}</span>
+                            <span class="text-sm font-black text-white">${order.order_code}</span>
                             <span class="px-2.5 py-1 text-[10px] font-bold rounded-full ${statusClass}">${getStatusFarsi(order.status)}</span>
-                            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white/10 text-stone-300">
                                 ${isIndoor ? 'حضوری در کافه' : 'ارسال غیرحضوری'}
                             </span>
                         </div>
-                        <div class="text-xs font-semibold text-stone-600 dark:text-stone-300 space-y-1">
-                            <p>مشتری: <span class="font-bold text-stone-900 dark:text-white">${order.customer_name}</span> (${order.customer_phone})</p>
-                            ${isIndoor ? `<p class="text-amber-700 dark:text-amber-500">آدرس: ${order.address} - پلاک: ${order.plaque} / طبقه: ${order.floor} / واحد: ${order.unit}</p>` : ''}
+                        <div class="text-xs font-semibold text-stone-300 space-y-1">
+                            <p>مشتری: <span class="font-bold text-white">${order.customer_name}</span> (${order.customer_phone})</p>
+                            ${isIndoor ? `<p class="text-[#c49b63]">آدرس: ${order.address} - پلاک: ${order.plaque} / طبقه: ${order.floor} / واحد: ${order.unit}</p>` : ''}
                             ${order.description ? `<p class="text-stone-400">توضیح: ${order.description}</p>` : ''}
                         </div>
                         <!-- اقلام فاکتور -->
-                        <div class="bg-white dark:bg-stone-900/50 p-3 rounded-xl border border-stone-200 dark:border-stone-800 text-xs">
-                            <ul class="divide-y divide-stone-100 dark:divide-stone-800 space-y-1.5">
+                        <div class="bg-[#0f0e0c]/60 p-3 rounded-xl border border-white/10 text-xs text-stone-200">
+                            <ul class="divide-y divide-white/10 space-y-1.5">
                                 ${order.items ? order.items.map(item => `
                                     <li class="flex items-center justify-between pt-1.5 first:pt-0 font-semibold">
                                         <span>${item.product_name} <span class="text-stone-400">× ${item.quantity}</span></span>
-                                        <span>${formatNumber(item.price * item.quantity)} تومان</span>
+                                        <span class="text-[#c49b63]">${formatNumber(item.price * item.quantity)} تومان</span>
                                     </li>
                                 `).join('') : ''}
                             </ul>
@@ -349,15 +369,15 @@ if ($pdo) {
                     </div>
 
                     <!-- کنترل ادمین برای تغییر وضعیت و چاپ -->
-                    <div class="flex flex-row md:flex-col items-end justify-between md:justify-center gap-2 shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-stone-200">
+                    <div class="flex flex-row md:flex-col items-end justify-between md:justify-center gap-2 shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-white/10">
                         <div class="flex flex-col items-end text-right">
                             <span class="text-[10px] text-stone-400 font-bold">${order.created_jalali}</span>
-                            <span class="text-sm font-black text-emerald-600 mt-1">${formatNumber(order.total_amount)} تومان</span>
+                            <span class="text-sm font-black text-emerald-400 mt-1">${formatNumber(order.total_amount)} تومان</span>
                         </div>
 
                         <div class="flex items-center gap-1">
                             <!-- دراپ دان تغییر وضعیت -->
-                            <select onchange="updateOrderStatus('${order.order_code}', this.value)" class="text-xs bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-amber-600 font-bold text-stone-700 dark:text-stone-300 cursor-pointer">
+                            <select onchange="updateOrderStatus('${order.order_code}', this.value)" class="text-xs bg-[#1a1916] border border-white/20 px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-[#c49b63] font-bold text-white cursor-pointer">
                                 <option value="registered" ${order.status === 'registered' ? 'selected' : ''}>ثبت شد</option>
                                 <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>در حال آماده‌سازی</option>
                                 <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>آماده تحویل</option>
