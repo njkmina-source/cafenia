@@ -318,9 +318,9 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
             <i data-lucide="settings" class="w-5 h-5 text-amber-600"></i>
             <span>تنظیمات سیستم</span>
         </a>
-        <a href="../../#code" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 font-bold text-sm transition-all">
-            <i data-lucide="download" class="w-5 h-5"></i>
-            <span>دانلود کدهای cPanel</span>
+        <a href="../index.php" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 font-bold text-sm transition-all">
+            <i data-lucide="external-link" class="w-5 h-5"></i>
+            <span>مشاهده منوی مشتری</span>
         </a>
     </nav>
     <div class="p-4 border-t border-stone-100 dark:border-stone-800">

@@ -19,8 +19,31 @@ if ($pdo) {
         $stmt_prod = $pdo->query("SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.is_visible = 1 ORDER BY p.sort_order ASC, p.id ASC");
         $products = $stmt_prod->fetchAll();
     } catch (Exception $e) {
-        // در صورت خطای دیتابیس، دیتای نمونه را لود خواهیم کرد تا صفحه خام نشان داده نشود
+        // در صورت خطای دیتابیس، دیتای نمونه را لود خواهیم کرد
     }
+}
+
+if (empty($categories)) {
+    $categories = [
+        ['id' => 1, 'name' => 'قهوه گرم', 'icon' => 'coffee'],
+        ['id' => 2, 'name' => 'قهوه سرد', 'icon' => 'ice-cream'],
+        ['id' => 3, 'name' => 'دمنوش و چای', 'icon' => 'leaf'],
+        ['id' => 4, 'name' => 'کیک و دسر', 'icon' => 'cake'],
+        ['id' => 5, 'name' => 'نوشیدنی خنک', 'icon' => 'glass-water'],
+        ['id' => 6, 'name' => 'صبحانه و غذا', 'icon' => 'egg']
+    ];
+}
+
+if (empty($products)) {
+    $products = [
+        ['id' => 1, 'category_id' => 1, 'category_name' => 'قهوه گرم', 'name' => 'اسپرسو دوبل', 'price' => 45000, 'discount' => 0, 'description' => 'اسپرسو ۱۰۰٪ عربیکا با طعم عمیق و بادی قوی', 'ingredients' => 'دبل شات قهوه عربیکا', 'image' => 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&q=80&w=600', 'is_available' => 1, 'is_popular' => 1, 'is_new' => 0, 'is_visible' => 1, 'sort_order' => 1],
+        ['id' => 2, 'category_id' => 1, 'category_name' => 'قهوه گرم', 'name' => 'کاپوچینو', 'price' => 55000, 'discount' => 10, 'description' => 'اسپرسو به همراه شیر گرم و فوم غلیظ شیر', 'ingredients' => 'اسپرسو، شیر، فوم شیر، پودر کاکائو', 'image' => 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&q=80&w=600', 'is_available' => 1, 'is_popular' => 0, 'is_new' => 0, 'is_visible' => 1, 'sort_order' => 2],
+        ['id' => 3, 'category_id' => 1, 'category_name' => 'قهوه گرم', 'name' => 'لاته آرت', 'price' => 58000, 'discount' => 0, 'description' => 'ترکیب بی‌نظیر اسپرسو و شیر مخملی با طراحی زیبا', 'ingredients' => 'اسپرسو، شیر، فوم شیر', 'image' => 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&q=80&w=600', 'is_available' => 1, 'is_popular' => 1, 'is_new' => 1, 'is_visible' => 1, 'sort_order' => 3],
+        ['id' => 4, 'category_id' => 2, 'category_name' => 'قهوه سرد', 'name' => 'آیس لاته', 'price' => 60000, 'discount' => 0, 'description' => 'نسخه خنک قهوه لاته به همراه تکه‌های یخ', 'ingredients' => 'اسپرسو، شیر سرد، یخ', 'image' => 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=600', 'is_available' => 1, 'is_popular' => 0, 'is_new' => 0, 'is_visible' => 1, 'sort_order' => 1],
+        ['id' => 5, 'category_id' => 2, 'category_name' => 'قهوه سرد', 'name' => 'اسپرسو تونیک', 'price' => 65000, 'discount' => 15, 'description' => 'نوشیدنی گازدار خنک و انرژی‌بخش ترکیبی', 'ingredients' => 'اسپرسو، آب تونیک، لیمو، یخ', 'image' => 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&q=80&w=600', 'is_available' => 1, 'is_popular' => 1, 'is_new' => 1, 'is_visible' => 1, 'sort_order' => 2],
+        ['id' => 6, 'category_id' => 4, 'category_name' => 'کیک و دسر', 'name' => 'کیک شکلاتی بی‌بی', 'price' => 52000, 'discount' => 0, 'description' => 'کیک شکلاتی کلاسیک فوق‌العاده مرطوب با سس شکلات داغ', 'ingredients' => 'آرد، کاکائو، خامه، سس شکلات', 'image' => 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=600', 'is_available' => 1, 'is_popular' => 1, 'is_new' => 0, 'is_visible' => 1, 'sort_order' => 1],
+        ['id' => 7, 'category_id' => 4, 'category_name' => 'کیک و دسر', 'name' => 'چیزکیک نیویورکی', 'price' => 58000, 'discount' => 5, 'description' => 'چیزکیک پخته غلیظ با کراست بیسکویت و سس تمشک', 'ingredients' => 'پنیر خامه‌ای، بیسکویت، سس تمشک', 'image' => 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=600', 'is_available' => 1, 'is_popular' => 0, 'is_new' => 1, 'is_visible' => 1, 'sort_order' => 2]
+    ];
 }
 ?>
 
@@ -301,74 +324,84 @@ if ($pdo) {
                     <label class="block text-xs font-bold text-stone-400 mb-2">نوع تحویل سفارش</label>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="cursor-pointer">
-                            <input type="radio" name="order_type" value="outdoor" checked onchange="toggleOrderTypeFields('outdoor')" class="peer sr-only">
-                            <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
-                                <i data-lucide="truck" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
-                                غیرحضوری (ارسال)
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="order_type" value="indoor" onchange="toggleOrderTypeFields('indoor')" class="peer sr-only">
+                            <input type="radio" name="order_type" value="indoor" checked onchange="toggleOrderTypeFields('indoor')" class="peer sr-only">
                             <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
                                 <i data-lucide="coffee" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
                                 حضوری در کافه
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="order_type" value="outdoor" onchange="toggleOrderTypeFields('outdoor')" class="peer sr-only">
+                            <div class="p-3 text-center border-2 border-stone-200 dark:border-stone-800 rounded-2xl font-bold text-sm text-stone-600 dark:text-stone-300 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
+                                <i data-lucide="truck" class="w-5 h-5 mx-auto mb-1 text-inherit"></i>
+                                غیرحضوری (ارسال)
                             </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- فیلدهای پویا بر اساس نوع سفارش -->
-                <!-- فیلدهای سفارش حضوری (مطابق پروپوزال مشتری) -->
-                <div id="indoorFields" class="space-y-4 hidden">
+                <!-- فیلدهای سفارش حضوری (در کافه) -->
+                <div id="indoorFields" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">شماره میز *</label>
+                            <select name="table_number" id="indoor_table" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                                <option value="میز ۱">میز ۱</option>
+                                <option value="میز ۲">میز ۲</option>
+                                <option value="میز ۳">میز ۳</option>
+                                <option value="میز ۴">میز ۴</option>
+                                <option value="میز ۵">میز ۵</option>
+                                <option value="میز ۶">میز ۶</option>
+                                <option value="میز ۷">میز ۷</option>
+                                <option value="میز ۸">میز ۸</option>
+                                <option value="سالن کافه">سالن کافه / عمومی</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام سفارش‌دهنده *</label>
+                            <input type="text" name="first_name" id="indoor_first_name" placeholder="نام شما" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">توضیحات و سفارش ویژه</label>
+                        <textarea name="description_indoor" id="indoor_desc" placeholder="توضیحات سفارش، کم شکر، بدون نی و..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
+                    </div>
+                </div>
+
+                <!-- فیلدهای سفارش غیرحضوری (ارسال با پیک) -->
+                <div id="outdoorFields" class="space-y-4 hidden">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام *</label>
-                            <input type="text" name="first_name" id="indoor_first_name" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                            <input type="text" name="outdoor_name" id="outdoor_name_input" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام خانوادگی *</label>
-                            <input type="text" name="last_name" id="indoor_last_name" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
+                            <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">شماره موبایل *</label>
+                            <input type="text" name="phone" id="outdoor_phone" placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-right dir-ltr">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">شماره موبایل *</label>
-                        <input type="text" name="phone" id="indoor_phone" placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-right dir-ltr">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">آدرس کامل *</label>
-                        <textarea name="address" id="indoor_address" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
+                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">آدرس دقیق تحویل *</label>
+                        <textarea name="address" id="outdoor_address" placeholder="نام خیابان، کوچه، پلاک..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">پلاک *</label>
-                            <input type="text" name="plaque" id="indoor_plaque" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <input type="text" name="plaque" id="outdoor_plaque" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">طبقه *</label>
-                            <input type="text" name="floor" id="indoor_floor" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <input type="text" name="floor" id="outdoor_floor" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">واحد *</label>
-                            <input type="text" name="unit" id="indoor_unit" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
+                            <input type="text" name="unit" id="outdoor_unit" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary text-center">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">توضیحات</label>
-                        <textarea name="description_indoor" id="indoor_desc" placeholder="توضیحات سفارش، قاشق چنگال اضافه و..." rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
-                    </div>
-                </div>
-
-                <!-- فیلدهای سفارش غیرحضوری -->
-                <div id="outdoorFields" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">نام *</label>
-                        <input type="text" name="outdoor_name" id="outdoor_name_input" required class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary">
-                    </div>
-                    <!-- شماره موبایل حذف شده است و مقدار پیش‌فرض ارسال می‌شود -->
-                    <input type="hidden" name="outdoor_phone" id="outdoor_phone_input" value="09000000000">
-                    <div>
-                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">توضیحات</label>
-                        <textarea name="description_outdoor" id="outdoor_desc_input" placeholder="مثلاً: لاته بدون شکر باشد" rows="3" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
+                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1.5">توضیحات پیک</label>
+                        <textarea name="description_outdoor" id="outdoor_desc_input" placeholder="مثلاً: زنگ واحد ۳ زده شود" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-white text-sm focus:outline-none focus:border-primary"></textarea>
                     </div>
                 </div>
 
@@ -568,54 +601,39 @@ if ($pdo) {
     }
 
     /**
-     * سوئیچ فیلدهای نوع سفارش بر اساس حضوری/غیرحضوری (مطابق پروپوزال مشتری)
+     * سوئیچ فیلدهای نوع سفارش بر اساس حضوری/غیرحضوری
      */
     function toggleOrderTypeFields(type) {
         const indoor = document.getElementById('indoorFields');
         const outdoor = document.getElementById('outdoorFields');
         
-        // دریافت تمام اینپوت‌های موردنیاز
         const indoorFirst = document.getElementById('indoor_first_name');
-        const indoorLast = document.getElementById('indoor_last_name');
-        const indoorPhone = document.getElementById('indoor_phone');
-        const indoorAddr = document.getElementById('indoor_address');
-        const indoorPlaq = document.getElementById('indoor_plaque');
-        const indoorFloor = document.getElementById('indoor_floor');
-        const indoorUnit = document.getElementById('indoor_unit');
+        const indoorTable = document.getElementById('indoor_table');
 
         const outdoorName = document.getElementById('outdoor_name_input');
-        const outdoorPhone = document.getElementById('outdoor_phone_input');
+        const outdoorPhone = document.getElementById('outdoor_phone');
+        const outdoorAddress = document.getElementById('outdoor_address');
 
         if (type === 'indoor') {
             indoor.classList.remove('hidden');
             outdoor.classList.add('hidden');
             
-            // مدیریت مقادیر Required
-            indoorFirst.required = true;
-            indoorLast.required = true;
-            indoorPhone.required = true;
-            indoorAddr.required = true;
-            indoorPlaq.required = true;
-            indoorFloor.required = true;
-            indoorUnit.required = true;
+            if (indoorFirst) indoorFirst.required = true;
+            if (indoorTable) indoorTable.required = true;
 
-            outdoorName.required = false;
-            outdoorPhone.required = false;
+            if (outdoorName) outdoorName.required = false;
+            if (outdoorPhone) outdoorPhone.required = false;
+            if (outdoorAddress) outdoorAddress.required = false;
         } else {
             indoor.classList.add('hidden');
             outdoor.classList.remove('hidden');
 
-            // مدیریت مقادیر Required
-            indoorFirst.required = false;
-            indoorLast.required = false;
-            indoorPhone.required = false;
-            indoorAddr.required = false;
-            indoorPlaq.required = false;
-            indoorFloor.required = false;
-            indoorUnit.required = false;
+            if (indoorFirst) indoorFirst.required = false;
+            if (indoorTable) indoorTable.required = false;
 
-            outdoorName.required = true;
-            outdoorPhone.required = true;
+            if (outdoorName) outdoorName.required = true;
+            if (outdoorPhone) outdoorPhone.required = true;
+            if (outdoorAddress) outdoorAddress.required = true;
         }
     }
 

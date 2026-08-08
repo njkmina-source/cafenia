@@ -29,43 +29,43 @@ if (empty($cart) || !is_array($cart)) {
     exit;
 }
 
-// اعتبارسنجی فیلدها بر اساس نوع سفارش (مطابق پروپوزال مشتری)
+// اعتبارسنجی فیلدها بر اساس نوع سفارش
 if ($order_type === 'indoor') {
-    // حضوری در کافه
+    // سفارش حضوری در کافه
     $first_name = trim($_POST['first_name'] ?? '');
-    $last_name = trim($_POST['last_name'] ?? '');
-    $customer_name = $first_name . ' ' . $last_name;
+    $table_number = trim($_POST['table_number'] ?? 'میز عمومی');
+    $customer_name = !empty($first_name) ? $first_name : 'مشتری حضوری';
+    $customer_phone = '09000000000';
+    $address = 'تحویل حضوری - ' . $table_number;
+    $plaque = $table_number;
+    $floor = '';
+    $unit = '';
+    $description = trim($_POST['description_indoor'] ?? '');
+
+    if (empty($first_name)) {
+        echo json_encode(['status' => 'error', 'message' => 'لطفاً نام سفارش‌دهنده را وارد کنید.']);
+        exit;
+    }
+} else {
+    // سفارش غیرحضوری (ارسال با پیک)
+    $customer_name = trim($_POST['outdoor_name'] ?? '');
     $customer_phone = trim($_POST['phone'] ?? '');
     $address = trim($_POST['address'] ?? '');
     $plaque = trim($_POST['plaque'] ?? '');
     $floor = trim($_POST['floor'] ?? '');
     $unit = trim($_POST['unit'] ?? '');
-    $description = trim($_POST['description_indoor'] ?? '');
-
-    if (empty($first_name) || empty($last_name) || empty($customer_phone) || empty($address) || empty($plaque) || empty($floor) || empty($unit)) {
-        echo json_encode(['status' => 'error', 'message' => 'خواهشمند است تمامی فیلدهای الزامی سفارش حضوری را تکمیل کنید.']);
-        exit;
-    }
-} else {
-    // غیرحضوری
-    $customer_name = trim($_POST['outdoor_name'] ?? '');
-    $customer_phone = '09000000000'; // شماره پیش‌فرض غیرحضوری به علت حذف فیلد موبایل طبق درخواست کاربر
     $description = trim($_POST['description_outdoor'] ?? '');
-    $address = '';
-    $plaque = '';
-    $floor = '';
-    $unit = '';
 
-    if (empty($customer_name)) {
-        echo json_encode(['status' => 'error', 'message' => 'لطفاً نام خود را وارد نمایید.']);
+    if (empty($customer_name) || empty($customer_phone) || empty($address)) {
+        echo json_encode(['status' => 'error', 'message' => 'لطفاً تمامی فیلدهای الزامی (نام، شماره تماس و آدرس) را وارد نمایید.']);
         exit;
     }
-}
 
-// بررسی درستی شماره موبایل ایران
-if (!preg_match('/^09[0-9]{9}$/', $customer_phone)) {
-    echo json_encode(['status' => 'error', 'message' => 'فرمت شماره موبایل نامعتبر است (مثال: 09123456789)']);
-    exit;
+    // بررسی درستی شماره موبایل ایران
+    if (!preg_match('/^09[0-9]{9}$/', $customer_phone)) {
+        echo json_encode(['status' => 'error', 'message' => 'فرمت شماره موبایل نامعتبر است (مثال: 09123456789)']);
+        exit;
+    }
 }
 
 // بررسی اتصال فعال پایگاه داده

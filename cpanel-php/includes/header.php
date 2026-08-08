@@ -2,11 +2,15 @@
 /**
  * هدر استاندارد منوی دیجیتال کافه
  */
-require_once __DIR__ . '/../config/config.php';
+if (file_exists(__DIR__ . '/../config/config.php')) {
+    require_once __DIR__ . '/../config/config.php';
+} else {
+    require_once __DIR__ . '/../config/config.example.php';
+}
 $settings = getSettings();
 ?>
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" class="scroll-smooth">
+<html lang="fa" dir="rtl" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,9 +25,9 @@ $settings = getSettings();
             theme: {
                 extend: {
                     colors: {
-                        primary: '<?php echo $settings['primary_color'] ?: "#8B5A2B"; ?>',
-                        secondary: '<?php echo $settings['secondary_color'] ?: "#D2B48C"; ?>',
-                        accent: '#E6C229',
+                        primary: '<?php echo $settings['primary_color'] ?: "#c49b63"; ?>',
+                        secondary: '<?php echo $settings['secondary_color'] ?: "#b28b58"; ?>',
+                        accent: '#c49b63',
                     },
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
