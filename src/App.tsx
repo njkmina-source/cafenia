@@ -2355,89 +2355,93 @@ export default function App() {
         </>
       )}
 
-      {/* مودال پاپ‌آپ اختصاصی و مدرن موفقیت ثبت سفارش */}
+      {/* مودال پاپ‌آپ اختصاصی، مدرن و ۱۰۰٪ ریسپانسیو موفقیت ثبت سفارش */}
       {successOrderModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#181512] border border-[#c49b63]/30 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-center overflow-hidden animate-scale-up">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/80 backdrop-blur-md animate-fade-in overflow-y-auto">
+          <div className="bg-[#181512] border border-[#c49b63]/30 rounded-3xl p-5 sm:p-7 md:p-8 max-w-sm sm:max-w-md w-full my-auto shadow-2xl relative text-center overflow-hidden animate-scale-up max-h-[92vh] flex flex-col">
             {/* نور پس‌زمینه تزئینی */}
-            <div className="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#c49b63]/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -top-24 -left-24 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-24 -right-24 w-44 h-44 bg-[#c49b63]/10 rounded-full blur-3xl pointer-events-none"></div>
 
             {/* دکمه بستن گوشه پنجره */}
             <button 
               onClick={() => setSuccessOrderModal(null)} 
-              className="absolute top-4 left-4 p-2 rounded-full text-white/40 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+              className="absolute top-3.5 left-3.5 sm:top-4 sm:left-4 p-2 rounded-full text-white/40 hover:text-white hover:bg-white/5 transition-colors cursor-pointer z-10"
               title="بستن"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* آیکون تایید جشن و موفقیت */}
-            <div className="relative w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-5 ring-8 ring-emerald-500/5">
-              <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+            <div className="overflow-y-auto pr-0.5 space-y-4 sm:space-y-5">
+              {/* آیکون تایید جشن و موفقیت */}
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center ring-4 sm:ring-8 ring-emerald-500/5 shrink-0">
+                <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-400" />
+              </div>
+
+              <div>
+                <h3 className="text-lg sm:text-2xl font-black text-white mb-1.5 sm:mb-2">سفارش شما با موفقیت ثبت شد!</h3>
+                <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
+                  سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.
+                </p>
+              </div>
+
+              {/* کادر کد سفارش با امکان کپی مستقیم */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 sm:p-4 text-right space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-white/50">کد پیگیری اختصاصی:</span>
+                  <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ${
+                    successOrderModal.order_type === 'indoor' ? 'bg-[#c49b63]/20 text-[#c49b63]' : 'bg-blue-500/20 text-blue-400'
+                  }`}>
+                    {successOrderModal.order_type === 'indoor' ? 'حضوری در کافه' : 'غیرحضوری (ارسال با پیک)'}
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 bg-black/40 p-2.5 sm:p-3 rounded-xl border border-white/10">
+                  <span className="text-base sm:text-lg font-mono font-black text-white tracking-wider dir-ltr select-all text-center sm:text-right py-0.5">
+                    {successOrderModal.order_code}
+                  </span>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(successOrderModal.order_code);
+                      setIsCopiedOrderCode(true);
+                      showNotification('کد سفارش با موفقیت در کلیپ‌بورد کپی شد.', 'success');
+                      setTimeout(() => setIsCopiedOrderCode(false), 2500);
+                    }}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer shrink-0 active:scale-95"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{isCopiedOrderCode ? 'کپی شد! ✓' : 'کپی کد'}</span>
+                  </button>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/70">
+                  <span className="text-white/40 font-medium">سفارش‌دهنده:</span>
+                  <span className="font-bold text-white truncate max-w-[180px]">{successOrderModal.customer_name}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-white/70">
+                  <span className="text-white/40 font-medium">مبلغ کل فاکتور:</span>
+                  <span className="font-black text-emerald-400">{toPersianDigits(successOrderModal.total_amount?.toLocaleString())} تومان</span>
+                </div>
+              </div>
+
+              {/* پیام راهنما */}
+              <div className="flex items-start gap-2 sm:gap-2.5 p-2.5 sm:p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] sm:text-xs text-right leading-relaxed">
+                <Info className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                <p>خواهشمند است جهت تحویل سفارش در کافه یا هماهنگی با پیک، کد سفارش بالا را به همراه داشته باشید.</p>
+              </div>
+
+              {/* دکمه تایید و بستن */}
+              <button 
+                type="button" 
+                onClick={() => setSuccessOrderModal(null)} 
+                className="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black font-black py-3 sm:py-3.5 px-5 sm:px-6 rounded-2xl shadow-lg shadow-[#c49b63]/20 flex items-center justify-center gap-2 text-sm sm:text-base transition-all cursor-pointer active:scale-98 accent-glow"
+              >
+                <Check className="w-5 h-5" />
+                <span>تأیید و بازگشت به منو</span>
+              </button>
             </div>
-
-            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">سفارش شما با موفقیت ثبت شد!</h3>
-            <p className="text-xs sm:text-sm text-white/60 mb-6 leading-relaxed">
-              سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.
-            </p>
-
-            {/* کادر کد سفارش با امکان کپی مستقیم */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-5 text-right space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white/50">کد پیگیری اختصاصی:</span>
-                <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
-                  successOrderModal.order_type === 'indoor' ? 'bg-[#c49b63]/20 text-[#c49b63]' : 'bg-blue-500/20 text-blue-400'
-                }`}>
-                  {successOrderModal.order_type === 'indoor' ? 'حضوری در کافه' : 'غیرحضوری (ارسال با پیک)'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between gap-2 bg-black/40 p-2.5 sm:p-3 rounded-xl border border-white/10">
-                <span className="text-base sm:text-lg font-mono font-black text-white tracking-wider dir-ltr select-all">
-                  {successOrderModal.order_code}
-                </span>
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    navigator.clipboard.writeText(successOrderModal.order_code);
-                    setIsCopiedOrderCode(true);
-                    showNotification('کد سفارش با موفقیت در کلیپ‌بورد کپی شد.', 'success');
-                    setTimeout(() => setIsCopiedOrderCode(false), 2500);
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{isCopiedOrderCode ? 'کپی شد! ✓' : 'کپی کد'}</span>
-                </button>
-              </div>
-
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/70">
-                <span className="text-white/40 font-medium">سفارش‌دهنده:</span>
-                <span className="font-bold text-white">{successOrderModal.customer_name}</span>
-              </div>
-
-              <div className="flex items-center justify-between text-xs text-white/70">
-                <span className="text-white/40 font-medium">مبلغ کل فاکتور:</span>
-                <span className="font-black text-emerald-400">{toPersianDigits(successOrderModal.total_amount?.toLocaleString())} تومان</span>
-              </div>
-            </div>
-
-            {/* پیام راهنما */}
-            <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs text-right mb-6">
-              <Info className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
-              <p className="leading-relaxed">خواهشمند است جهت تحویل سفارش در کافه یا هماهنگی با پیک، کد سفارش بالا را به همراه داشته باشید.</p>
-            </div>
-
-            {/* دکمه تایید و بستن */}
-            <button 
-              type="button" 
-              onClick={() => setSuccessOrderModal(null)} 
-              className="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black font-black py-3.5 px-6 rounded-2xl shadow-lg shadow-[#c49b63]/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98 accent-glow"
-            >
-              <Check className="w-5 h-5" />
-              <span>تأیید و بازگشت به منو</span>
-            </button>
           </div>
         </div>
       )}

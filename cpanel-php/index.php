@@ -235,7 +235,7 @@ if (empty($products)) {
 </div>
 
 <!-- دکمه سبد خرید شناور لوکس فیکسد و ۱۰۰٪ واکنش‌گرا هماهنگ با تم سایت -->
-<button onclick="openCartModal()" id="floatingCartBtn" class="fixed bottom-6 left-6 z-40 bg-primary hover:opacity-95 text-white font-black py-3.5 px-5 md:py-4 md:px-6 rounded-full shadow-[rgba(139,90,43,0.35)_0px_8px_32px] flex items-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer hidden" title="مشاهده سبد خرید و ثبت نهایی">
+<button onclick="openCartModal()" id="floatingCartBtn" class="fixed bottom-4 sm:bottom-6 left-4 right-4 sm:right-auto sm:left-6 z-40 bg-primary hover:opacity-95 text-white font-black py-3.5 px-5 sm:px-6 rounded-full shadow-[rgba(139,90,43,0.35)_0px_8px_32px] flex items-center justify-center sm:justify-start gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer hidden" title="مشاهده سبد خرید و ثبت نهایی">
     <i data-lucide="shopping-bag" class="w-5 h-5 shrink-0"></i>
     <span class="text-xs md:text-sm">مشاهده سبد خرید</span>
     <span id="floatingCartCount" class="bg-white text-primary text-[10px] font-black w-5.5 h-5.5 rounded-full flex items-center justify-center shadow-sm shrink-0 font-mono">0</span>
@@ -417,65 +417,69 @@ if (empty($products)) {
     </div>
 </div>
 
-<!-- مودال پاپ‌آپ مدرن و شکیل موفقیت ثبت سفارش -->
-<div id="orderSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/70 backdrop-blur-md hidden transition-all duration-300">
-    <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-center overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="orderSuccessModalCard">
+<!-- مودال پاپ‌آپ مدرن، شکیل و ۱۰۰٪ ریسپانسیو موفقیت ثبت سفارش -->
+<div id="orderSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-stone-950/80 backdrop-blur-md hidden transition-all duration-300 overflow-y-auto">
+    <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-5 sm:p-7 md:p-8 max-w-sm sm:max-w-md w-full my-auto shadow-2xl relative text-center overflow-hidden transform transition-all duration-300 scale-95 opacity-0 max-h-[92vh] flex flex-col" id="orderSuccessModalCard">
         <!-- نور پس‌زمینه تزئینی -->
-        <div class="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-24 -left-24 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- دکمه بستن ضربدر گوشه بالا -->
-        <button type="button" onclick="closeOrderSuccessModal()" class="absolute top-4 left-4 p-2 rounded-full text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer" title="بستن">
+        <button type="button" onclick="closeOrderSuccessModal()" class="absolute top-3.5 left-3.5 sm:top-4 sm:left-4 p-2 rounded-full text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer z-10" title="بستن">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
 
-        <!-- آیکون تایید جشن و موفقیت -->
-        <div class="relative w-20 h-20 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-500 flex items-center justify-center mb-5 ring-8 ring-emerald-500/10">
-            <i data-lucide="check-circle-2" class="w-10 h-10 text-emerald-500"></i>
+        <div class="overflow-y-auto pr-0.5 space-y-4 sm:space-y-5">
+            <!-- آیکون تایید جشن و موفقیت -->
+            <div class="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-500 flex items-center justify-center ring-4 sm:ring-8 ring-emerald-500/10 shrink-0">
+                <i data-lucide="check-circle-2" class="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500"></i>
+            </div>
+
+            <div>
+                <h3 class="text-lg sm:text-2xl font-black text-stone-900 dark:text-white mb-1.5 sm:mb-2">سفارش شما با موفقیت ثبت شد!</h3>
+                <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
+                    سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.
+                </p>
+            </div>
+
+            <!-- کادر کد سفارش با امکان کپی مستقیم -->
+            <div class="bg-stone-50 dark:bg-stone-850 border border-stone-200 dark:border-stone-750 rounded-2xl p-3.5 sm:p-4 text-right space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-bold text-stone-500 dark:text-stone-400">کد پیگیری اختصاصی:</span>
+                    <span id="successModalTypeBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">حضوری در کافه</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 bg-white dark:bg-stone-900 p-2.5 sm:p-3 rounded-xl border border-stone-200 dark:border-stone-700">
+                    <span id="successModalOrderCode" class="text-base sm:text-lg font-mono font-black text-stone-900 dark:text-white tracking-wider dir-ltr select-all text-center sm:text-right py-0.5">CAFE-1405-XXXX</span>
+                    <button type="button" onclick="copySuccessOrderCode()" id="copyOrderCodeBtn" class="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 text-xs font-bold transition-all cursor-pointer shrink-0 active:scale-95">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span id="copyBtnText">کپی کد</span>
+                    </button>
+                </div>
+
+                <div class="pt-2 border-t border-stone-200/60 dark:border-stone-700/60 flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
+                    <span class="text-stone-400 font-medium">سفارش‌دهنده:</span>
+                    <span id="successModalCustomerName" class="font-bold text-stone-800 dark:text-white truncate max-w-[180px]">-</span>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
+                    <span class="text-stone-400 font-medium">مبلغ کل فاکتور:</span>
+                    <span id="successModalTotalAmount" class="font-black text-emerald-600 dark:text-emerald-400">-</span>
+                </div>
+            </div>
+
+            <!-- پیام راهنما -->
+            <div class="flex items-start gap-2 sm:gap-2.5 p-2.5 sm:p-3 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-900/50 text-amber-900 dark:text-amber-300 text-[11px] sm:text-xs text-right leading-relaxed">
+                <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400"></i>
+                <p>خواهشمند است جهت تحویل سفارش در کافه یا هماهنگی با پیک، کد سفارش بالا را به همراه داشته باشید.</p>
+            </div>
+
+            <!-- دکمه تایید و بستن -->
+            <button type="button" onclick="closeOrderSuccessModal()" class="w-full bg-primary hover:bg-primary/90 text-stone-900 font-black py-3 sm:py-3.5 px-5 sm:px-6 rounded-2xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 text-sm sm:text-base transition-all cursor-pointer active:scale-98">
+                <i data-lucide="check" class="w-5 h-5"></i>
+                <span>تأیید و بازگشت به منو</span>
+            </button>
         </div>
-
-        <h3 class="text-xl sm:text-2xl font-black text-stone-900 dark:text-white mb-2">سفارش شما با موفقیت ثبت شد!</h3>
-        <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mb-6 leading-relaxed">
-            سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.
-        </p>
-
-        <!-- کادر کد سفارش با امکان کپی مستقیم -->
-        <div class="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700/80 rounded-2xl p-4 mb-5 text-right space-y-3">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-stone-500 dark:text-stone-400">کد پیگیری اختصاصی:</span>
-                <span id="successModalTypeBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">حضوری در کافه</span>
-            </div>
-
-            <div class="flex items-center justify-between gap-2 bg-white dark:bg-stone-900 p-2.5 sm:p-3 rounded-xl border border-stone-200 dark:border-stone-700">
-                <span id="successModalOrderCode" class="text-base sm:text-lg font-mono font-black text-stone-900 dark:text-white tracking-wider dir-ltr select-all">CAFE-1405-XXXX</span>
-                <button type="button" onclick="copySuccessOrderCode()" id="copyOrderCodeBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 text-xs font-bold transition-all cursor-pointer">
-                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                    <span id="copyBtnText">کپی کد</span>
-                </button>
-            </div>
-
-            <div class="pt-2 border-t border-stone-200/60 dark:border-stone-700/60 flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
-                <span class="text-stone-400 font-medium">سفارش‌دهنده:</span>
-                <span id="successModalCustomerName" class="font-bold text-stone-800 dark:text-white">-</span>
-            </div>
-
-            <div class="flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
-                <span class="text-stone-400 font-medium">مبلغ کل فاکتور:</span>
-                <span id="successModalTotalAmount" class="font-black text-emerald-600 dark:text-emerald-400">-</span>
-            </div>
-        </div>
-
-        <!-- پیام راهنما -->
-        <div class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 text-amber-800 dark:text-amber-300 text-xs text-right mb-6">
-            <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400"></i>
-            <p class="leading-relaxed">خواهشمند است جهت تحویل سفارش در کافه یا هماهنگی با پیک، کد سفارش بالا را به همراه داشته باشید.</p>
-        </div>
-
-        <!-- دکمه تایید و بستن -->
-        <button type="button" onclick="closeOrderSuccessModal()" class="w-full bg-primary hover:bg-primary/90 text-stone-900 font-black py-3.5 px-6 rounded-2xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98">
-            <i data-lucide="check" class="w-5 h-5"></i>
-            <span>تأیید و بازگشت به منو</span>
-        </button>
     </div>
 </div>
 

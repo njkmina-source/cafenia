@@ -138,7 +138,8 @@ try {
     echo json_encode([
         'status' => 'success',
         'message' => 'سفارش شما با موفقیت ثبت گردید و در صف آماده‌سازی قرار گرفت.',
-        'order_code' => $order_code
+        'order_code' => $order_code,
+        'total_amount' => $total_amount
     ]);
 
 } catch (Exception $e) {

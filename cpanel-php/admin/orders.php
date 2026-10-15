@@ -273,8 +273,11 @@ if ($pdo) {
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <span class="px-2 py-1 rounded bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-bold">
+                                    <span class="px-2 py-1 rounded bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-bold inline-block mb-1">
                                         <?php echo $isIndoor ? 'حضوری' : 'غیرحضوری'; ?>
+                                    </span>
+                                    <span class="text-[10px] text-stone-400 block max-w-[150px] truncate" title="<?php echo sanitize($order['address']); ?>">
+                                        <?php echo $isIndoor ? sanitize($order['plaque'] ?: $order['address']) : sanitize($order['address'] ?: 'بدون آدرس'); ?>
                                     </span>
                                 </td>
                                 <td class="p-4 font-black text-emerald-600"><?php echo number_format($order['total_amount']); ?> تومان</td>

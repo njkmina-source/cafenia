@@ -323,7 +323,7 @@ if ($pdo) {
                         </div>
                         <div class="text-xs font-semibold text-stone-600 dark:text-stone-300 space-y-1">
                             <p>مشتری: <span class="font-bold text-stone-900 dark:text-white">${order.customer_name}</span> (${order.customer_phone})</p>
-                            ${isIndoor ? `<p class="text-amber-700 dark:text-amber-500">آدرس: ${order.address} - پلاک: ${order.plaque} / طبقه: ${order.floor} / واحد: ${order.unit}</p>` : ''}
+                            ${isIndoor ? `<p class="text-amber-700 dark:text-amber-500 font-bold">📍 تحویل حضوری: ${order.plaque || order.address}</p>` : `<p class="text-stone-600 dark:text-stone-300">📍 آدرس ارسال: ${order.address || 'آدرس ثبت نشده'} ${order.plaque ? `(پلاک ${order.plaque})` : ''} ${order.floor ? `(طبقه ${order.floor})` : ''} ${order.unit ? `(واحد ${order.unit})` : ''}</p>`}
                             ${order.description ? `<p class="text-stone-400">توضیح: ${order.description}</p>` : ''}
                         </div>
                         <!-- اقلام فاکتور -->
