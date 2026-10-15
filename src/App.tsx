@@ -6,7 +6,7 @@ import {
   BarChart3, LogOut, ShieldAlert, Printer, FileSpreadsheet, 
   Folder, File, Download, ChevronRight, Play, RefreshCw, 
   ExternalLink, Copy, CheckCircle2, AlertTriangle, Info, Star,
-  Pencil, Lock, Upload, Package, X, Bell, BellRing
+  Pencil, Lock, Upload, Package, X
 } from 'lucide-react';
 import JSZip from 'jszip';
 
@@ -401,79 +401,6 @@ export default function App() {
   const [adminPass, setAdminPass] = useState('');
 
   const [adminAlerts, setAdminAlerts] = useState<{ id: string; message: string; code: string }[]>([]);
-
-  // مدیریت وضعیت نوتیفیکیشن مرورگر اختصاصی ادمین (Web Notification API)
-  const [browserNotificationPermission, setBrowserNotificationPermission] = useState<NotificationPermission>(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      return Notification.permission;
-    }
-    return 'default';
-  });
-
-  const requestBrowserNotificationPermission = () => {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
-      showNotification('این مرورگر از نوتیفیکیشن دسکتاپ پشتیبانی نمی‌کند.', 'error');
-      return;
-    }
-
-    Notification.requestPermission().then(permission => {
-      setBrowserNotificationPermission(permission);
-      if (permission === 'granted') {
-        showNotification('نوتیفیکیشن مرورگر برای ادمین فعال شد.', 'success');
-        sendTestAdminBrowserNotification();
-      } else if (permission === 'denied') {
-        showNotification('دسترسی نوتیفیکیشن در مرورگر مسدود شده است.', 'error');
-      }
-    });
-  };
-
-  const sendTestAdminBrowserNotification = () => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return;
-    if (Notification.permission === 'granted') {
-      try {
-        const n = new Notification('☕ کافه گالری: سیستم اعلان مرورگر فعال است', {
-          body: 'از این پس به محض ثبت هر سفارش توسط مشتریان، نوتیفیکیشن فوری در مرورگر شما ظاهر می‌شود.',
-          icon: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=128&auto=format&fit=crop&q=80',
-          tag: 'cafe-test-notification'
-        });
-        n.onclick = () => {
-          window.focus();
-          n.close();
-        };
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
-
-  const sendAdminBrowserNotification = (order: any) => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return;
-    if (Notification.permission === 'granted') {
-      try {
-        const isIndoor = order.order_type === 'indoor';
-        const typeInfo = isIndoor 
-          ? (order.plaque ? `(میز ${toPersianDigits(order.plaque)})` : 'حضوری در کافه') 
-          : 'غیرحضوری (پیک)';
-        const title = `🔔 سفارش جدید: ${order.order_code}`;
-        const body = `مشتری: ${order.customer_name} ${typeInfo}\nمبلغ: ${toPersianDigits(order.total_amount?.toLocaleString())} تومان`;
-        
-        const n = new Notification(title, {
-          body,
-          icon: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=128&auto=format&fit=crop&q=80',
-          badge: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=96&auto=format&fit=crop&q=80',
-          tag: `order-${order.order_code}`,
-          requireInteraction: true
-        });
-
-        n.onclick = () => {
-          window.focus();
-          n.close();
-        };
-      } catch (err) {
-        console.error('Browser notification error:', err);
-      }
-    }
-  };
   
   // ذخیره کدهای سفارش‌های دیده شده توسط ادمین در لوکال استوریج جهت عدم تکرار آلارم پس از ورودهای مکرر
   const [acknowledgedCodes, setAcknowledgedCodes] = useState<string[]>(() => {
@@ -502,7 +429,6 @@ export default function App() {
       if (unacknowledged.length > 0) {
         unacknowledged.forEach(o => {
           playNotificationSound();
-          sendAdminBrowserNotification(o); // ارسال نوتیفیکیشن مرورگر اختصاصی برای ادمین
           setAdminAlerts(prev => {
             if (prev.some(a => a.id === o.order_code)) return prev;
             return [
@@ -578,7 +504,6 @@ export default function App() {
 
     setOrders([simOrder, ...orders]);
     playNotificationSound();
-    sendAdminBrowserNotification(simOrder);
     showNotification(`سفارش جدید دریافت شد: ${code}`, 'success');
   };
 
@@ -1365,32 +1290,7 @@ export default function App() {
                     <h2 className="text-xl font-black text-white">میز کار مانیتورینگ زنده</h2>
                     <p className="text-xs text-white/50 mt-1">سفارشات جدید ثبت شده مشتری به محض دریافت در اینجا نمایش داده خواهند شد</p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {/* کنترل نوتیفیکیشن مرورگر اختصاصی ادمین */}
-                    {browserNotificationPermission === 'granted' ? (
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-sm">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <Bell className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>اعلان مرورگر فعال است</span>
-                        <button 
-                          onClick={sendTestAdminBrowserNotification} 
-                          className="mr-1 text-[10px] text-emerald-300 underline hover:text-white cursor-pointer"
-                          title="ارسال یک نوتیفیکیشن تستی به مرورگر"
-                        >
-                          تست
-                        </button>
-                      </div>
-                    ) : (
-                      <button 
-                        onClick={requestBrowserNotificationPermission}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#c49b63] hover:bg-[#b28b58] text-black text-xs font-black transition-all shadow-md cursor-pointer animate-pulse accent-glow"
-                        title="فعال‌سازی دریافت اعلان سیستم در صورت ثبت سفارش جدید"
-                      >
-                        <BellRing className="w-3.5 h-3.5" />
-                        <span>فعال‌سازی نوتیفیکیشن مرورگر</span>
-                      </button>
-                    )}
-
+                  <div className="flex items-center gap-2">
                     <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-center shadow-sm shrink-0">
                       <span className="text-[10px] font-bold text-white/40 block">ساعت رسمی ایران</span>
                       <span className="text-xs font-black text-[#c49b63] tracking-wider">{liveTime}</span>
@@ -1446,17 +1346,7 @@ export default function App() {
                 <div className="glass p-5 rounded-2xl shadow-md">
                   <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
                     <h3 className="text-sm font-black text-white">فهرست سفارشات فعال کافه</h3>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={handleSimulateNewOrder}
-                        className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
-                        title="شبیه‌سازی سفارش جدید برای بررسی صدای زنگ و اعلان مرورگر"
-                      >
-                        <Plus className="w-3 h-3 text-[#c49b63]" />
-                        <span>سفارش تستی</span>
-                      </button>
-                      <span className="bg-red-500/15 text-red-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-red-500/30">{toPersianDigits(activeOrders.length)} سفارش فعال</span>
-                    </div>
+                    <span className="bg-red-500/15 text-red-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-red-500/30">{toPersianDigits(activeOrders.length)} سفارش فعال</span>
                   </div>
 
                   <div className="space-y-4">

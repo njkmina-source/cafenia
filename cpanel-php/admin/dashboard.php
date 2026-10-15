@@ -133,29 +133,13 @@ if ($pdo) {
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-2xl font-black text-stone-950 dark:text-white">میز مانیتورینگ سفارشات</h2>
-            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">سفارش‌ها به محض ثبت با صدای هشدار و نوتیفیکیشن مرورگر در اینجا لود خواهند شد</p>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">سفارش‌ها به محض ثبت با صدای هشدار در اینجا لود خواهند شد</p>
         </div>
         
-        <div class="flex flex-wrap items-center gap-3">
-            <!-- وضعیت و کنترل فعال‌سازی نوتیفیکیشن مرورگر ادمین -->
-            <div id="notificationControlBox">
-                <button id="enableNotificationBtn" onclick="requestAdminNotificationPermission()" class="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all shadow-md cursor-pointer animate-pulse">
-                    <i data-lucide="bell" class="w-4 h-4"></i>
-                    <span>فعال‌سازی نوتیفیکیشن مرورگر</span>
-                </button>
-                <div id="notificationGrantedBadge" class="hidden items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    <i data-lucide="bell" class="w-4 h-4 text-emerald-600"></i>
-                    <span>اعلان مرورگر فعال است</span>
-                    <button type="button" onclick="testAdminNotification()" class="mr-2 text-[11px] px-2 py-0.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 hover:bg-emerald-200 transition-colors cursor-pointer" title="ارسال یک پیام تستی به مرورگر">تست اعلان</button>
-                </div>
-            </div>
-
-            <!-- نمایش زمان زنده ایران -->
-            <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 px-5 py-3 rounded-2xl text-center shadow-sm shrink-0">
-                <span class="text-xs font-bold text-stone-400 block">ساعت و تاریخ رسمی</span>
-                <span id="liveClock" class="text-sm font-black text-amber-600 tracking-wider">۱۴۰۵/۰۴/۱۵ - ۱۲:۳۴:۵۶</span>
-            </div>
+        <!-- نمایش زمان زنده ایران -->
+        <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 px-5 py-3 rounded-2xl text-center shadow-sm shrink-0">
+            <span class="text-xs font-bold text-stone-400 block">ساعت و تاریخ رسمی</span>
+            <span id="liveClock" class="text-sm font-black text-amber-600 tracking-wider">۱۴۰۵/۰۴/۱۵ - ۱۲:۳۴:۵۶</span>
         </div>
     </div>
 
@@ -213,13 +197,7 @@ if ($pdo) {
                     <span class="w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
                     <h3 class="text-lg font-black text-stone-900 dark:text-white">سفارش‌های جدید دریافت شده</h3>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="simulateOrderForTesting()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-bold transition-all cursor-pointer shadow-xs" title="ثبت یک سفارش آزمایشی جهت بررسی نوتیفیکیشن مرورگر و زنگ آلارم">
-                        <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-amber-600"></i>
-                        <span>سفارش تستی</span>
-                    </button>
-                    <span id="activeOrdersCount" class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">0 جدید</span>
-                </div>
+                <span id="activeOrdersCount" class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">0 جدید</span>
             </div>
 
             <!-- اسکرول‌بار سفارشات زنده -->
@@ -265,13 +243,12 @@ if ($pdo) {
     let initialLoad = true;
     let salesChartInstance = null;
 
-    // راه‌اندازی آیکون‌ها و ماژول‌ها
+    // راه‌اندازی آیکون‌ها
     document.addEventListener("DOMContentLoaded", function() {
         if (typeof lucide !== 'undefined') lucide.createIcons();
         initSalesChart();
         updateLiveClock();
         setInterval(updateLiveClock, 1000);
-        initBrowserNotification();
         
         // شروع مانیتورینگ سفارشات هر ۵ ثانیه یکبار (AJAX Polling پایدار)
         pollLiveOrders();
@@ -323,13 +300,11 @@ if ($pdo) {
         let hasNewOrder = false;
 
         orders.forEach(order => {
-            // بررسی ایجاد صدای آلارم و ارسال نوتیفیکیشن مرورگر برای سفارش جدید
+            // بررسی ایجاد صدای آلارم بر روی سفارش جدید
             if (!knownOrderCodes.has(order.order_code)) {
                 knownOrderCodes.add(order.order_code);
                 if (!initialLoad && order.status === 'registered') {
                     hasNewOrder = true;
-                    // ارسال اعلان مرورگر فقط و فقط برای ادمین
-                    sendAdminBrowserNotification(order);
                 }
             }
 
@@ -477,149 +452,6 @@ if ($pdo) {
                 } catch (err) {}
             });
         }
-    }
-
-    /**
-     * مدیریت نوتیفیکیشن مرورگر اختصاصی ادمین (Web Notifications API)
-     */
-    function initBrowserNotification() {
-        if (!("Notification" in window)) {
-            const controlBox = document.getElementById('notificationControlBox');
-            if (controlBox) controlBox.style.display = 'none';
-            return;
-        }
-        updateNotificationUI();
-    }
-
-    function updateNotificationUI() {
-        const btn = document.getElementById('enableNotificationBtn');
-        const badge = document.getElementById('notificationGrantedBadge');
-        if (!btn || !badge) return;
-
-        if (Notification.permission === 'granted') {
-            btn.classList.add('hidden');
-            btn.classList.remove('flex');
-            badge.classList.remove('hidden');
-            badge.classList.add('flex');
-        } else if (Notification.permission === 'default') {
-            badge.classList.add('hidden');
-            badge.classList.remove('flex');
-            btn.classList.remove('hidden');
-            btn.classList.add('flex');
-        } else {
-            // denied / مسدود شده توسط کاربر
-            badge.classList.add('hidden');
-            btn.classList.add('hidden');
-        }
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
-
-    function requestAdminNotificationPermission() {
-        if (!("Notification" in window)) {
-            alert("مرورگر شما از نوتیفیکیشن دسکتاپ پشتیبانی نمی‌کند.");
-            return;
-        }
-
-        Notification.requestPermission().then(permission => {
-            updateNotificationUI();
-            if (permission === 'granted') {
-                testAdminNotification();
-            } else if (permission === 'denied') {
-                alert("شما دسترسی نوتیفیکیشن مرورگر را غیرفعال کرده‌اید. در تنظیمات مرورگر می‌توانید مجدداً آن را فعال نمایید.");
-            }
-        });
-    }
-
-    /**
-     * ارسال نوتیفیکیشن مرورگر واقعی به صفحه ادمین به محض ثبت سفارش جدید
-     */
-    function sendAdminBrowserNotification(order) {
-        if (!("Notification" in window) || Notification.permission !== "granted") return;
-
-        try {
-            const isIndoor = order.order_type === 'indoor';
-            const locationText = isIndoor 
-                ? (order.plaque ? `(میز: ${order.plaque})` : 'حضوری در کافه') 
-                : 'غیرحضوری (پیک)';
-            const title = `🔔 سفارش جدید: ${order.order_code}`;
-            const body = `مشتری: ${order.customer_name} ${locationText}\nمبلغ کل: ${formatNumber(order.total_amount)} تومان\nکلیک کنید تا جزئیات سفارش باز شود.`;
-
-            const notification = new Notification(title, {
-                body: body,
-                icon: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=128&auto=format&fit=crop&q=80',
-                badge: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=96&auto=format&fit=crop&q=80',
-                tag: 'order-' + order.order_code,
-                requireInteraction: true // در صفحه باقی بماند تا ادمین آن را ببیند یا ببندد
-            });
-
-            notification.onclick = function() {
-                window.focus();
-                notification.close();
-            };
-        } catch (e) {
-            console.error("Browser notification error:", e);
-        }
-    }
-
-    /**
-     * تست نوتیفیکیشن مرورگر ادمین
-     */
-    function testAdminNotification() {
-        if (!("Notification" in window) || Notification.permission !== "granted") {
-            requestAdminNotificationPermission();
-            return;
-        }
-
-        try {
-            const testN = new Notification("☕ کافه گالری: سیستم اعلان مرورگر فعال است", {
-                body: "این یک پیام تستی است. از این پس به محض ثبت هر سفارش توسط مشتریان، اعلان فوری در مرورگر شما ظاهر می‌شود.",
-                icon: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=128&auto=format&fit=crop&q=80',
-                tag: 'cafe-test-notification'
-            });
-
-            testN.onclick = function() {
-                window.focus();
-                testN.close();
-            };
-        } catch (e) {
-            console.error("Test notification error:", e);
-        }
-    }
-
-    /**
-     * ثبت سفارش آزمایشی جهت تست فوری صدای زنگ و اعلان مرورگر
-     */
-    function simulateOrderForTesting() {
-        const mockCode = "CAFE-1405-" + Math.floor(1000 + Math.random() * 9000);
-        const names = ['سارا احمدی', 'رضا نوری', 'مریم اکبری', 'محمد مرادی', 'امیر رضایی'];
-        const randomName = names[Math.floor(Math.random() * names.length)];
-        const isIndoor = Math.random() > 0.5;
-        const testOrder = {
-            id: Date.now(),
-            order_code: mockCode,
-            customer_name: randomName,
-            customer_phone: '0912' + Math.floor(1000000 + Math.random() * 9000000),
-            order_type: isIndoor ? 'indoor' : 'outdoor',
-            address: isIndoor ? 'تحویل حضوری در سالن' : 'خیابان ولیعصر، کوچه ۴، پلاک ۱۲',
-            plaque: isIndoor ? 'میز ' + Math.floor(1 + Math.random() * 8) : '۱۲',
-            floor: isIndoor ? '' : '۳',
-            unit: isIndoor ? '' : '۶',
-            description: 'سفارش آزمایشی برای تست نوتیفیکیشن مرورگر',
-            total_amount: 115000,
-            status: 'registered',
-            created_jalali: 'همین الان',
-            items: [
-                { product_name: 'لاته آرت', quantity: 1, price: 60000 },
-                { product_name: 'کیک شکلاتی بی‌بی', quantity: 1, price: 55000 }
-            ]
-        };
-
-        let mockOrders = JSON.parse(localStorage.getItem('mock_orders')) || getDemoOrders();
-        mockOrders.unshift(testOrder);
-        localStorage.setItem('mock_orders', JSON.stringify(mockOrders));
-
-        // اجرای فوری مانیتورینگ سفارشات
-        pollLiveOrders();
     }
 
     /**
