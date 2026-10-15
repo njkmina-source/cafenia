@@ -6,7 +6,7 @@ import {
   BarChart3, LogOut, ShieldAlert, Printer, FileSpreadsheet, 
   Folder, File, Download, ChevronRight, Play, RefreshCw, 
   ExternalLink, Copy, CheckCircle2, AlertTriangle, Info, Star,
-  Pencil, Lock, Upload, Package
+  Pencil, Lock, Upload, Package, X, Bell, BellRing
 } from 'lucide-react';
 import JSZip from 'jszip';
 
@@ -239,6 +239,10 @@ export default function App() {
   const [unit, setUnit] = useState('');
   const [description, setDescription] = useState('');
 
+  // وضعیت پاپ‌آپ موفقیت ثبت سفارش
+  const [successOrderModal, setSuccessOrderModal] = useState<any | null>(null);
+  const [isCopiedOrderCode, setIsCopiedOrderCode] = useState(false);
+
   // فیلتر کردن محصولات در نمای مشتری
   const filteredProducts = products.filter(p => {
     if (!p.is_visible) return false;
@@ -359,7 +363,14 @@ export default function App() {
     setIsCartOpen(false);
     setCheckoutStep(1);
 
-    alert(`سفارش شما با موفقیت ثبت شد.\n\nکد پیگیری شما: ${orderCode}\nلطفاً جهت تحویل این کد را به همراه داشته باشید.`);
+    // نمایش پاپ‌آپ مدرن و شکیل جزئیات سفارش
+    setSuccessOrderModal({
+      order_code: orderCode,
+      customer_name: newOrder.customer_name,
+      order_type: orderType,
+      total_amount: totalAmount,
+      table_number: plaque || 'میز کافه'
+    });
   };
 
   // پخش صدای زنگ هشدار نوتیفیکیشن ادمین
@@ -390,6 +401,79 @@ export default function App() {
   const [adminPass, setAdminPass] = useState('');
 
   const [adminAlerts, setAdminAlerts] = useState<{ id: string; message: string; code: string }[]>([]);
+
+  // مدیریت وضعیت نوتیفیکیشن مرورگر اختصاصی ادمین (Web Notification API)
+  const [browserNotificationPermission, setBrowserNotificationPermission] = useState<NotificationPermission>(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      return Notification.permission;
+    }
+    return 'default';
+  });
+
+  const requestBrowserNotificationPermission = () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      showNotification('این مرورگر از نوتیفیکیشن دسکتاپ پشتیبانی نمی‌کند.', 'error');
+      return;
+    }
+
+    Notification.requestPermission().then(permission => {
+      setBrowserNotificationPermission(permission);
+      if (permission === 'granted') {
+        showNotification('نوتیفیکیشن مرورگر برای ادمین فعال شد.', 'success');
+        sendTestAdminBrowserNotification();
+      } else if (permission === 'denied') {
+        showNotification('دسترسی نوتیفیکیشن در مرورگر مسدود شده است.', 'error');
+      }
+    });
+  };
+
+  const sendTestAdminBrowserNotification = () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    if (Notification.permission === 'granted') {
+      try {
+        const n = new Notification('☕ کافه گالری: سیستم اعلان مرورگر فعال است', {
+          body: 'از این پس به محض ثبت هر سفارش توسط مشتریان، نوتیفیکیشن فوری در مرورگر شما ظاهر می‌شود.',
+          icon: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=128&auto=format&fit=crop&q=80',
+          tag: 'cafe-test-notification'
+        });
+        n.onclick = () => {
+          window.focus();
+          n.close();
+        };
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const sendAdminBrowserNotification = (order: any) => {
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    if (Notification.permission === 'granted') {
+      try {
+        const isIndoor = order.order_type === 'indoor';
+        const typeInfo = isIndoor 
+          ? (order.plaque ? `(میز ${toPersianDigits(order.plaque)})` : 'حضوری در کافه') 
+          : 'غیرحضوری (پیک)';
+        const title = `🔔 سفارش جدید: ${order.order_code}`;
+        const body = `مشتری: ${order.customer_name} ${typeInfo}\nمبلغ: ${toPersianDigits(order.total_amount?.toLocaleString())} تومان`;
+        
+        const n = new Notification(title, {
+          body,
+          icon: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=128&auto=format&fit=crop&q=80',
+          badge: 'https://images.unsplash.com/photo-1510972527409-cef5e0af073c?w=96&auto=format&fit=crop&q=80',
+          tag: `order-${order.order_code}`,
+          requireInteraction: true
+        });
+
+        n.onclick = () => {
+          window.focus();
+          n.close();
+        };
+      } catch (err) {
+        console.error('Browser notification error:', err);
+      }
+    }
+  };
   
   // ذخیره کدهای سفارش‌های دیده شده توسط ادمین در لوکال استوریج جهت عدم تکرار آلارم پس از ورودهای مکرر
   const [acknowledgedCodes, setAcknowledgedCodes] = useState<string[]>(() => {
@@ -418,6 +502,7 @@ export default function App() {
       if (unacknowledged.length > 0) {
         unacknowledged.forEach(o => {
           playNotificationSound();
+          sendAdminBrowserNotification(o); // ارسال نوتیفیکیشن مرورگر اختصاصی برای ادمین
           setAdminAlerts(prev => {
             if (prev.some(a => a.id === o.order_code)) return prev;
             return [
@@ -493,6 +578,7 @@ export default function App() {
 
     setOrders([simOrder, ...orders]);
     playNotificationSound();
+    sendAdminBrowserNotification(simOrder);
     showNotification(`سفارش جدید دریافت شد: ${code}`, 'success');
   };
 
@@ -1279,7 +1365,32 @@ export default function App() {
                     <h2 className="text-xl font-black text-white">میز کار مانیتورینگ زنده</h2>
                     <p className="text-xs text-white/50 mt-1">سفارشات جدید ثبت شده مشتری به محض دریافت در اینجا نمایش داده خواهند شد</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* کنترل نوتیفیکیشن مرورگر اختصاصی ادمین */}
+                    {browserNotificationPermission === 'granted' ? (
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-sm">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <Bell className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>اعلان مرورگر فعال است</span>
+                        <button 
+                          onClick={sendTestAdminBrowserNotification} 
+                          className="mr-1 text-[10px] text-emerald-300 underline hover:text-white cursor-pointer"
+                          title="ارسال یک نوتیفیکیشن تستی به مرورگر"
+                        >
+                          تست
+                        </button>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={requestBrowserNotificationPermission}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#c49b63] hover:bg-[#b28b58] text-black text-xs font-black transition-all shadow-md cursor-pointer animate-pulse accent-glow"
+                        title="فعال‌سازی دریافت اعلان سیستم در صورت ثبت سفارش جدید"
+                      >
+                        <BellRing className="w-3.5 h-3.5" />
+                        <span>فعال‌سازی نوتیفیکیشن مرورگر</span>
+                      </button>
+                    )}
+
                     <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-center shadow-sm shrink-0">
                       <span className="text-[10px] font-bold text-white/40 block">ساعت رسمی ایران</span>
                       <span className="text-xs font-black text-[#c49b63] tracking-wider">{liveTime}</span>
@@ -1335,7 +1446,17 @@ export default function App() {
                 <div className="glass p-5 rounded-2xl shadow-md">
                   <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
                     <h3 className="text-sm font-black text-white">فهرست سفارشات فعال کافه</h3>
-                    <span className="bg-red-500/15 text-red-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-red-500/30">{toPersianDigits(activeOrders.length)} سفارش فعال</span>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={handleSimulateNewOrder}
+                        className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                        title="شبیه‌سازی سفارش جدید برای بررسی صدای زنگ و اعلان مرورگر"
+                      >
+                        <Plus className="w-3 h-3 text-[#c49b63]" />
+                        <span>سفارش تستی</span>
+                      </button>
+                      <span className="bg-red-500/15 text-red-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-red-500/30">{toPersianDigits(activeOrders.length)} سفارش فعال</span>
+                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -2342,6 +2463,93 @@ export default function App() {
             )}
           </div>
         </>
+      )}
+
+      {/* مودال پاپ‌آپ اختصاصی و مدرن موفقیت ثبت سفارش */}
+      {successOrderModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#181512] border border-[#c49b63]/30 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-center overflow-hidden animate-scale-up">
+            {/* نور پس‌زمینه تزئینی */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#c49b63]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            {/* دکمه بستن گوشه پنجره */}
+            <button 
+              onClick={() => setSuccessOrderModal(null)} 
+              className="absolute top-4 left-4 p-2 rounded-full text-white/40 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+              title="بستن"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* آیکون تایید جشن و موفقیت */}
+            <div className="relative w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-5 ring-8 ring-emerald-500/5">
+              <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">سفارش شما با موفقیت ثبت شد!</h3>
+            <p className="text-xs sm:text-sm text-white/60 mb-6 leading-relaxed">
+              سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.
+            </p>
+
+            {/* کادر کد سفارش با امکان کپی مستقیم */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-5 text-right space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-white/50">کد پیگیری اختصاصی:</span>
+                <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
+                  successOrderModal.order_type === 'indoor' ? 'bg-[#c49b63]/20 text-[#c49b63]' : 'bg-blue-500/20 text-blue-400'
+                }`}>
+                  {successOrderModal.order_type === 'indoor' ? 'حضوری در کافه' : 'غیرحضوری (ارسال با پیک)'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 bg-black/40 p-2.5 sm:p-3 rounded-xl border border-white/10">
+                <span className="text-base sm:text-lg font-mono font-black text-white tracking-wider dir-ltr select-all">
+                  {successOrderModal.order_code}
+                </span>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    navigator.clipboard.writeText(successOrderModal.order_code);
+                    setIsCopiedOrderCode(true);
+                    showNotification('کد سفارش با موفقیت در کلیپ‌بورد کپی شد.', 'success');
+                    setTimeout(() => setIsCopiedOrderCode(false), 2500);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{isCopiedOrderCode ? 'کپی شد! ✓' : 'کپی کد'}</span>
+                </button>
+              </div>
+
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/70">
+                <span className="text-white/40 font-medium">سفارش‌دهنده:</span>
+                <span className="font-bold text-white">{successOrderModal.customer_name}</span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-white/70">
+                <span className="text-white/40 font-medium">مبلغ کل فاکتور:</span>
+                <span className="font-black text-emerald-400">{toPersianDigits(successOrderModal.total_amount?.toLocaleString())} تومان</span>
+              </div>
+            </div>
+
+            {/* پیام راهنما */}
+            <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs text-right mb-6">
+              <Info className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+              <p className="leading-relaxed">خواهشمند است جهت تحویل سفارش در کافه یا هماهنگی با پیک، کد سفارش بالا را به همراه داشته باشید.</p>
+            </div>
+
+            {/* دکمه تایید و بستن */}
+            <button 
+              type="button" 
+              onClick={() => setSuccessOrderModal(null)} 
+              className="w-full bg-[#c49b63] hover:bg-[#b28b58] text-black font-black py-3.5 px-6 rounded-2xl shadow-lg shadow-[#c49b63]/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98 accent-glow"
+            >
+              <Check className="w-5 h-5" />
+              <span>تأیید و بازگشت به منو</span>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* فلوتینگ سبد خرید در منوی کلاینت با استایل لوکس، واکنش‌گرا و ۱۰۰٪ فیکسد واقعی در روت بدون تداخل */}

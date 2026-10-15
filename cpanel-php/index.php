@@ -417,6 +417,68 @@ if (empty($products)) {
     </div>
 </div>
 
+<!-- مودال پاپ‌آپ مدرن و شکیل موفقیت ثبت سفارش -->
+<div id="orderSuccessModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/70 backdrop-blur-md hidden transition-all duration-300">
+    <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-center overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="orderSuccessModalCard">
+        <!-- نور پس‌زمینه تزئینی -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- دکمه بستن ضربدر گوشه بالا -->
+        <button type="button" onclick="closeOrderSuccessModal()" class="absolute top-4 left-4 p-2 rounded-full text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer" title="بستن">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <!-- آیکون تایید جشن و موفقیت -->
+        <div class="relative w-20 h-20 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-500 flex items-center justify-center mb-5 ring-8 ring-emerald-500/10">
+            <i data-lucide="check-circle-2" class="w-10 h-10 text-emerald-500"></i>
+        </div>
+
+        <h3 class="text-xl sm:text-2xl font-black text-stone-900 dark:text-white mb-2">سفارش شما با موفقیت ثبت شد!</h3>
+        <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mb-6 leading-relaxed">
+            سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.
+        </p>
+
+        <!-- کادر کد سفارش با امکان کپی مستقیم -->
+        <div class="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700/80 rounded-2xl p-4 mb-5 text-right space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-stone-500 dark:text-stone-400">کد پیگیری اختصاصی:</span>
+                <span id="successModalTypeBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">حضوری در کافه</span>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 bg-white dark:bg-stone-900 p-2.5 sm:p-3 rounded-xl border border-stone-200 dark:border-stone-700">
+                <span id="successModalOrderCode" class="text-base sm:text-lg font-mono font-black text-stone-900 dark:text-white tracking-wider dir-ltr select-all">CAFE-1405-XXXX</span>
+                <button type="button" onclick="copySuccessOrderCode()" id="copyOrderCodeBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 text-xs font-bold transition-all cursor-pointer">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span id="copyBtnText">کپی کد</span>
+                </button>
+            </div>
+
+            <div class="pt-2 border-t border-stone-200/60 dark:border-stone-700/60 flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
+                <span class="text-stone-400 font-medium">سفارش‌دهنده:</span>
+                <span id="successModalCustomerName" class="font-bold text-stone-800 dark:text-white">-</span>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
+                <span class="text-stone-400 font-medium">مبلغ کل فاکتور:</span>
+                <span id="successModalTotalAmount" class="font-black text-emerald-600 dark:text-emerald-400">-</span>
+            </div>
+        </div>
+
+        <!-- پیام راهنما -->
+        <div class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 text-amber-800 dark:text-amber-300 text-xs text-right mb-6">
+            <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400"></i>
+            <p class="leading-relaxed">خواهشمند است جهت تحویل سفارش در کافه یا هماهنگی با پیک، کد سفارش بالا را به همراه داشته باشید.</p>
+        </div>
+
+        <!-- دکمه تایید و بستن -->
+        <button type="button" onclick="closeOrderSuccessModal()" class="w-full bg-primary hover:bg-primary/90 text-stone-900 font-black py-3.5 px-6 rounded-2xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98">
+            <i data-lucide="check" class="w-5 h-5"></i>
+            <span>تأیید و بازگشت به منو</span>
+        </button>
+    </div>
+</div>
+
 <!-- اسکریپت سبد خرید و منو -->
 <script>
     // سبد خرید ذخیره شده در حافظه مرورگر (LocalStorage)
@@ -646,6 +708,13 @@ if (empty($products)) {
         const form = document.getElementById('orderForm');
         const formData = new FormData(form);
         
+        // محاسبه مبلغ کل سبد خرید
+        const currentTotal = cart.reduce((tot, item) => tot + (item.price * item.quantity), 0);
+        const orderType = formData.get('order_type');
+        const isIndoor = orderType === 'indoor';
+        const customerName = isIndoor ? formData.get('first_name') : formData.get('outdoor_name');
+        const tableNumber = formData.get('table_number');
+        
         // اضافه کردن آیتم‌های سبد خرید به درخواست ارسالی
         formData.append('cart', JSON.stringify(cart));
         
@@ -657,15 +726,21 @@ if (empty($products)) {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                showNotification(data.message, 'success');
+                showNotification(data.message || 'سفارش شما با موفقیت ثبت شد.', 'success');
                 // پاک کردن سبد خرید کلاینت پس از موفقیت
                 cart = [];
                 saveCart();
                 updateCartBadges();
                 closeCartModal();
                 
-                // هدایت یا نمایش کارت موفقیت سفارش
-                alert(`سفارش شما با موفقیت ثبت شد.\nکد سفارش شما: ${data.order_code}\nخواهشمند است جهت هماهنگی نهایی کد را به همراه داشته باشید.`);
+                // نمایش پاپ‌آپ مدرن و لوکس جزئیات و موفقیت سفارش
+                showOrderSuccessModal({
+                    order_code: data.order_code,
+                    order_type: orderType,
+                    customer_name: customerName,
+                    table_number: tableNumber,
+                    total_amount: data.total_amount || currentTotal
+                });
             } else {
                 showNotification(data.message || 'خطایی در ثبت سفارش رخ داد.', 'error');
             }
@@ -678,18 +753,17 @@ if (empty($products)) {
             // ثبت در LocalStorage کلاینت (برای شبیه‌سازی دقیق و بدون نقص دمو در هوش مصنوعی)
             let mockOrders = JSON.parse(localStorage.getItem('mock_orders')) || [];
             
-            const isIndoor = formData.get('order_type') === 'indoor';
             const order_obj = {
                 order_code: mockCode,
-                customer_name: isIndoor ? `${formData.get('first_name')} ${formData.get('last_name')}` : formData.get('outdoor_name'),
-                customer_phone: isIndoor ? formData.get('phone') : formData.get('outdoor_phone'),
-                order_type: formData.get('order_type'),
-                address: isIndoor ? formData.get('address') : '',
-                plaque: isIndoor ? formData.get('plaque') : '',
-                floor: isIndoor ? formData.get('floor') : '',
-                unit: isIndoor ? formData.get('unit') : '',
+                customer_name: customerName || (isIndoor ? 'مشتری حضوری' : 'مشتری پیک'),
+                customer_phone: isIndoor ? '09000000000' : formData.get('phone'),
+                order_type: orderType,
+                address: isIndoor ? `تحویل حضوری - ${tableNumber}` : formData.get('address'),
+                plaque: isIndoor ? tableNumber : formData.get('plaque'),
+                floor: isIndoor ? '' : formData.get('floor'),
+                unit: isIndoor ? '' : formData.get('unit'),
                 description: isIndoor ? formData.get('description_indoor') : formData.get('description_outdoor'),
-                total_amount: cart.reduce((tot, item) => tot + (item.price * item.quantity), 0),
+                total_amount: currentTotal,
                 status: 'registered',
                 created_jalali: getPersianDateString(),
                 items: cart
@@ -706,9 +780,137 @@ if (empty($products)) {
             // پخش صدای اعلان به صورت شبیه‌سازی در مرورگر
             playNotificationSound();
 
-            alert(`[دموی شبیه‌ساز] سفارش شما ثبت شد.\nشماره سفارش: ${mockCode}`);
+            // نمایش پاپ‌آپ مدرن و شکیل موفقیت سفارش
+            showOrderSuccessModal({
+                order_code: mockCode,
+                order_type: orderType,
+                customer_name: order_obj.customer_name,
+                table_number: tableNumber,
+                total_amount: currentTotal
+            });
         });
     }
+
+    /**
+     * نمایش مودال پاپ‌آپ موفقیت ثبت سفارش
+     */
+    function showOrderSuccessModal(orderData) {
+        const modal = document.getElementById('orderSuccessModal');
+        const card = document.getElementById('orderSuccessModalCard');
+        if (!modal) return;
+
+        // تنظیم اطلاعات سفارش در پاپ‌آپ
+        const codeEl = document.getElementById('successModalOrderCode');
+        if (codeEl) codeEl.innerText = orderData.order_code || '---';
+
+        const nameEl = document.getElementById('successModalCustomerName');
+        if (nameEl) nameEl.innerText = orderData.customer_name || 'مشتری گرامی';
+
+        const totalEl = document.getElementById('successModalTotalAmount');
+        if (totalEl) totalEl.innerText = (orderData.total_amount ? formatNumber(orderData.total_amount) : '۰') + ' تومان';
+        
+        const typeBadge = document.getElementById('successModalTypeBadge');
+        if (typeBadge) {
+            if (orderData.order_type === 'indoor') {
+                const tableInfo = orderData.table_number || 'میز کافه';
+                typeBadge.innerText = `حضوری (${tableInfo})`;
+                typeBadge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400';
+            } else {
+                typeBadge.innerText = 'غیرحضوری (ارسال با پیک)';
+                typeBadge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400';
+            }
+        }
+
+        // ریست متن دکمه کپی
+        const copyBtnText = document.getElementById('copyBtnText');
+        if (copyBtnText) copyBtnText.innerText = 'کپی کد';
+
+        // نمایش پاپ‌آپ با ترنزیشن نرم
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            if (card) {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }
+        }, 30);
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    /**
+     * بستن مودال پاپ‌آپ موفقیت سفارش
+     */
+    function closeOrderSuccessModal() {
+        const modal = document.getElementById('orderSuccessModal');
+        const card = document.getElementById('orderSuccessModalCard');
+        if (!modal) return;
+
+        if (card) {
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+        }
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 200);
+    }
+
+    /**
+     * کپی کردن کد سفارش به کلیپ‌بورد با فیدبک بصری
+     */
+    function copySuccessOrderCode() {
+        const codeEl = document.getElementById('successModalOrderCode');
+        const btnText = document.getElementById('copyBtnText');
+        if (!codeEl) return;
+
+        const code = codeEl.innerText.trim();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code).then(() => {
+                if (btnText) btnText.innerText = 'کپی شد! ✓';
+                showNotification('کد سفارش با موفقیت در کلیپ‌بورد کپی شد.', 'success');
+                setTimeout(() => {
+                    if (btnText) btnText.innerText = 'کپی کد';
+                }, 2500);
+            }).catch(() => fallbackCopy(code, btnText));
+        } else {
+            fallbackCopy(code, btnText);
+        }
+    }
+
+    function fallbackCopy(code, btnText) {
+        const temp = document.createElement('input');
+        temp.value = code;
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+            document.execCommand('copy');
+            if (btnText) btnText.innerText = 'کپی شد! ✓';
+            showNotification('کد سفارش کپی شد.', 'success');
+            setTimeout(() => {
+                if (btnText) btnText.innerText = 'کپی کد';
+            }, 2500);
+        } catch (e) {
+            showNotification('کپی خودکار ناموفق بود. لطفاً کد را دستی کپی نمایید.', 'error');
+        }
+        document.body.removeChild(temp);
+    }
+
+    // بستن پاپ‌آپ با کلیک روی پس‌زمینه
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('orderSuccessModal');
+        const card = document.getElementById('orderSuccessModalCard');
+        if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+            closeOrderSuccessModal();
+        }
+    });
+
+    // بستن با دکمه Esc کیبورد
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeOrderSuccessModal();
+            closeCartModal();
+        }
+    });
 
     /**
      * شبیه‌سازی زنگ پیام جدید ادمین
