@@ -135,6 +135,30 @@ try {
     // تایید و اعمال تراکنش در دیتابیس
     $pdo->commit();
 
+    // ارسال خودکار سفارش به وب‌هوک API تعریف شده در تنظیمات پیشرفته در قالب JSON
+    $webhook_order_payload = [
+        'order_code' => $order_code,
+        'customer_name' => $customer_name,
+        'customer_phone' => $customer_phone,
+        'order_type' => $order_type,
+        'address' => $address,
+        'plaque' => $plaque,
+        'floor' => $floor,
+        'unit' => $unit,
+        'description' => $description,
+        'total_amount' => $total_amount,
+        'status' => 'registered',
+        'created_jalali' => $jalali_date,
+        'items' => array_map(function($i) {
+            return [
+                'product_name' => $i['name'],
+                'quantity' => (int)$i['quantity'],
+                'price' => (float)$i['price']
+            ];
+        }, $cart)
+    ];
+    @dispatchOrderWebhook($webhook_order_payload);
+
     echo json_encode([
         'status' => 'success',
         'message' => 'سفارش شما با موفقیت ثبت گردید و در صف آماده‌سازی قرار گرفت.',

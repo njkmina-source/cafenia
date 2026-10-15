@@ -6,7 +6,8 @@ import {
   BarChart3, LogOut, ShieldAlert, Printer, FileSpreadsheet, 
   Folder, File, Download, ChevronRight, Play, RefreshCw, 
   ExternalLink, Copy, CheckCircle2, AlertTriangle, Info, Star,
-  Pencil, Lock, Upload, Package, X
+  Pencil, Lock, Upload, Package, X,
+  Radio, Globe, Send, Code2
 } from 'lucide-react';
 import JSZip from 'jszip';
 
@@ -144,7 +145,10 @@ export default function App() {
       logo_url: '',
       banner_url: '',
       admin_username: 'admin', // نام کاربری پیش‌فرض ادمین
-      admin_password: 'admin' // رمز عبور ادمین پیش‌فرض
+      admin_password: 'admin', // رمز عبور ادمین پیش‌فرض
+      webhook_enabled: true, // فعال‌سازی وب‌هوک API
+      webhook_order_url: '', // لینک وب‌هوک سفارشات
+      webhook_secret: '' // کلید امنیتی هدر
     };
     if (saved) {
       try {
@@ -242,6 +246,108 @@ export default function App() {
   // وضعیت پاپ‌آپ موفقیت ثبت سفارش
   const [successOrderModal, setSuccessOrderModal] = useState<any | null>(null);
   const [isCopiedOrderCode, setIsCopiedOrderCode] = useState(false);
+
+  // وضعیت و توابع تنظیمات پیشرفته وب‌هوک API سفارشات
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  const [webhookTestStatus, setWebhookTestStatus] = useState<string | null>(null);
+
+  // ارسال خودکار سفارش به وب‌هوک API تعریف شده در تنظیمات پیشرفته در قالب JSON
+  const sendWebhookOrder = async (orderData: any, url: string, secret?: string) => {
+    try {
+      const payload = {
+        event: 'new_order',
+        timestamp: Math.floor(Date.now() / 1000),
+        order: {
+          order_code: orderData.order_code,
+          customer_name: orderData.customer_name,
+          customer_phone: orderData.customer_phone,
+          order_type: orderData.order_type,
+          address: orderData.address,
+          plaque: orderData.plaque,
+          floor: orderData.floor,
+          unit: orderData.unit,
+          description: orderData.description,
+          total_amount: orderData.total_amount,
+          status: orderData.status,
+          created_jalali: orderData.created_jalali,
+          items: orderData.items
+        }
+      };
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (secret && secret.trim()) {
+        const token = secret.trim();
+        headers['Authorization'] = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+      }
+
+      await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        mode: 'no-cors'
+      });
+      console.log('Order successfully sent to webhook API:', url);
+    } catch (e) {
+      console.warn('Webhook dispatch failed:', e);
+    }
+  };
+
+  // ارسال بسته تستی برای اعتبارسنجی وب‌هوک
+  const handleTestWebhook = async () => {
+    const url = settings.webhook_order_url?.trim();
+    if (!url) {
+      showNotification('لطفاً ابتدا آدرس وب‌هوک API را در کادر بالا وارد فرمایید.', 'error');
+      return;
+    }
+    setIsTestingWebhook(true);
+    setWebhookTestStatus('در حال ارسال بسته آزمایشی...');
+    try {
+      const testPayload = {
+        event: 'test_ping',
+        timestamp: Math.floor(Date.now() / 1000),
+        message: 'این یک درخواست تستی جهت اعتبارسنجی وب‌هوک کافه گالری است.',
+        sample_order: {
+          order_code: 'CAFE-1405-TEST',
+          customer_name: 'کاربر آزمایشی',
+          customer_phone: '09121111111',
+          order_type: 'indoor',
+          table_number: 'میز ۲',
+          total_amount: 95000,
+          status: 'registered',
+          created_jalali: '۱۴۰۵/۰۱/۱۵ ۱۲:۰۰:۰۰',
+          items: [
+            { product_name: 'قهوه اسپرسو تخصصی', quantity: 1, price: 45000 },
+            { product_name: 'چیزکیک نیویورکی', quantity: 1, price: 50000 }
+          ]
+        }
+      };
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (settings.webhook_secret && settings.webhook_secret.trim()) {
+        const token = settings.webhook_secret.trim();
+        headers['Authorization'] = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+      }
+
+      await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(testPayload),
+        mode: 'no-cors'
+      });
+
+      setWebhookTestStatus('بسته آزمایشی با موفقیت در قالب JSON به وب‌هوک ارسال گردید.');
+      showNotification('درخواست تست وب‌هوک با موفقیت به سرور مقصد ارسال شد.', 'success');
+    } catch (err: any) {
+      setWebhookTestStatus('خطا در ارسال به آدرس وب‌هوک.');
+      showNotification('خطا در برقراری ارتباط با وب‌هوک.', 'error');
+    } finally {
+      setIsTestingWebhook(false);
+    }
+  };
 
   // فیلتر کردن محصولات در نمای مشتری
   const filteredProducts = products.filter(p => {
@@ -362,6 +468,11 @@ export default function App() {
     setCart([]);
     setIsCartOpen(false);
     setCheckoutStep(1);
+
+    // ارسال خودکار سفارش به وب‌هوک API در قالب JSON در صورت تنظیم بودن
+    if (settings.webhook_enabled && settings.webhook_order_url) {
+      sendWebhookOrder(newOrder, settings.webhook_order_url, settings.webhook_secret);
+    }
 
     // نمایش پاپ‌آپ مدرن و شکیل جزئیات سفارش
     setSuccessOrderModal({
@@ -505,6 +616,11 @@ export default function App() {
     setOrders([simOrder, ...orders]);
     playNotificationSound();
     showNotification(`سفارش جدید دریافت شد: ${code}`, 'success');
+
+    // ارسال به وب‌هوک API در صورت فعال بودن
+    if (settings.webhook_enabled && settings.webhook_order_url) {
+      sendWebhookOrder(simOrder, settings.webhook_order_url, settings.webhook_secret);
+    }
   };
 
   // تغییر وضعیت سفارش در ادمین
@@ -1974,6 +2090,142 @@ export default function App() {
                         className="bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 px-6 py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer"
                       >
                         ذخیره هویت و رمز عبور جدید
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* بخش تنظیمات پیشرفته (اتصال وب‌هوک و API سفارشات) */}
+                <div className="glass p-6 rounded-3xl border border-white/10 shadow-md space-y-5 animate-fade-in">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <Radio className="w-4 h-4 animate-pulse" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-emerald-400">تنظیمات پیشرفته (اتصال وب‌هوک و API سفارشات)</h3>
+                        <p className="text-[10px] text-white/50">ارسال خودکار و لحظه‌ای تمامی سفارشات جدید در قالب JSON</p>
+                      </div>
+                    </div>
+                    <span className="self-start sm:self-auto text-[10px] bg-emerald-500/10 text-emerald-400 font-mono px-2.5 py-1 rounded-full border border-emerald-500/20 font-black">
+                      JSON Webhook Dispatcher
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-white/70 leading-relaxed">
+                    با تعریف یک آدرس وب‌هوک (Webhook URL)، به محض ثبت هر سفارش جدید در سیستم، تمامی داده‌ها و اقلام فاکتور به صورت خودکار در قالب ساختاریافته <span className="text-[#c49b63] font-mono font-bold">JSON</span> با متد <span className="text-emerald-400 font-mono font-bold">POST</span> به سیستم حسابداری، نرم‌افزار انبارداری، CRM یا ربات اختصاصی شما فرستاده می‌شود.
+                  </p>
+
+                  <div className="space-y-4 text-xs font-semibold">
+                    {/* سوئیچ فعال/غیرفعال‌سازی */}
+                    <label className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/[0.07] transition-all">
+                      <input 
+                        type="checkbox" 
+                        checked={settings.webhook_enabled ?? true} 
+                        onChange={e => setSettings({ ...settings, webhook_enabled: e.target.checked })} 
+                        className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <span className="text-white font-bold block text-xs">فعال‌سازی ارسال خودکار سفارشات جدید به وب‌هوک API</span>
+                        <span className="text-[10px] text-white/40 block mt-0.5">در صورت غیرفعال بودن، داده‌ای به آدرس سرور خارجی فرستاده نمی‌شود.</span>
+                      </div>
+                    </label>
+
+                    {/* فیلد لینک وب‌هوک */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-white/60 font-bold">آدرس وب‌هوک API (POST URL) *</label>
+                        <span className="text-[10px] text-emerald-400 font-mono">Method: POST</span>
+                      </div>
+                      <div className="relative">
+                        <input 
+                          type="url" 
+                          value={settings.webhook_order_url || ''} 
+                          onChange={e => setSettings({ ...settings, webhook_order_url: e.target.value })} 
+                          className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-left dir-ltr placeholder:text-white/20 text-xs" 
+                          placeholder="https://api.yourdomain.com/v1/orders/webhook"
+                        />
+                        <Globe className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                      <span className="text-[10px] text-white/40 block mt-1">مثال: اندپوینت نرم‌افزار، سرور اختصاصی شما، سرویس Zapier، Make، وب‌هوک تلگرام/بله یا سیستم انبارداری</span>
+                    </div>
+
+                    {/* کلید امنیتی Bearer Token */}
+                    <div>
+                      <label className="block text-white/60 mb-1.5 font-bold">کلید محرمانه هدر امنیتی (اختیاری - Authorization Header)</label>
+                      <input 
+                        type="text" 
+                        value={settings.webhook_secret || ''} 
+                        onChange={e => setSettings({ ...settings, webhook_secret: e.target.value })} 
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-left dir-ltr placeholder:text-white/20 text-xs" 
+                        placeholder="Bearer sec_key_98a723b یا رمز هدر..."
+                      />
+                      <span className="text-[10px] text-white/40 block mt-1">در صورت تکمیل، مقدار در هدر <code className="text-emerald-400 font-mono">Authorization</code> به همراه بسته ارسالی فرستاده می‌شود.</span>
+                    </div>
+
+                    {/* پیش‌نمایش ساختار JSON ارسالی */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60 font-bold flex items-center gap-1.5">
+                          <Code2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>پیش‌نمایش ساختار JSON ارسالی (Payload Schema):</span>
+                        </span>
+                        <span className="text-[10px] text-white/30 font-mono">application/json</span>
+                      </div>
+                      <div className="bg-black/60 text-stone-200 p-3.5 rounded-2xl border border-white/10 text-[11px] font-mono dir-ltr overflow-x-auto text-left shadow-inner">
+                        <pre className="text-emerald-400 leading-relaxed">{`{
+  "event": "new_order",
+  "timestamp": 1744685000,
+  "order": {
+    "order_code": "CAFE-1405-XXXX",
+    "customer_name": "سفارش‌دهنده",
+    "customer_phone": "0912xxxxxxx",
+    "order_type": "indoor | outdoor",
+    "table_number": "میز ۴",
+    "total_amount": 125000,
+    "status": "registered",
+    "created_jalali": "۱۴۰۵/۰۱/۱۵ ۱۶:۳۰:۰۰",
+    "items": [
+      { "product_name": "اسپرسو دوبل", "quantity": 1, "price": 45000 },
+      { "product_name": "چیزکیک نیویورکی", "quantity": 1, "price": 80000 }
+    ]
+  }
+}`}</pre>
+                      </div>
+                    </div>
+
+                    {/* پیام نتیجه ارسال آزمایشی */}
+                    {webhookTestStatus && (
+                      <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs flex items-center gap-2 animate-fade-in">
+                        <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                        <span>{webhookTestStatus}</span>
+                      </div>
+                    )}
+
+                    {/* دکمه‌های اقدام: تست وب‌هوک و ذخیره تنظیمات */}
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <button 
+                        type="button" 
+                        onClick={handleTestWebhook} 
+                        disabled={isTestingWebhook}
+                        className="w-full sm:w-auto bg-white/10 hover:bg-white/15 text-white border border-white/15 px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                      >
+                        <Send className={`w-3.5 h-3.5 ${isTestingWebhook ? 'animate-spin' : ''}`} />
+                        <span>{isTestingWebhook ? 'در حال ارسال تست...' : 'ارسال بسته آزمایشی (Test Webhook)'}</span>
+                      </button>
+
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          const updated = { ...settings };
+                          setSettings(updated);
+                          localStorage.setItem('demo_settings', JSON.stringify(updated));
+                          showNotification('تنظیمات پیشرفته وب‌هوک API با موفقیت ذخیره شد.', 'success');
+                        }} 
+                        className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md shadow-emerald-600/20 cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span>ذخیره تنظیمات پیشرفته وب‌هوک</span>
                       </button>
                     </div>
                   </div>

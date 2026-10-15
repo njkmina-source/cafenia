@@ -22,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $keys_to_update = [
             'cafe_name', 'cafe_description', 'cafe_phone', 'cafe_address', 
             'working_hours', 'primary_color', 'secondary_color', 
-            'instagram_link', 'telegram_link'
+            'instagram_link', 'telegram_link',
+            'webhook_enabled', 'webhook_order_url', 'webhook_secret'
         ];
 
         // آپلود لوگوی جدید
@@ -288,6 +289,56 @@ $settings = getSettings();
                 </div>
             </div>
             <p class="text-[10px] text-stone-400 mt-1">از این اطلاعات برای احراز هویت در ورود مجدد به مسیر مدیریت استفاده می‌شود.</p>
+        <!-- ۵. تنظیمات پیشرفته (اتصال وب‌هوک و ارسال JSON سفارشات) -->
+        <div class="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="radio" class="w-4 h-4 text-emerald-600"></i>
+                    <h3 class="text-sm font-black text-emerald-600 dark:text-emerald-400">تنظیمات پیشرفته (اتصال وب‌هوک و API سفارشات)</h3>
+                </div>
+                <span class="text-[10px] bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 font-mono px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 font-bold">JSON Webhook</span>
+            </div>
+            
+            <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                با تنظیم آدرس وب‌هوک زیر، به محض ثبت هر سفارش جدید در سیستم، اطلاعات کامل فاکتور و اقلام در قالب ساختاریافته JSON با متد POST به این آدرس ارسال خواهد شد (جهت اتصال به نرم‌افزارهای حسابداری، انبارداری، CRM یا ربات‌ها).
+            </p>
+
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="webhook_enabled" name="webhook_enabled" value="1" <?php echo ($settings['webhook_enabled'] ?? '0') === '1' ? 'checked' : ''; ?> class="w-4 h-4 text-emerald-600 rounded cursor-pointer">
+                    <label for="webhook_enabled" class="text-xs font-bold text-stone-700 dark:text-stone-300 cursor-pointer">فعال‌سازی ارسال خودکار سفارشات جدید به وب‌هوک</label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">آدرس وب‌هوک API (POST URL) *</label>
+                    <input type="url" name="webhook_order_url" value="<?php echo sanitize($settings['webhook_order_url'] ?? ''); ?>" placeholder="https://api.yourdomain.com/v1/orders/webhook" class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-emerald-600 font-mono text-left dir-ltr">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">کلید محرمانه هدر امنیتی (اختیاری - Bearer Token)</label>
+                    <input type="text" name="webhook_secret" value="<?php echo sanitize($settings['webhook_secret'] ?? ''); ?>" placeholder="مثلاً: sec_key_98a723b یا توکن اختصاصی شما..." class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-emerald-600 font-mono text-left dir-ltr">
+                </div>
+
+                <!-- پیش‌نمایش قالب JSON ارسالی -->
+                <div class="bg-stone-900 text-stone-200 p-3.5 rounded-xl border border-stone-800 text-[11px] font-mono dir-ltr overflow-x-auto text-left">
+                    <div class="text-stone-400 font-bold mb-1">// ساختار خروجی JSON ارسال شونده (Sample Payload):</div>
+                    <pre class="text-emerald-400">{
+  "event": "new_order",
+  "timestamp": 1744685000,
+  "order": {
+    "order_code": "CAFE-1405-XXXX",
+    "customer_name": "سفارش‌دهنده",
+    "customer_phone": "0912xxxxxxx",
+    "order_type": "indoor / outdoor",
+    "total_amount": 125000,
+    "status": "registered",
+    "items": [
+      { "product_name": "نام محصول", "quantity": 1, "price": 45000 }
+    ]
+  }
+}</pre>
+                </div>
+            </div>
         </div>
 
         <div class="pt-4">
