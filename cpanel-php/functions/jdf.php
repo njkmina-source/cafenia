@@ -31,26 +31,7 @@ class JalaliDate {
     public static function now($format = 'Y/m/d H:i:s') {
         // تنظیم منطقه زمانی روی ایران
         date_default_timezone_set('Asia/Tehran');
-        
-        $timestamp = time();
-        $g_date = date('Y-m-d', $timestamp);
-        $g_parts = explode('-', $g_date);
-        
-        $j_parts = self::gregorian_to_jalali((int)$g_parts[0], (int)$g_parts[1], (int)$g_parts[2]);
-        
-        $jy = $j_parts[0];
-        $jm = str_pad($j_parts[1], 2, '0', STR_PAD_LEFT);
-        $jd = str_pad($j_parts[2], 2, '0', STR_PAD_LEFT);
-        
-        $time = date('H:i:s', $timestamp);
-        
-        $result = $format;
-        $result = str_replace('Y', $jy, $result);
-        $result = str_replace('m', $jm, $result);
-        $result = str_replace('d', $jd, $result);
-        $result = str_replace('H:i:s', $time, $result);
-        
-        return $result;
+        return self::from_timestamp(time(), $format);
     }
 
     /**
@@ -58,6 +39,7 @@ class JalaliDate {
      */
     public static function from_timestamp($timestamp, $format = 'Y/m/d H:i:s') {
         if (!$timestamp) return '';
+        date_default_timezone_set('Asia/Tehran');
         
         $g_date = date('Y-m-d', $timestamp);
         $g_parts = explode('-', $g_date);
@@ -68,14 +50,29 @@ class JalaliDate {
         $jm = str_pad($j_parts[1], 2, '0', STR_PAD_LEFT);
         $jd = str_pad($j_parts[2], 2, '0', STR_PAD_LEFT);
         
-        $time = date('H:i:s', $timestamp);
+        $time_his = date('H:i:s', $timestamp);
+        $time_hi = date('H:i', $timestamp);
         
         $result = $format;
         $result = str_replace('Y', $jy, $result);
         $result = str_replace('m', $jm, $result);
         $result = str_replace('d', $jd, $result);
-        $result = str_replace('H:i:s', $time, $result);
+        $result = str_replace('H:i:s', $time_his, $result);
+        $result = str_replace('H:i', $time_hi, $result);
         
         return $result;
     }
 }
+
+/**
+ * تابع سراسری کمکی jdate سازگار با استانداردهای تاریخ شمسی
+ */
+if (!function_exists('jdate')) {
+    function jdate($format = 'Y/m/d', $timestamp = null) {
+        if ($timestamp === null) {
+            return JalaliDate::now($format);
+        }
+        return JalaliDate::from_timestamp($timestamp, $format);
+    }
+}
+

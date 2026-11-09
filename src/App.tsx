@@ -7,7 +7,7 @@ import {
   Folder, File, Download, ChevronRight, Play, RefreshCw, 
   ExternalLink, Copy, CheckCircle2, AlertTriangle, Info, Star,
   Pencil, Lock, Upload, Package, X,
-  Radio, Globe, Send, Code2
+  Radio, Globe, Send, Code2, CreditCard, ShieldCheck
 } from 'lucide-react';
 import JSZip from 'jszip';
 
@@ -148,7 +148,9 @@ export default function App() {
       admin_password: 'admin', // رمز عبور ادمین پیش‌فرض
       webhook_enabled: true, // فعال‌سازی وب‌هوک API
       webhook_order_url: '', // لینک وب‌هوک سفارشات
-      webhook_secret: '' // کلید امنیتی هدر
+      webhook_secret: '', // کلید امنیتی هدر
+      gateway_aqayepardakht_enabled: true, // درگاه پرداخت آقای پرداخت
+      gateway_aqayepardakht_pin: '' // پین درگاه آقای پرداخت
     };
     if (saved) {
       try {
@@ -185,16 +187,27 @@ export default function App() {
     }
   }, [theme]);
 
-  // زمان زنده ایران
+  // دریافت تاریخ دقیق خورشیدی (شمسی ایران)
+  const getJalaliDateString = (date = new Date()) => {
+    try {
+      return new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-latn', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(date);
+    } catch (e) {
+      return '1405/08/18';
+    }
+  };
+
+  // زمان زنده ایران (تاریخ شمسی و ساعت)
   const [liveTime, setLiveTime] = useState('');
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const y = 1405; // سال دمو پروپوزال مشتری
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const d = String(now.getDate()).padStart(2, '0');
+      const jalaliDate = getJalaliDateString(now);
       const time = now.toTimeString().split(' ')[0];
-      setLiveTime(`${y}/${m}/${d} - ${time}`);
+      setLiveTime(`${jalaliDate} - ${time}`);
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
@@ -246,6 +259,29 @@ export default function App() {
   // وضعیت پاپ‌آپ موفقیت ثبت سفارش
   const [successOrderModal, setSuccessOrderModal] = useState<any | null>(null);
   const [isCopiedOrderCode, setIsCopiedOrderCode] = useState(false);
+
+  // وضعیت و متغیرهای شبیه‌ساز درگاه پرداخت آقای پرداخت (سفارشات غیرحضوری)
+  const [isPaymentSimulatorOpen, setIsPaymentSimulatorOpen] = useState(false);
+  const [pendingPaymentOrder, setPendingPaymentOrder] = useState<any | null>(null);
+  const [isSimulatingPayment, setIsSimulatingPayment] = useState(false);
+  const [simCardNumber, setSimCardNumber] = useState('6037 9975 4120 8391');
+  const [simCvv2, setSimCvv2] = useState('742');
+  const [simExpiryMonth, setSimExpiryMonth] = useState('08');
+  const [simExpiryYear, setSimExpiryYear] = useState('06');
+  const [simPin2, setSimPin2] = useState('385910');
+  const [simTimerSeconds, setSimTimerSeconds] = useState(600);
+
+  // شمارش معکوس زمان انقضای جلسه درگاه شاپرک
+  useEffect(() => {
+    if (!isPaymentSimulatorOpen) {
+      setSimTimerSeconds(600);
+      return;
+    }
+    const timer = setInterval(() => {
+      setSimTimerSeconds(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isPaymentSimulatorOpen]);
 
   // وضعیت و توابع تنظیمات پیشرفته وب‌هوک API سفارشات
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
@@ -441,6 +477,9 @@ export default function App() {
     const orderCode = `CAFE-1405-${Math.floor(1000 + Math.random() * 9000)}`;
     const totalAmount = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
+    const isOutdoorDelivery = orderType === 'outdoor';
+    const isGatewayActive = isOutdoorDelivery && (settings.gateway_aqayepardakht_enabled ?? true);
+
     const newOrder = {
       order_code: orderCode,
       customer_name: orderType === 'indoor' ? `${firstName} ${lastName}` : firstName,
@@ -452,7 +491,8 @@ export default function App() {
       unit: orderType === 'indoor' ? unit : '',
       description: description,
       total_amount: totalAmount,
-      status: 'registered',
+      status: isGatewayActive ? 'pending_payment' : 'registered',
+      payment_status: isGatewayActive ? 'pending' : 'paid',
       created_jalali: liveTime.split(' - ')[0] + ' ' + liveTime.split(' - ')[1],
       items: cart.map(item => ({
         product_name: item.name,
@@ -460,6 +500,13 @@ export default function App() {
         price: item.price
       }))
     };
+
+    // در صورتی که سفارش غیرحضوری (ارسال) و درگاه آقای پرداخت فعال باشد، کاربر به درگاه آنلاین منتقل می‌شود
+    if (isGatewayActive) {
+      setPendingPaymentOrder(newOrder);
+      setIsPaymentSimulatorOpen(true);
+      return;
+    }
 
     // اضافه کردن به دیتابیس ادمین (آرشیو)
     setOrders([newOrder, ...orders]);
@@ -482,6 +529,59 @@ export default function App() {
       total_amount: totalAmount,
       table_number: plaque || 'میز کافه'
     });
+  };
+
+  // تأیید یا انصراف از پرداخت آنلاین شبیه‌ساز شاپرک / آقای پرداخت
+  const handleConfirmOnlinePayment = (isSuccess: boolean) => {
+    if (!pendingPaymentOrder) return;
+
+    if (!isSuccess) {
+      setIsPaymentSimulatorOpen(false);
+      showNotification('پرداخت توسط کاربر لغو شد. اقلام سبد خرید شما جهت تلاش مجدد محفوظ ماندند.', 'info');
+      return;
+    }
+
+    setIsSimulatingPayment(true);
+    setTimeout(() => {
+      const trackingNumber = `SHP-${Math.floor(10000000 + Math.random() * 90000000)}`;
+      const cardNumber = simCardNumber ? simCardNumber.slice(0, 7) + '******' + simCardNumber.slice(-4) : '6037-99**-****-4281';
+
+      const completedOrder = {
+        ...pendingPaymentOrder,
+        status: 'registered',
+        payment_status: 'paid',
+        payment_transid: `AP-${Date.now().toString(36).toUpperCase()}`,
+        payment_tracking_number: trackingNumber,
+        payment_card_number: cardNumber
+      };
+
+      setOrders(prev => [completedOrder, ...prev]);
+      setCart([]);
+      setIsCartOpen(false);
+      setCheckoutStep(1);
+      setIsSimulatingPayment(false);
+      setIsPaymentSimulatorOpen(false);
+
+      // ارسال به وب‌هوک در صورت فعال بودن
+      if (settings.webhook_enabled && settings.webhook_order_url) {
+        sendWebhookOrder(completedOrder, settings.webhook_order_url, settings.webhook_secret);
+      }
+
+      // نمایش مودال موفقیت ثبت سفارش با جزییات تراکنش شاپرک
+      setSuccessOrderModal({
+        order_code: completedOrder.order_code,
+        customer_name: completedOrder.customer_name,
+        order_type: completedOrder.order_type,
+        total_amount: completedOrder.total_amount,
+        table_number: 'غیرحضوری (ارسال با پیک)',
+        tracking_number: trackingNumber,
+        card_number: cardNumber,
+        payment_status: 'paid'
+      });
+
+      showNotification('پرداخت آنلاین با موفقیت تایید شد و سفارش ثبت گردید.', 'success');
+      setPendingPaymentOrder(null);
+    }, 1000);
   };
 
   // پخش صدای زنگ هشدار نوتیفیکیشن ادمین
@@ -928,7 +1028,8 @@ export default function App() {
                   <p>تهیه شده به صورت رسمی برای کافه: ${settings.cafe_name}</p>
               </div>
               <div style="text-align: left;">
-                  <span style="color: #6b7280;">تاریخ گزارش: 1405/07/06</span><br>
+                  <span style="color: #6b7280;">تاریخ چاپ گزارش: ${toPersianDigits(getJalaliDateString())}</span><br>
+                  <span style="color: #6b7280;">ساعت چاپ: ${toPersianDigits(new Date().toTimeString().split(' ')[0].substring(0, 5))}</span><br>
                   <span style="color: #6b7280;">تلفن پشتیبانی: ${settings.cafe_phone}</span>
               </div>
           </div>
@@ -1488,10 +1589,19 @@ export default function App() {
                                  order.status === 'completed' ? 'تکمیل شد' : 'لغو شد'}
                               </span>
                               <span className="px-1.5 py-0.5 bg-white/10 text-white/70 text-[9px] font-bold rounded">
-                                {order.order_type === 'indoor' ? 'حضوری' : 'غیرحضوری'}
+                                {order.order_type === 'indoor' ? 'حضوری' : 'غیرحضوری (ارسال)'}
                               </span>
+                              {order.payment_status === 'paid' && (
+                                <span className="px-1.5 py-0.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold rounded flex items-center gap-1">
+                                  <ShieldCheck className="w-3 h-3" />
+                                  <span>پرداخت آنلاین شاپرک</span>
+                                </span>
+                              )}
                             </div>
                             <p className="font-semibold text-white/70">مشتری: <span className="font-bold text-white">{order.customer_name}</span> ({toPersianDigits(order.customer_phone)})</p>
+                            {order.payment_tracking_number && (
+                              <p className="text-emerald-400 font-mono text-[10px]">کد رهگیری شاپرک: {order.payment_tracking_number}</p>
+                            )}
                             {order.address && <p className="text-amber-500">آدرس: {order.address} پلاک {toPersianDigits(order.plaque)} طبقه {toPersianDigits(order.floor)} واحد {toPersianDigits(order.unit)}</p>}
                             {order.description && <p className="text-white/40">توضیح: {order.description}</p>}
                             
@@ -1797,7 +1907,17 @@ export default function App() {
                           <td className="p-4 font-black text-white">{o.order_code}</td>
                           <td className="p-4">{toPersianDigits(o.created_jalali)}</td>
                           <td className="p-4">{o.customer_name} ({toPersianDigits(o.customer_phone)})</td>
-                          <td className="p-4">{o.order_type === 'indoor' ? 'حضوری' : 'غیرحضوری'}</td>
+                          <td className="p-4">
+                            <div className="flex flex-col gap-1 items-start">
+                              <span>{o.order_type === 'indoor' ? 'حضوری' : 'غیرحضوری'}</span>
+                              {o.payment_status === 'paid' && (
+                                <span className="inline-flex items-center gap-1 text-[9px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono">
+                                  <ShieldCheck className="w-2.5 h-2.5" />
+                                  <span>شاپرک</span>
+                                </span>
+                              )}
+                            </div>
+                          </td>
                           <td className="p-4 font-black text-[#c49b63]">{toPersianDigits(o.total_amount.toLocaleString())} تومان</td>
                            <td className="p-4">
                             <div className="flex items-center">
@@ -2230,6 +2350,94 @@ export default function App() {
                     </div>
                   </div>
                 </div>
+
+                {/* بخش ۶: درگاه پرداخت اینترنتی آقای پرداخت (سفارشات غیرحضوری) */}
+                <div className="glass p-6 rounded-3xl border border-cyan-500/20 space-y-5 bg-gradient-to-br from-cyan-950/20 via-black/40 to-black/60 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                        <CreditCard className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-black text-white">درگاه پرداخت اینترنتی آقای پرداخت (Aqaye Pardakht)</h3>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">سفارشات غیرحضوری</span>
+                        </div>
+                        <p className="text-[11px] text-white/50 mt-0.5">اتصال به شاپرک برای پرداخت آنلاین سفارش‌های غیرحضوری (ارسال با پیک)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 text-xs font-semibold">
+                    {/* سوئیچ فعال/غیرفعال‌سازی درگاه */}
+                    <label className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/[0.07] transition-all">
+                      <input 
+                        type="checkbox" 
+                        checked={settings.gateway_aqayepardakht_enabled ?? true} 
+                        onChange={e => setSettings({ ...settings, gateway_aqayepardakht_enabled: e.target.checked })} 
+                        className="w-4 h-4 accent-cyan-500 rounded cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <span className="text-white font-bold block text-xs">فعال‌سازی درگاه پرداخت آنلاین شاپرک برای سفارش‌های غیرحضوری</span>
+                        <span className="text-[10px] text-white/40 block mt-0.5">هنگام فعال بودن، مشتریان در سفارش غیرحضوری پس از تکمیل سبد به درگاه بانکی هدایت می‌شوند.</span>
+                      </div>
+                    </label>
+
+                    {/* فیلد PIN درگاه */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-white/60 font-bold">پین درگاه پرداخت (Gateway PIN) *</label>
+                        <span className="text-[10px] text-cyan-400 font-mono">Aqaye Pardakht API v2</span>
+                      </div>
+                      <div className="relative">
+                        <input 
+                          type="text" 
+                          value={settings.gateway_aqayepardakht_pin || ''} 
+                          onChange={e => setSettings({ ...settings, gateway_aqayepardakht_pin: e.target.value })} 
+                          className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 text-left dir-ltr placeholder:text-white/20 text-xs" 
+                          placeholder="مثلاً: aqayepardakht یا PIN اختصاصی دریافتی از پنل آقای پرداخت"
+                        />
+                        <Lock className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                      <span className="text-[10px] text-white/40 block mt-1">
+                        برای تست می‌توانید عبارت <code className="text-cyan-400 font-mono">sandbox</code> را وارد کنید یا در صورت دریافت کد زنده، پین اختصاصی خود را در این فیلد قرار دهید.
+                      </span>
+                    </div>
+
+                    {/* راهنما و اطلاعات اندپوینت‌ها */}
+                    <div className="p-3.5 rounded-2xl bg-cyan-950/30 border border-cyan-500/20 text-cyan-200 text-[11px] space-y-2">
+                      <div className="flex items-center gap-2 font-bold text-cyan-300">
+                        <Info className="w-4 h-4 shrink-0" />
+                        <span>مشخصات فنی و وب‌سرویس فعال شده در cPanel PHP:</span>
+                      </div>
+                      <ul className="list-disc list-inside space-y-1 text-white/70 text-[10px] leading-relaxed">
+                        <li>اندپوینت ایجاد تراکنش: <code className="font-mono text-cyan-300">https://panel.aqayepardakht.ir/api/v2/create</code></li>
+                        <li>اندپوینت تایید تراکنش (Verify): <code className="font-mono text-cyan-300">https://panel.aqayepardakht.ir/api/v2/verify</code></li>
+                        <li>آدرس بازگشت خودکار (Callback): <code className="font-mono text-cyan-300">payment_callback.php</code></li>
+                        <li>تفکیک هوشمند: سفارشات حضوری در کافه نیازی به پرداخت اینترنتی ندارند و سر میز یا پای صندوق تسویه می‌شوند.</li>
+                      </ul>
+                    </div>
+
+                    {/* دکمه ذخیره تنظیمات درگاه */}
+                    <div className="pt-2 flex justify-end">
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          const updated = { ...settings };
+                          setSettings(updated);
+                          localStorage.setItem('demo_settings', JSON.stringify(updated));
+                          showNotification('تنظیمات درگاه پرداخت آقای پرداخت با موفقیت ذخیره شد.', 'success');
+                        }} 
+                        className="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md shadow-cyan-600/20 cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span>ذخیره تنظیمات درگاه پرداخت</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
               </div>
@@ -2294,7 +2502,7 @@ export default function App() {
                 className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-black text-white cursor-pointer focus:border-[#c49b63] outline-none"
               >
                 {[
-                  { name: 'فایل‌های روت پروژه', files: ['index.php', 'login.php', 'logout.php', '.htaccess', 'README.md'] },
+                  { name: 'فایل‌های روت پروژه', files: ['index.php', 'login.php', 'logout.php', 'payment_callback.php', '.htaccess', 'README.md'] },
                   { name: 'پوشه تنظیمات (config/)', files: ['config/config.php'] },
                   { name: 'پوشه کتابخانه‌ها (functions/)', files: ['functions/jdf.php'] },
                   { name: 'پوشه پایگاه داده (database/)', files: ['database/schema.sql'] },
@@ -2318,7 +2526,7 @@ export default function App() {
             {/* دسکتاپ: فایل‌های پروژه به صورت دسته‌بندی درختی در مرورگر */}
             <div className="hidden md:block space-y-4 max-h-[450px] overflow-y-auto text-xs font-semibold">
               {[
-                { name: 'فایل‌های روت پروژه', files: ['index.php', 'login.php', 'logout.php', '.htaccess', 'README.md'] },
+                { name: 'فایل‌های روت پروژه', files: ['index.php', 'login.php', 'logout.php', 'payment_callback.php', '.htaccess', 'README.md'] },
                 { name: 'پوشه تنظیمات (config/)', files: ['config/config.php'] },
                 { name: 'پوشه کتابخانه‌ها (functions/)', files: ['functions/jdf.php'] },
                 { name: 'پوشه پایگاه داده (database/)', files: ['database/schema.sql'] },
@@ -2595,10 +2803,23 @@ export default function App() {
                   <button 
                     form="checkout-form"
                     type="submit" 
-                    className="w-full bg-[#c49b63] hover:bg-[#c49b63]/90 text-black py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer active:scale-98 accent-glow"
+                    className={`w-full py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer active:scale-98 ${
+                      orderType === 'outdoor' && (settings.gateway_aqayepardakht_enabled ?? true)
+                        ? 'bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 hover:opacity-90 text-white shadow-teal-500/20'
+                        : 'bg-[#c49b63] hover:bg-[#c49b63]/90 text-black accent-glow'
+                    }`}
                   >
-                    <Check className="w-5 h-5" />
-                    <span>ثبت و پرداخت نهایی سفارش</span>
+                    {orderType === 'outdoor' && (settings.gateway_aqayepardakht_enabled ?? true) ? (
+                      <>
+                        <CreditCard className="w-5 h-5 text-white" />
+                        <span>پرداخت آنلاین با درگاه آقای پرداخت ({toPersianDigits(cart.reduce((acc, item) => acc + (item.price * item.quantity), 0).toLocaleString())} تومان)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-5 h-5" />
+                        <span>ثبت نهایی سفارش</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -2659,7 +2880,7 @@ export default function App() {
                       setIsCopiedOrderCode(true);
                       showNotification('کد سفارش با موفقیت در کلیپ‌بورد کپی شد.', 'success');
                       setTimeout(() => setIsCopiedOrderCode(false), 2500);
-                    }}
+                    }} 
                     className="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer shrink-0 active:scale-95"
                   >
                     <Copy className="w-3.5 h-3.5" />
@@ -2676,6 +2897,27 @@ export default function App() {
                   <span className="text-white/40 font-medium">مبلغ کل فاکتور:</span>
                   <span className="font-black text-emerald-400">{toPersianDigits(successOrderModal.total_amount?.toLocaleString())} تومان</span>
                 </div>
+
+                {/* نمایش اطلاعات پرداخت آنلاین شاپرک / آقای پرداخت در صورت وجود */}
+                {successOrderModal.tracking_number && (
+                  <div className="pt-3 border-t border-emerald-500/30 bg-emerald-500/10 -mx-3.5 sm:-mx-4 -mb-3.5 sm:-mb-4 p-3 rounded-b-2xl space-y-1.5 text-xs text-right">
+                    <div className="flex items-center justify-between">
+                      <span className="text-emerald-300 font-bold flex items-center gap-1">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        <span>کد رهگیری پرداخت شاپرک:</span>
+                      </span>
+                      <span className="font-mono text-emerald-400 font-black tracking-wider dir-ltr select-all">
+                        {successOrderModal.tracking_number}
+                      </span>
+                    </div>
+                    {successOrderModal.card_number && (
+                      <div className="flex items-center justify-between text-[11px] text-emerald-200/80">
+                        <span>شماره کارت پرداخت‌کننده:</span>
+                        <span className="font-mono dir-ltr">{successOrderModal.card_number}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* پیام راهنما */}
@@ -2693,6 +2935,182 @@ export default function App() {
                 <Check className="w-5 h-5" />
                 <span>تأیید و بازگشت به منو</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* شبیه‌ساز اختصاصی درگاه پرداخت اینترنتی شاپرک / آقای پرداخت (سفارشات غیرحضوری) */}
+      {isPaymentSimulatorOpen && pendingPaymentOrder && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/85 backdrop-blur-md animate-fade-in overflow-y-auto">
+          <div className="bg-[#141a24] border border-cyan-500/30 rounded-3xl max-w-lg w-full my-auto shadow-2xl relative text-right overflow-hidden animate-scale-up max-h-[94vh] flex flex-col text-white">
+            
+            {/* هدر رسمی شاپرک و درگاه */}
+            <div className="bg-gradient-to-r from-cyan-950 via-[#102030] to-[#0f172a] p-4 sm:p-5 border-b border-cyan-500/20 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-400 shadow-inner">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-sm text-cyan-300">درگاه پرداخت اینترنتی شاپرک</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-200 font-mono font-bold">Aqaye Pardakht</span>
+                  </div>
+                  <span className="text-[10px] text-white/50 flex items-center gap-1 mt-0.5">
+                    <Lock className="w-3 h-3 text-emerald-400" />
+                    <span>اتصال امن رمزنگاری شده SSL ۲۵۶ بیتی</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-left font-mono">
+                <span className="text-[10px] text-white/40 block">زمان باقیمانده</span>
+                <span className="text-xs font-bold text-amber-400">
+                  {toPersianDigits(Math.floor(simTimerSeconds / 60).toString().padStart(2, '0'))}:{toPersianDigits((simTimerSeconds % 60).toString().padStart(2, '0'))}
+                </span>
+              </div>
+            </div>
+
+            {/* کارت اطلاعات فاکتور و پذیرنده */}
+            <div className="p-4 sm:p-5 overflow-y-auto space-y-4">
+              <div className="bg-black/40 border border-white/10 rounded-2xl p-3.5 space-y-2 text-xs">
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                  <span className="text-white/50">نام پذیرنده:</span>
+                  <span className="font-black text-white">{settings.cafe_name || 'کافه گالری'}</span>
+                </div>
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                  <span className="text-white/50">شناسه سفارش / فاکتور:</span>
+                  <span className="font-mono text-cyan-400 font-bold dir-ltr">{pendingPaymentOrder.order_code}</span>
+                </div>
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                  <span className="text-white/50">پین درگاه پرداخت:</span>
+                  <span className="font-mono text-white/70 dir-ltr text-[11px]">
+                    {settings.gateway_aqayepardakht_pin ? `${settings.gateway_aqayepardakht_pin.slice(0, 4)}••••` : 'پین استاندارد (Sandbox)'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-white/50">مبلغ قابل پرداخت:</span>
+                  <div className="text-left">
+                    <span className="text-base font-black text-emerald-400 block">{toPersianDigits(pendingPaymentOrder.total_amount?.toLocaleString())} تومان</span>
+                    <span className="text-[10px] text-white/40 font-mono dir-ltr block">{toPersianDigits((pendingPaymentOrder.total_amount * 10)?.toLocaleString())} ریال</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* فرم ورود اطلاعات کارت شبیه‌ساز */}
+              <div className="space-y-3.5 bg-white/5 p-4 rounded-2xl border border-white/10 text-xs">
+                <div>
+                  <label className="block text-[11px] font-bold text-white/70 mb-1">شماره کارت ۱۶ رقمی</label>
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      value={simCardNumber} 
+                      onChange={e => setSimCardNumber(e.target.value)} 
+                      maxLength={19}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-white font-mono text-center tracking-widest text-sm focus:border-cyan-400 outline-none"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-cyan-300 font-bold bg-cyan-500/20 px-2 py-0.5 rounded">عضو شتاب</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-white/70 mb-1">کد شناسایی دوم (CVV2)</label>
+                    <input 
+                      type="password" 
+                      value={simCvv2} 
+                      onChange={e => setSimCvv2(e.target.value)} 
+                      maxLength={4}
+                      className="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/15 text-white font-mono text-center tracking-widest focus:border-cyan-400 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-white/70 mb-1">تاریخ انقضا (ماه / سال)</label>
+                    <div className="flex items-center gap-1.5 dir-ltr">
+                      <input 
+                        type="text" 
+                        value={simExpiryMonth} 
+                        onChange={e => setSimExpiryMonth(e.target.value)} 
+                        maxLength={2} 
+                        placeholder="MM"
+                        className="w-1/2 px-2 py-2 rounded-xl bg-black/50 border border-white/15 text-white font-mono text-center focus:border-cyan-400 outline-none" 
+                      />
+                      <span className="text-white/40">/</span>
+                      <input 
+                        type="text" 
+                        value={simExpiryYear} 
+                        onChange={e => setSimExpiryYear(e.target.value)} 
+                        maxLength={2} 
+                        placeholder="YY"
+                        className="w-1/2 px-2 py-2 rounded-xl bg-black/50 border border-white/15 text-white font-mono text-center focus:border-cyan-400 outline-none" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-bold text-white/70">رمز دوم پویا (اینترنتی)</label>
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        const randomPin = Math.floor(100000 + Math.random() * 900000).toString();
+                        setSimPin2(randomPin);
+                        showNotification(`رمز پویای پیامکی شبیه‌سازی شد: ${randomPin}`, 'info');
+                      }}
+                      className="text-[10px] text-cyan-300 hover:text-cyan-200 underline cursor-pointer"
+                    >
+                      دریافت رمز پویا (SMS)
+                    </button>
+                  </div>
+                  <input 
+                    type="password" 
+                    value={simPin2} 
+                    onChange={e => setSimPin2(e.target.value)} 
+                    maxLength={8}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-white font-mono text-center tracking-widest text-sm focus:border-cyan-400 outline-none"
+                    placeholder="رمز دوم پیامک شده"
+                  />
+                </div>
+              </div>
+
+              {/* هشدارهای امنیتی شاپرک */}
+              <div className="p-3 rounded-xl bg-cyan-950/20 border border-cyan-500/20 text-[10px] text-cyan-300/80 leading-relaxed space-y-1">
+                <p>• این درگاه به وب‌سرویس آقای پرداخت (Aqaye Pardakht API v2) متصل است.</p>
+                <p>• پس از کلیک بر روی پرداخت موفق، تراکنش فوراً تأیید (Verify) شده و کد رهگیری شاپرک ثبت می‌شود.</p>
+              </div>
+
+              {/* دکمه‌های عملیات: پرداخت یا انصراف */}
+              <div className="space-y-2.5 pt-1">
+                <button 
+                  type="button" 
+                  disabled={isSimulatingPayment}
+                  onClick={() => handleConfirmOnlinePayment(true)}
+                  className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:opacity-95 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50"
+                >
+                  {isSimulatingPayment ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span>در حال اعتبارسنجی در شاپرک (Verify)...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-5 h-5" />
+                      <span>پرداخت موفق و ثبت سفارش (شبیه‌ساز شاپرک)</span>
+                    </>
+                  )}
+                </button>
+
+                <button 
+                  type="button" 
+                  disabled={isSimulatingPayment}
+                  onClick={() => handleConfirmOnlinePayment(false)}
+                  className="w-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white py-3 rounded-xl font-bold text-xs transition-colors cursor-pointer border border-white/10"
+                >
+                  انصراف از پرداخت و بازگشت به کافه
+                </button>
+              </div>
+
             </div>
           </div>
         </div>

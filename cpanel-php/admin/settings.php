@@ -23,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'cafe_name', 'cafe_description', 'cafe_phone', 'cafe_address', 
             'working_hours', 'primary_color', 'secondary_color', 
             'instagram_link', 'telegram_link',
-            'webhook_enabled', 'webhook_order_url', 'webhook_secret'
+            'webhook_enabled', 'webhook_order_url', 'webhook_secret',
+            'gateway_aqayepardakht_enabled', 'gateway_aqayepardakht_pin'
         ];
 
         // آپلود لوگوی جدید
@@ -337,6 +338,39 @@ $settings = getSettings();
     ]
   }
 }</pre>
+                </div>
+            </div>
+        <!-- ۶. تنظیمات درگاه پرداخت اینترنتی شاپرک (آقای پرداخت) -->
+        <div class="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="credit-card" class="w-4 h-4 text-amber-600"></i>
+                    <h3 class="text-sm font-black text-stone-900 dark:text-white">درگاه پرداخت اینترنتی آقای پرداخت (خرید غیرحضوری)</h3>
+                </div>
+                <span class="text-[10px] bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400 font-mono px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-bold">Aqaye Pardakht v2</span>
+            </div>
+
+            <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                با فعال‌سازی این درگاه، مشتریانی که گزینه «سفارش غیرحضوری (ارسال با پیک)» را انتخاب می‌کنند، قبل از آماده‌سازی و ارسال، به درگاه شاپرک هدایت شده و پس از پرداخت آنلاین، فاکتور آن‌ها نهایی می‌شود.
+            </p>
+
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="gateway_aqayepardakht_enabled" name="gateway_aqayepardakht_enabled" value="1" <?php echo ($settings['gateway_aqayepardakht_enabled'] ?? '1') === '1' ? 'checked' : ''; ?> class="w-4 h-4 text-amber-600 rounded cursor-pointer">
+                    <label for="gateway_aqayepardakht_enabled" class="text-xs font-bold text-stone-700 dark:text-stone-300 cursor-pointer">فعال‌سازی درگاه پرداخت آنلاین شاپرک برای سفارش‌های غیرحضوری</label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-500 mb-1.5">کد پین درگاه آقای پرداخت (Merchant PIN) *</label>
+                    <input type="text" name="gateway_aqayepardakht_pin" value="<?php echo sanitize($settings['gateway_aqayepardakht_pin'] ?? ''); ?>" placeholder="کد پین اختصاصی دریافتی از پنل آقای پرداخت..." class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs focus:outline-none focus:border-amber-600 font-mono text-left dir-ltr">
+                </div>
+
+                <div class="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 p-3 rounded-xl flex items-start gap-2.5 text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+                    <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                    <div>
+                        <p class="font-bold text-stone-800 dark:text-stone-200">راهنمای دریافت کد پین درگاه:</p>
+                        <p class="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">وارد پنل کاربری خود در سایت <a href="https://panel.aqayepardakht.ir" target="_blank" class="text-amber-600 underline font-mono">aqayepardakht.ir</a> شوید، در بخش درگاه‌های پرداخت، درگاه سایت خود را اضافه کرده و «پین درگاه» اختصاصی را کپی و در کادر بالا قرار دهید.</p>
+                    </div>
                 </div>
             </div>
         </div>

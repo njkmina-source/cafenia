@@ -405,11 +405,15 @@ if (empty($products)) {
                     </div>
                 </div>
 
-                <!-- دکمه پرداخت و ارسال نهایی -->
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all">
-                        <i data-lucide="check" class="w-5 h-5"></i>
-                        <span>ثبت و پرداخت نهایی</span>
+                <!-- راهنما و دکمه پرداخت و ارسال نهایی -->
+                <div class="pt-4 space-y-2">
+                    <div id="paymentGatewayNotice" class="hidden p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-800 dark:text-amber-300 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                        <span>پرداخت سفارشات غیرحضوری از طریق درگاه امن شاپرک (آقای پرداخت) انجام می‌شود.</span>
+                    </div>
+                    <button type="submit" id="submitOrderBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer">
+                        <i data-lucide="check" class="w-5 h-5" id="submitOrderBtnIcon"></i>
+                        <span id="submitOrderBtnText">ثبت سفارش و پرداخت</span>
                     </button>
                 </div>
             </form>
@@ -436,8 +440,8 @@ if (empty($products)) {
             </div>
 
             <div>
-                <h3 class="text-lg sm:text-2xl font-black text-stone-900 dark:text-white mb-1.5 sm:mb-2">سفارش شما با موفقیت ثبت شد!</h3>
-                <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
+                <h3 class="text-lg sm:text-2xl font-black text-stone-900 dark:text-white mb-1.5 sm:mb-2" id="successModalTitle">سفارش شما با موفقیت ثبت شد!</h3>
+                <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 leading-relaxed" id="successModalSubtitle">
                     سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.
                 </p>
             </div>
@@ -455,6 +459,12 @@ if (empty($products)) {
                         <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                         <span id="copyBtnText">کپی کد</span>
                     </button>
+                </div>
+
+                <!-- ردیف شماره پیگیری شاپرک (در صورت پرداخت آنلاین) -->
+                <div id="successModalTrackingRow" class="hidden pt-2 border-t border-stone-200/60 dark:border-stone-700/60 flex items-center justify-between text-xs">
+                    <span class="text-stone-400 font-medium">کد رهگیری بانکی شاپرک:</span>
+                    <span id="successModalTrackingNumber" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">-</span>
                 </div>
 
                 <div class="pt-2 border-t border-stone-200/60 dark:border-stone-700/60 flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
@@ -680,9 +690,16 @@ if (empty($products)) {
         const outdoorPhone = document.getElementById('outdoor_phone');
         const outdoorAddress = document.getElementById('outdoor_address');
 
+        const submitBtnText = document.getElementById('submitOrderBtnText');
+        const submitBtnIcon = document.getElementById('submitOrderBtnIcon');
+        const gatewayNotice = document.getElementById('paymentGatewayNotice');
+
         if (type === 'indoor') {
             indoor.classList.remove('hidden');
             outdoor.classList.add('hidden');
+            if (gatewayNotice) gatewayNotice.classList.add('hidden');
+            if (submitBtnText) submitBtnText.innerText = 'ثبت سفارش در کافه';
+            if (submitBtnIcon) submitBtnIcon.setAttribute('data-lucide', 'check');
             
             if (indoorFirst) indoorFirst.required = true;
             if (indoorTable) indoorTable.required = true;
@@ -693,6 +710,9 @@ if (empty($products)) {
         } else {
             indoor.classList.add('hidden');
             outdoor.classList.remove('hidden');
+            if (gatewayNotice) gatewayNotice.classList.remove('hidden');
+            if (submitBtnText) submitBtnText.innerText = 'پرداخت آنلاین شاپرک (درگاه آقای پرداخت)';
+            if (submitBtnIcon) submitBtnIcon.setAttribute('data-lucide', 'credit-card');
 
             if (indoorFirst) indoorFirst.required = false;
             if (indoorTable) indoorTable.required = false;
@@ -701,6 +721,7 @@ if (empty($products)) {
             if (outdoorPhone) outdoorPhone.required = true;
             if (outdoorAddress) outdoorAddress.required = true;
         }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     /**
@@ -722,6 +743,12 @@ if (empty($products)) {
         // اضافه کردن آیتم‌های سبد خرید به درخواست ارسالی
         formData.append('cart', JSON.stringify(cart));
         
+        const submitBtn = document.getElementById('submitOrderBtn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        }
+
         // ارسال از طریق Fetch API
         fetch('api/submit_order.php', {
             method: 'POST',
@@ -729,7 +756,22 @@ if (empty($products)) {
         })
         .then(response => response.json())
         .then(data => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+
             if (data.status === 'success') {
+                // اگر سفارش نیازمند هدایت به درگاه پرداخت شاپرک (آقای پرداخت) باشد
+                if (data.requires_payment && data.payment_url) {
+                    showNotification('در حال انتقال امن به درگاه شاپرک (آقای پرداخت)...', 'info');
+                    // بستن فرم و هدایت به درگاه بانک
+                    setTimeout(() => {
+                        window.location.href = data.payment_url;
+                    }, 600);
+                    return;
+                }
+
                 showNotification(data.message || 'سفارش شما با موفقیت ثبت شد.', 'success');
                 // پاک کردن سبد خرید کلاینت پس از موفقیت
                 cart = [];
@@ -813,6 +855,22 @@ if (empty($products)) {
         const totalEl = document.getElementById('successModalTotalAmount');
         if (totalEl) totalEl.innerText = (orderData.total_amount ? formatNumber(orderData.total_amount) : '۰') + ' تومان';
         
+        const titleEl = document.getElementById('successModalTitle');
+        const subtitleEl = document.getElementById('successModalSubtitle');
+        const trackingRow = document.getElementById('successModalTrackingRow');
+        const trackingEl = document.getElementById('successModalTrackingNumber');
+
+        if (orderData.tracking_number) {
+            if (titleEl) titleEl.innerText = 'پرداخت با موفقیت انجام شد!';
+            if (subtitleEl) subtitleEl.innerText = 'سفارش شما با موفقیت از طریق درگاه شاپرک تسویه شد و در صف آماده‌سازی کافه قرار گرفت.';
+            if (trackingRow) trackingRow.classList.remove('hidden');
+            if (trackingEl) trackingEl.innerText = orderData.tracking_number;
+        } else {
+            if (titleEl) titleEl.innerText = 'سفارش شما با موفقیت ثبت شد!';
+            if (subtitleEl) subtitleEl.innerText = 'سفارش شما در سیستم کافه ثبت گردید و هم‌اکنون در مرحله آماده‌سازی قرار دارد.';
+            if (trackingRow) trackingRow.classList.add('hidden');
+        }
+
         const typeBadge = document.getElementById('successModalTypeBadge');
         if (typeBadge) {
             if (orderData.order_type === 'indoor') {
@@ -820,8 +878,13 @@ if (empty($products)) {
                 typeBadge.innerText = `حضوری (${tableInfo})`;
                 typeBadge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400';
             } else {
-                typeBadge.innerText = 'غیرحضوری (ارسال با پیک)';
-                typeBadge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400';
+                if (orderData.tracking_number) {
+                    typeBadge.innerText = 'غیرحضوری (پرداخت آنلاین شاپرک ✓)';
+                    typeBadge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30';
+                } else {
+                    typeBadge.innerText = 'غیرحضوری (ارسال با پیک)';
+                    typeBadge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400';
+                }
             }
         }
 
@@ -941,11 +1004,14 @@ if (empty($products)) {
      */
     function getPersianDateString() {
         const today = new Date();
-        const y = 1405; // سال دمو پروپوزال
-        const m = String(today.getMonth() + 1).padStart(2, '0');
-        const d = String(today.getDate()).padStart(2, '0');
-        const time = today.toTimeString().split(' ')[0];
-        return `${y}/${m}/${d} ${time}`;
+        try {
+            const jalali = new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-latn', {
+                year: 'numeric', month: '2-digit', day: '2-digit'
+            }).format(today);
+            return `${jalali} ${today.toTimeString().split(' ')[0]}`;
+        } catch (e) {
+            return `1405/08/18 ${today.toTimeString().split(' ')[0]}`;
+        }
     }
 
     // ==================== مدیریت مودال جزئیات محصول ====================
@@ -1123,6 +1189,46 @@ if (empty($products)) {
             }, 300);
         }, 3000);
     }
+
+    // بررسی وضعیت بازگشت از درگاه پرداخت شاپرک (آقای پرداخت)
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.get('payment_success') === '1') {
+            const orderCode = urlParams.get('order_code') || 'CAFE-PAID';
+            const tracking = urlParams.get('tracking') || '';
+            const amount = parseInt(urlParams.get('amount') || '0');
+            
+            // پاکسازی سبد خرید پس از پرداخت موفق
+            cart = [];
+            saveCart();
+            updateCartBadges();
+
+            // پخش صدای اعلان موفقیت
+            playNotificationSound();
+
+            showOrderSuccessModal({
+                order_code: orderCode,
+                order_type: 'outdoor',
+                customer_name: 'مشتری گرامی (پرداخت آنلاین)',
+                total_amount: amount,
+                tracking_number: tracking
+            });
+
+            // حذف پارامترها از آدرس بار بدون ریلود صفحه
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+        } else if (urlParams.get('payment_cancelled') === '1') {
+            const code = urlParams.get('order_code');
+            showNotification('فرآیند پرداخت در درگاه بانکی شاپرک لغو شد. اقلام سبد خرید شما محفوظ است.', 'error');
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+        } else if (urlParams.get('payment_error')) {
+            const err = decodeURIComponent(urlParams.get('payment_error'));
+            showNotification('خطای پرداخت: ' + err, 'error');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    });
 </script>
 
 <?php include_once __DIR__ . '/includes/footer.php'; ?>

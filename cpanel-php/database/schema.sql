@@ -57,7 +57,11 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `unit` VARCHAR(20) DEFAULT NULL,
   `description` TEXT DEFAULT NULL,
   `total_amount` DECIMAL(12,0) NOT NULL,
-  `status` ENUM('registered', 'preparing', 'ready', 'sent', 'completed', 'cancelled') DEFAULT 'registered',
+  `status` ENUM('pending_payment', 'registered', 'preparing', 'ready', 'sent', 'completed', 'cancelled') DEFAULT 'registered',
+  `payment_status` ENUM('none', 'pending', 'paid', 'failed') DEFAULT 'none', -- وضعیت پرداخت درگاه
+  `payment_transid` VARCHAR(100) DEFAULT NULL, -- شناسه تراکنش درگاه آقای پرداخت
+  `payment_tracking_number` VARCHAR(100) DEFAULT NULL, -- شماره پیگیری شاپرک
+  `payment_card_number` VARCHAR(30) DEFAULT NULL, -- شماره کارت ماسک شده پرداخت کننده
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `created_jalali` VARCHAR(50) DEFAULT NULL -- تاریخ شمسی متنی ذخیره شده
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;

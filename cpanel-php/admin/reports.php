@@ -215,7 +215,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
                     elseif ($range === 'weekly') echo '۷ روز گذشته';
                     else echo '۳۰ روز گذشته';
                 ?></div>
-                <div style="margin-top: 4px;">تاریخ چاپ گزارش: <?php echo date('Y/m/d'); ?></div>
+                <div style="margin-top: 4px;">تاریخ چاپ گزارش: <?php echo function_exists('jdate') ? jdate('Y/m/d - H:i') : (class_exists('JalaliDate') ? JalaliDate::now('Y/m/d - H:i') : date('Y/m/d')); ?></div>
             </div>
         </div>
 

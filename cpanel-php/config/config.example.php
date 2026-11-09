@@ -117,7 +117,10 @@ function getSettings() {
         'instagram_link' => 'https://instagram.com/cafegallery',
         'telegram_link' => 'https://t.me/cafegallery',
         'logo_url' => '',
-        'banner_url' => ''
+        'banner_url' => '',
+        // تنظیمات درگاه پرداخت اینترنتی آقای پرداخت (شاپرک) برای سفارشات غیرحضوری
+        'gateway_aqayepardakht_enabled' => '1',
+        'gateway_aqayepardakht_pin' => ''
     ];
 
     if (!$pdo) {

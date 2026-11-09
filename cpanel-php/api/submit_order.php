@@ -92,11 +92,20 @@ try {
     $order_code = generateOrderCode();
     $jalali_date = JalaliDate::now('Y/m/d H:i:s');
 
+    // بررسی نیاز به پرداخت آنلاین با درگاه آقای پرداخت برای سفارشات غیرحضوری
+    $settings = getSettings();
+    $gateway_enabled = ($settings['gateway_aqayepardakht_enabled'] ?? '1') === '1';
+    $gateway_pin = trim($settings['gateway_aqayepardakht_pin'] ?? '');
+
+    $requires_online_payment = ($order_type === 'outdoor' && $gateway_enabled && !empty($gateway_pin));
+    $order_initial_status = $requires_online_payment ? 'pending_payment' : 'registered';
+    $payment_initial_status = $requires_online_payment ? 'pending' : 'none';
+
     // ۳. درج فاکتور نهایی در جدول سفارشات
     $stmt_order = $pdo->prepare("
         INSERT INTO orders 
-        (order_code, customer_name, customer_phone, order_type, address, plaque, floor, unit, description, total_amount, status, created_jalali) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'registered', ?)
+        (order_code, customer_name, customer_phone, order_type, address, plaque, floor, unit, description, total_amount, status, payment_status, created_jalali) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     
     $stmt_order->execute([
@@ -110,6 +119,8 @@ try {
         $unit,
         $description,
         $total_amount,
+        $order_initial_status,
+        $payment_initial_status,
         $jalali_date
     ]);
     
@@ -132,7 +143,56 @@ try {
         ]);
     }
 
-    // تایید و اعمال تراکنش در دیتابیس
+    // اگر سفارش نیازمند پرداخت آنلاین درگاه شاپرک باشد
+    if ($requires_online_payment) {
+        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+        $host = $_SERVER['HTTP_HOST'];
+        $script_dir = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/\\');
+        $callback_url = "{$protocol}://{$host}{$script_dir}/payment_callback.php?order_code=" . urlencode($order_code);
+
+        $payment_desc = "پرداخت سفارش کافه گالری - کد: " . $order_code;
+        $create_res = aqayepardakht_create_payment(
+            $gateway_pin,
+            $total_amount,
+            $callback_url,
+            $customer_phone,
+            $order_code,
+            $payment_desc
+        );
+
+        if (isset($create_res['status']) && $create_res['status'] === 'success' && !empty($create_res['transid'])) {
+            $transid = $create_res['transid'];
+            // ثبت transid در سفارش
+            $stmt_update_trans = $pdo->prepare("UPDATE orders SET payment_transid = ? WHERE id = ?");
+            $stmt_update_trans->execute([$transid, $order_id]);
+
+            $pdo->commit();
+
+            $payment_url = "https://panel.aqayepardakht.ir/startpay/" . $transid;
+
+            echo json_encode([
+                'status' => 'success',
+                'requires_payment' => true,
+                'payment_url' => $payment_url,
+                'transid' => $transid,
+                'order_code' => $order_code,
+                'total_amount' => $total_amount,
+                'message' => 'در حال اتصال به درگاه پرداخت شاپرک (آقای پرداخت)...'
+            ]);
+            exit;
+        } else {
+            // در صورتی که پین نامعتبر باشد یا درگاه خطا دهد، تراکنش رول‌بک و خطا گزارش می‌شود
+            $pdo->rollBack();
+            $error_msg = $create_res['message'] ?? 'خطا در ایجاد تراکنش با درگاه پرداخت شاپرک';
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'خطای اتصال به درگاه آقای پرداخت: ' . $error_msg
+            ]);
+            exit;
+        }
+    }
+
+    // تایید و اعمال تراکنش در دیتابیس (سفارشات حضوری یا بدون درگاه)
     $pdo->commit();
 
     // ارسال خودکار سفارش به وب‌هوک API تعریف شده در تنظیمات پیشرفته در قالب JSON
@@ -161,6 +221,7 @@ try {
 
     echo json_encode([
         'status' => 'success',
+        'requires_payment' => false,
         'message' => 'سفارش شما با موفقیت ثبت گردید و در صف آماده‌سازی قرار گرفت.',
         'order_code' => $order_code,
         'total_amount' => $total_amount
